@@ -13,3 +13,8 @@ type User struct {
 	Profile      string `json:"profile"`
 	EventId      uint   `json:"eventid"`
 }
+
+type Verification struct {
+	Email string `json:"email" validate:"email"`
+	Code  int    `json:"code"`
+}

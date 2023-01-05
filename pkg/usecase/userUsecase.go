@@ -1,11 +1,15 @@
 package usecase
 
 import (
-	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"log"
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userUseCase struct {
@@ -13,8 +17,27 @@ type userUseCase struct {
 }
 
 // CreateUser implements interfaces.UserUseCase
-func (*userUseCase) CreateUser(user domain.Users) error {
-	panic("unimplemented")
+func (c *userUseCase) CreateUser(user domain.Users) error {
+	fmt.Println("create user from service")
+	_, err := c.userRepo.FindUser(user.Email)
+	fmt.Println("found user", err)
+
+	if err == nil {
+		return errors.New("Username already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	//hashing password
+	user.Password = HashPassword(user.Password)
+	fmt.Println("password", user.Password)
+	_, err = c.userRepo.InsertUser(user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // FindUser implements interfaces.UserUseCase
@@ -32,19 +55,18 @@ func (*userUseCase) VerifyAccount(email string, code int) error {
 	panic("unimplemented")
 }
 
-// Delete implements interfaces.UserUseCase
-func (*userUseCase) Delete(ctx context.Context, user domain.Users) error {
-	panic("unimplemented")
-}
-
 func NewUserUseCase(repo interfaces.UserRepository) services.UserUseCase {
 	return &userUseCase{
 		userRepo: repo,
 	}
 }
 
-// func (c *userUseCase) Delete(ctx context.Context, user domain.Users) error {
-// 	err := c.userRepo.Delete(ctx, user)
+// HashPassword hashes the password
+func HashPassword(password string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	return err
-// }
+	return string(hash)
+}

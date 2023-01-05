@@ -1,14 +1,12 @@
 package interfaces
 
 import (
-	"context"
-
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 )
 
 type UserUseCase interface {
-	FindAll(ctx context.Context) ([]domain.Users, error)
-	FindByID(ctx context.Context, id uint) (domain.Users, error)
-	Save(ctx context.Context, user domain.Users) (domain.Users, error)
-	Delete(ctx context.Context, user domain.Users) error
+	CreateUser(user domain.Users) error
+	FindUser(email string) (*domain.UserResponse, error)
+	SendVerificationEmail(email string) error
+	VerifyAccount(email string, code int) error
 }

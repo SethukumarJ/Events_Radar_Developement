@@ -85,8 +85,13 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 }
 
 // VerifyAccount implements interfaces.UserUseCase
-func (*userUseCase) VerifyAccount(email string, code int) error {
-	panic("unimplemented")
+func (c *userUseCase) VerifyAccount(email string, code int) error {
+	err := c.userRepo.VerifyAccount(email, code)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewUserUseCase(

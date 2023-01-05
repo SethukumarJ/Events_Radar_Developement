@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"time"
 
+	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
@@ -15,7 +16,9 @@ import (
 )
 
 type userUseCase struct {
-	userRepo interfaces.UserRepository
+	userRepo   interfaces.UserRepository
+	mailConfig config.MailConfig
+	config     config.Config
 }
 
 // CreateUser implements interfaces.UserUseCase
@@ -86,9 +89,14 @@ func (*userUseCase) VerifyAccount(email string, code int) error {
 	panic("unimplemented")
 }
 
-func NewUserUseCase(repo interfaces.UserRepository) services.UserUseCase {
+func NewUserUseCase(
+	userRepo interfaces.UserRepository,
+	mailConfig config.MailConfig,
+	config config.Config) services.UserUseCase {
 	return &userUseCase{
-		userRepo: repo,
+		userRepo: userRepo,
+		mailConfig: mailConfig,
+		config: config,
 	}
 }
 

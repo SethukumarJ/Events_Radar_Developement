@@ -5,7 +5,8 @@ type UserResponse struct {
 	UserName     string `json:"username"`
 	FirstName    string `json:"firstname"`
 	LastName     string `json:"lastname"`
-	Email        string `json:"email" `
+	Password     string `json:"password"`
+	Email        string `json:"email"`
 	Verification bool   `json:"verification" `
 	Vip          bool   `json:"vip" `
 	PhoneNumber  string `json:"phonenumber"`

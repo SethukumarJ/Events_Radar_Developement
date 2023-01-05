@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -41,7 +43,7 @@ func (c *userUseCase) CreateUser(user domain.Users) error {
 }
 
 // FindUser implements interfaces.UserUseCase
-func (c*userUseCase) FindUser(email string) (*domain.UserResponse, error) {
+func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 	user, err := c.userRepo.FindUser(email)
 
 	if err != nil {
@@ -52,8 +54,31 @@ func (c*userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 }
 
 // SendVerificationEmail implements interfaces.UserUseCase
-func (*userUseCase) SendVerificationEmail(email string) error {
-	panic("unimplemented")
+func (c *userUseCase) SendVerificationEmail(email string) error {
+	//to generate random code
+	rand.Seed(time.Now().UnixNano())
+	code := rand.Intn(100000)
+
+	fmt.Println("code: ", code)
+
+	message := fmt.Sprintf(
+		"\nThe verification code is:\n\n%d.\nUse to verify your account.\n Thank you for usingEvents.\n with regards Team Events radar.",
+		code,
+	)
+
+	// send random code to user's email
+	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+		return err
+	}
+	fmt.Println("email sent: ", email)
+
+	err := c.userRepo.StoreVerificationDetails(email, code)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // VerifyAccount implements interfaces.UserUseCase

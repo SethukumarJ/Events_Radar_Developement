@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
@@ -92,3 +93,26 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 }
 
+// user refresh token
+func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
+
+	autheader := ("Authorization")
+	bearerToken := strings.Split(autheader, " ")
+	token := bearerToken[1]
+
+	refreshToken, err := cr.jwtUserUsecase.GenerateRefreshToken(token)
+
+	if err != nil {
+		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "SUCCESS", refreshToken)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}

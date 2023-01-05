@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"context"
-
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	"gorm.io/gorm"
@@ -12,33 +10,26 @@ type userDatabase struct {
 	DB *gorm.DB
 }
 
+// FindUser implements interfaces.UserRepository
+func (*userDatabase) FindUser(email string) (domain.UserResponse, error) {
+	panic("unimplemented")
+}
+
+// InsertUser implements interfaces.UserRepository
+func (*userDatabase) InsertUser(user domain.Users) (int, error) {
+	panic("unimplemented")
+}
+
+// StoreVerificationDetails implements interfaces.UserRepository
+func (*userDatabase) StoreVerificationDetails(email string, code int) error {
+	panic("unimplemented")
+}
+
+// VerifyAccount implements interfaces.UserRepository
+func (*userDatabase) VerifyAccount(email string, code int) error {
+	panic("unimplemented")
+}
 
 func NewUserRepository(DB *gorm.DB) interfaces.UserRepository {
 	return &userDatabase{DB}
-}
-
-func (c *userDatabase) FindAll(ctx context.Context) ([]domain.Users, error) {
-	var users []domain.Users
-	err := c.DB.Find(&users).Error
-
-	return users, err
-}
-
-func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
-	var user domain.Users
-	err := c.DB.First(&user, id).Error
-
-	return user, err
-}
-
-func (c *userDatabase) Save(ctx context.Context, user domain.Users) (domain.Users, error) {
-	err := c.DB.Save(&user).Error
-
-	return user, err
-}
-
-func (c *userDatabase) Delete(ctx context.Context, user domain.Users) error {
-	err := c.DB.Delete(&user).Error
-
-	return err
 }

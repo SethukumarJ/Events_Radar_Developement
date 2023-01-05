@@ -73,8 +73,16 @@ func (j *jwtUsecase) GetTokenFromString(signedToken string, claims *domain.Signe
 }
 
 // VerifyToken implements interfaces.JWTUsecase
-func (*jwtUsecase) VerifyToken(token string) (bool, *domain.SignedDetails) {
-	panic("unimplemented")
+func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetails) {
+	claims := &domain.SignedDetails{}
+	token, _ := j.GetTokenFromString(signedToken, claims)
+
+	if token.Valid {
+		if e := claims.Valid(); e == nil {
+			return true, claims
+		}
+	}
+	return false, claims
 }
 
 func NewJwtUsecase() usecase.JWTUsecase {

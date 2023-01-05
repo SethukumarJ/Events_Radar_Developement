@@ -23,8 +23,8 @@ func (claims JWTClamis) Valid() error {
 }
 
 type SignedDetails struct {
-	UserId uint `json:"userid"`
+	UserId   uint   `json:"userid"`
 	UserName string `json:"username"`
-	Role string `json:"role"`
+	Role     string `json:"role"`
 	jwt.StandardClaims
 }

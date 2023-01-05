@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -38,12 +39,12 @@ func (j *jwtUsecase) GenerateRefreshToken(accessToken string) (string, error) {
 
 // GenerateToken implements interfaces.JWTUsecase
 func (j *jwtUsecase) GenerateToken(userid uint, username string, role string) string {
-	
+
 	claims := &domain.SignedDetails{
-		UserId :userid,
+		UserId:   userid,
 		UserName: username,
-		Role:role,
-		StandardClaims:jwt.StandardClaims{
+		Role:     role,
+		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Minute * time.Duration(2)).Unix(),
 		},
 	}
@@ -60,8 +61,15 @@ func (j *jwtUsecase) GenerateToken(userid uint, username string, role string) st
 }
 
 // GetTokenFromString implements interfaces.JWTUsecase
-func (*jwtUsecase) GetTokenFromString(signedToken string, claims *domain.SignedDetails) {
-	panic("unimplemented")
+func (j *jwtUsecase) GetTokenFromString(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error){
+	return jwt.ParseWithClaims(signedToken, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(j.SecretKey), nil
+	})
+
 }
 
 // VerifyToken implements interfaces.JWTUsecase

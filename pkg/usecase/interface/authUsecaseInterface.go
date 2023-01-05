@@ -1,6 +1,6 @@
 package interfaces
 
 //AuthUseCase is the interface for authentication usecase
-type authUsecase interface {
+type AuthUsecase interface {
 	VerifyUser(email string, password string) error
 }

@@ -1,69 +1,68 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	usecases "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 )
 
-func AuthorizationMiddleware(c *gin.Context) {
-	s := c.Request.Header.Get("Authorization")
-
-	token := strings.TrimPrefix(s, "Bearer ")
-
-	if err := validateToken(token); err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
-		return
-	}
+type Middleware interface {
+	AuthorizeJwt() gin.HandlerFunc
 }
 
-func validateToken(token string) error {
-	_, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+type middleware struct {
+	jwtService usecases.JWTService
+}
+
+func NewMiddlewareAdmin(jwtAdminService usecases.JWTService) Middleware {
+	return &middleware{
+		jwtService: jwtAdminService,
+	}
+
+}
+
+func NewMiddlewareUser(jwtUserService usecases.JWTService) Middleware {
+	return &middleware{
+		jwtService: jwtUserService,
+	}
+
+}
+
+func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
+	return (func(c *gin.Context) {
+
+		//getting from header
+		autheader := c.Writer.Header().Get("Authorization")
+		bearerToken := strings.Split(autheader, " ")
+
+		if len(bearerToken) != 2 {
+			err := errors.New("request does not contain an access token")
+			response := response.ErrorResponse("Failed to autheticate jwt", err.Error(), nil)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			return
 		}
 
-		return []byte("secret"), nil
-	})
+		authtoken := bearerToken[1]
+		ok, claims := cr.jwtService.VerifyToken(authtoken)
 
-	return err
-}
+		if !ok {
+			err := errors.New("your token is not valid")
+			response := response.ErrorResponse("Error", err.Error(), nil)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			return
+		}
 
-func LoginHandler(c *gin.Context) {
-	// implement login logic here
-	// user := c.PostForm("user")
-	// pass := c.PostForm("pass")
+		user_email := fmt.Sprint(claims.Username)
+		c.Writer.Header().Set("email", user_email)
+		c.Next()
 
-	// // Throws Unauthorized error
-	// if user != "john" || pass != "lark" {
-	// 	return c.AbortWithStatus(http.StatusUnauthorized)
-	// }
-
-	// Create the Claims
-	// claims := jwt.MapClaims{
-	// 	"name":  "John Lark",
-	// 	"admin": true,
-	// 	"exp":   time.Now().Add(time.Hour * 72).Unix(),
-	// }
-
-	// Create token
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-	})
-
-	ss, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"token": ss,
 	})
 }

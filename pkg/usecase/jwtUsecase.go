@@ -37,8 +37,26 @@ func (j *jwtUsecase) GenerateRefreshToken(accessToken string) (string, error) {
 }
 
 // GenerateToken implements interfaces.JWTUsecase
-func (*jwtUsecase) GenerateToken(userid int, email string, role string) string {
-	panic("unimplemented")
+func (j *jwtUsecase) GenerateToken(userid uint, username string, role string) string {
+	
+	claims := &domain.SignedDetails{
+		UserId :userid,
+		UserName: username,
+		Role:role,
+		StandardClaims:jwt.StandardClaims{
+			ExpiresAt: time.Now().Local().Add(time.Minute * time.Duration(2)).Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	signedToken, err := token.SignedString([]byte(j.SecretKey))
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return signedToken
 }
 
 // GetTokenFromString implements interfaces.JWTUsecase

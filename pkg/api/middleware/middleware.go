@@ -63,7 +63,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			return
 		}
 
-		user_email := fmt.Sprint(claims.Username)
+		user_email := fmt.Sprint(claims.UserName)
 		c.Writer.Header().Set("email", user_email)
 		c.Next()
 

@@ -59,8 +59,13 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 
 
 // StoreVerificationDetails implements interfaces.UserRepository
-func (*userRepository) StoreVerificationDetails(email string, code int) error {
-	panic("unimplemented")
+func (u *userRepository) StoreVerificationDetails(email string, code int) error {
+	var err error
+	query := `INSERT INTO verifications (email, code) 
+										VALUES ($1, $2);`
+
+	err = u.db.QueryRow(query, email, code).Err()
+	return err
 }
 
 // VerifyAccount implements interfaces.UserRepository

@@ -41,8 +41,14 @@ func (c *userUseCase) CreateUser(user domain.Users) error {
 }
 
 // FindUser implements interfaces.UserUseCase
-func (*userUseCase) FindUser(email string) (*domain.UserResponse, error) {
-	panic("unimplemented")
+func (c*userUseCase) FindUser(email string) (*domain.UserResponse, error) {
+	user, err := c.userRepo.FindUser(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // SendVerificationEmail implements interfaces.UserUseCase

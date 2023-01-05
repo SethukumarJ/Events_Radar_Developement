@@ -1,6 +1,6 @@
 package domain
 
-type User struct {
+type Users struct {
 	UserId       uint   `json:"userid" gorm:"autoIncrement:true;unique"`
 	UserName     string `json:"username" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	FirstName    string `json:"firstname" validate:"required,min=2,max=50"`

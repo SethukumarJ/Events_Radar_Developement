@@ -1,123 +1,72 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/copier"
 
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
+	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type UserHandler struct {
-	userUseCase services.UserUseCase
+	userUseCase usecase.UserUseCase
 }
 
-type Response struct {
-	ID      uint   `copier:"must"`
-	Name    string `copier:"must"`
-	Surname string `copier:"must"`
-}
-
-func NewUserHandler(usecase services.UserUseCase) *UserHandler {
+func NewUserHandler(usecase usecase.UserUseCase) *UserHandler {
 	return &UserHandler{
 		userUseCase: usecase,
 	}
 }
 
-// FindAll godoc
-// @summary Get all users
-// @description Get all users
-// @tags users
-// @security ApiKeyAuth
-// @id FindAll
-// @produce json
-// @Router /api/users [get]
-// @response 200 {object} []Response "OK"
-func (cr *UserHandler) FindAll(c *gin.Context) {
-	users, err := cr.userUseCase.FindAll(c.Request.Context())
+// SendVerificationEmail sends the verification email
+
+func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
+
+	email := c.Query("Email")
+
+	_, err := cr.userUseCase.FindUser(email)
+	fmt.Println("email: ", email)
+	fmt.Println("err: ", err)
+
+	if err == nil {
+		err = cr.userUseCase.SendVerificationEmail(email)
+	}
+
+	fmt.Println(err)
 
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		response := []Response{}
-		copier.Copy(&response, &users)
-
-		c.JSON(http.StatusOK, response)
+		response := response.ErrorResponse("Error while sending verification mail", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
 	}
+	response := response.SuccessResponse(true, "Verification mail sent successfully", email)
+	utils.ResponseJSON(*c, response)
+
 }
 
-func (cr *UserHandler) FindByID(c *gin.Context) {
-	paramsId := c.Param("id")
-	id, err := strconv.Atoi(paramsId)
+// verifyAccount verifies the account
+
+func (cr *UserHandler) VerifyAccount(c *gin.Context) {
+
+	email := c.Query("Email")
+	code, _ := strconv.Atoi(c.Query("Code"))
+
+	err := cr.userUseCase.VerifyAccount(email, code)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "cannot parse id",
-		})
+		response := response.ErrorResponse("Verification failed, Invalid OTP", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
 		return
 	}
+	response := response.SuccessResponse(true, "Account verified successfully", email)
+	utils.ResponseJSON(*c, response)
 
-	user, err := cr.userUseCase.FindByID(c.Request.Context(), uint(id))
-
-	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		response := Response{}
-		copier.Copy(&response, &user)
-
-		c.JSON(http.StatusOK, response)
-	}
-}
-
-func (cr *UserHandler) Save(c *gin.Context) {
-	var user domain.Users
-
-	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-
-	user, err := cr.userUseCase.Save(c.Request.Context(), user)
-
-	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	} else {
-		response := Response{}
-		copier.Copy(&response, &user)
-
-		c.JSON(http.StatusOK, response)
-	}
-}
-
-func (cr *UserHandler) Delete(c *gin.Context) {
-	paramsId := c.Param("id")
-	id, err := strconv.Atoi(paramsId)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Cannot parse id",
-		})
-		return
-	}
-
-	ctx := c.Request.Context()
-	user, err := cr.userUseCase.FindByID(ctx, uint(id))
-
-	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-	}
-
-	if user == (domain.Users{}) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "User is not booking yet",
-		})
-		return
-	}
-
-	cr.userUseCase.Delete(ctx, user)
-
-	c.JSON(http.StatusOK, gin.H{"message": "User is deleted successfully"})
 }

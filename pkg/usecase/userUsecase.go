@@ -12,6 +12,26 @@ type userUseCase struct {
 	userRepo interfaces.UserRepository
 }
 
+// CreateUser implements interfaces.UserUseCase
+func (*userUseCase) CreateUser(user domain.Users) error {
+	panic("unimplemented")
+}
+
+// FindUser implements interfaces.UserUseCase
+func (*userUseCase) FindUser(email string) (*domain.UserResponse, error) {
+	panic("unimplemented")
+}
+
+// SendVerificationEmail implements interfaces.UserUseCase
+func (*userUseCase) SendVerificationEmail(email string) error {
+	panic("unimplemented")
+}
+
+// VerifyAccount implements interfaces.UserUseCase
+func (*userUseCase) VerifyAccount(email string, code int) error {
+	panic("unimplemented")
+}
+
 // Delete implements interfaces.UserUseCase
 func (*userUseCase) Delete(ctx context.Context, user domain.Users) error {
 	panic("unimplemented")
@@ -21,22 +41,6 @@ func NewUserUseCase(repo interfaces.UserRepository) services.UserUseCase {
 	return &userUseCase{
 		userRepo: repo,
 	}
-}
-
-func (c *userUseCase) FindAll(ctx context.Context) ([]domain.Users, error) {
-	users, err := c.userRepo.FindAll(ctx)
-	return users, err
-}
-
-func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
-	user, err := c.userRepo.FindByID(ctx, id)
-	return user, err
-}
-
-func (c *userUseCase) Save(ctx context.Context, user domain.Users) (domain.Users, error) {
-	user, err := c.userRepo.Save(ctx, user)
-
-	return user, err
 }
 
 // func (c *userUseCase) Delete(ctx context.Context, user domain.Users) error {

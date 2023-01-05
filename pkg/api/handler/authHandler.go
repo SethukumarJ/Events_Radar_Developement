@@ -61,3 +61,34 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+// UserLogin handles the user login
+
+func (cr *AuthHandler) UserLogin(c *gin.Context) {
+
+	var userLogin domain.Users
+
+	c.Bind(&userLogin)
+
+	//verify User details
+	err := cr.authUsecase.VerifyUser(userLogin.Email, userLogin.Password)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to login", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	//fetching user details
+	user, _ := cr.userUsecase.FindUser(userLogin.Email)
+	token := cr.jwtUserUsecase.GenerateToken(user.UserId, user.Email, "user")
+	user.Token = token
+	response := response.SuccessResponse(true, "SUCCESS", user.Token)
+	utils.ResponseJSON(*c, response)
+
+	fmt.Println("login function returned successfully")
+
+}
+

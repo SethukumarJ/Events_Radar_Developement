@@ -37,9 +37,26 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 }
 
 // InsertUser implements interfaces.UserRepository
-func (*userRepository) InsertUser(user domain.Users) (int, error) {
-	panic("unimplemented")
+func (c *userRepository) InsertUser(user domain.Users) (int, error) {
+	var id int
+
+	query := `INSERT INTO users(username,firstname,lastname,
+								email,phonenumber,password,
+								profile)VALUES($1, $2, $3, $4, $5, $6,$7)
+								RETURNING id;`
+
+	err := c.db.QueryRow(query, user.UserName,
+								user.FirstName,
+								user.LastName,
+								user.Email,
+								user.PhoneNumber,
+								user.Password,
+								user.Profile).Scan(&id)
+
+	fmt.Println("id", id)
+	return id, err
 }
+
 
 // StoreVerificationDetails implements interfaces.UserRepository
 func (*userRepository) StoreVerificationDetails(email string, code int) error {

@@ -18,17 +18,17 @@ type Middleware interface {
 }
 
 type middleware struct {
-	jwtService usecases.JWTService
+	jwtService usecases.JWTUsecase
 }
 
-func NewMiddlewareAdmin(jwtAdminService usecases.JWTService) Middleware {
+func NewMiddlewareAdmin(jwtAdminService usecases.JWTUsecase) Middleware {
 	return &middleware{
 		jwtService: jwtAdminService,
 	}
 
 }
 
-func NewMiddlewareUser(jwtUserService usecases.JWTService) Middleware {
+func NewMiddlewareUser(jwtUserService usecases.JWTUsecase) Middleware {
 	return &middleware{
 		jwtService: jwtUserService,
 	}

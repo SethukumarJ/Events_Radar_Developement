@@ -1,6 +1,10 @@
 package usecase
 
 import (
+	"database/sql"
+	"errors"
+	"log"
+
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -14,8 +18,26 @@ type AdminUsecase struct {
 }
 
 // CreateAdmin implements interfaces.AdminUsecase
-func (*AdminUsecase) CreateAdmin(admin domain.Admins) error {
-	panic("unimplemented")
+func (c *AdminUsecase) CreateAdmin(admin domain.Admins) error {
+	_, err := c.adminRepo.FindAdmin(admin.AdminName)
+
+	if err == nil {
+		return errors.New("admin already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	//hashing password
+	admin.Password = HashPassword(admin.Password)
+	_,err = c.adminRepo.CreateAdmin(admin)
+
+	if err != nil {
+		log.Println(err)
+		return errors.New("error while signup")
+	}
+	return nil
 }
 
 // FindAdmin implements interfaces.AdminUsecase

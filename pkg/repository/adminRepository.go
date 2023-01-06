@@ -21,15 +21,7 @@ func (*adminRepository) InsertAdmin(admin domain.Admins) (int, error) {
 	panic("unimplemented")
 }
 
-// StoreVerificationDetails implements interfaces.AdminRepository
-func (*adminRepository) StoreVerificationDetails(email string, code int) error {
-	panic("unimplemented")
-}
 
-// VerifyAccount implements interfaces.AdminRepository
-func (*adminRepository) VerifyAccount(email string, code int) error {
-	panic("unimplemented")
-}
 
 func NewAdminRespository(db *sql.DB) interfaces.AdminRepository {
 	return &adminRepository{

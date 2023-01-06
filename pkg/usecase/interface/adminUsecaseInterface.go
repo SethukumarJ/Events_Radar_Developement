@@ -7,6 +7,5 @@ import (
 type AdminUsecase interface {
 	CreateAdmin(admin domain.Admins) error
 	FindAdmin(email string) (*domain.AdminResponse, error)
-	SendVerificationEmail(email string) error
-	VerifyAccount(email string, code int) error
+
 }

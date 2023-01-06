@@ -19,9 +19,9 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 
 	var user domain.UserResponse
 
-	query := `SELECT userid,username,firstname,
-			  		lastname,email,password,
-					phonenumber,profileFROM users 
+	query := `SELECT user_id,user_name,first_name,
+			  		last_name,email,password,
+					phone_number,profile FROM users 
 					WHERE email = $1;`
 
 	err := c.db.QueryRow(query, email).Scan(&user.UserId,
@@ -42,10 +42,10 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var id int
 
-	query := `INSERT INTO users(username,firstname,lastname,
-								email,phonenumber,password,
+	query := `INSERT INTO users(user_name,first_name,last_name,
+								email,phone_number,password,
 								profile)VALUES($1, $2, $3, $4, $5, $6,$7)
-								RETURNING id;`
+								RETURNING user_id;`
 
 	err := c.db.QueryRow(query, user.UserName,
 		user.FirstName,
@@ -71,11 +71,11 @@ func (u *userRepository) StoreVerificationDetails(email string, code int) error 
 
 // VerifyAccount implements interfaces.UserRepository
 func (c *userRepository) VerifyAccount(email string, code int) error {
-	var id int
+	var useremail string
 
-	query := `SELECT userid FROM verifications 
+	query := `SELECT email FROM verifications 
 			  WHERE email = $1 AND code = $2;`
-	err := c.db.QueryRow(query, email, code).Scan(&id)
+	err := c.db.QueryRow(query, email, code).Scan(&useremail)
 
 	if err == sql.ErrNoRows {
 		return errors.New("Invalid verification code/Email")

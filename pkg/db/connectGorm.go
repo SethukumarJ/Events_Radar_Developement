@@ -12,6 +12,7 @@ import (
 
 func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	// psqlInfo := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
+	fmt.Println("Connect gormdb called!")
 	psqlInfo := cfg.DBSOURCE
 	fmt.Printf("\n\nsql : %v\n\n", psqlInfo)
 	db, dbErr := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{

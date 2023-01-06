@@ -22,6 +22,7 @@ type Verification struct {
 type Admins struct {
 	AdminId      uint   `json:"adminid" gorm:"autoIncrement:true;unique"`
 	AdminName    string `json:"adminname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+	Password     string `json:"password" validate:"required"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
 	Verification bool   `json:"verification" gorm:"default:false"`

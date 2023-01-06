@@ -19,9 +19,10 @@ type Verification struct {
 	Code  int    `json:"code"`
 }
 
-type Admin struct {
-	AdminId  uint `json:"adminid" gorm:"autoIncrement:true;unique"`
-	AdminName string `json:"adminname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+type Admins struct {
+	AdminId      uint   `json:"adminid" gorm:"autoIncrement:true;unique"`
+	AdminName    string `json:"adminname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
+	Verification bool   `json:"verification" gorm:"default:false"`
 }

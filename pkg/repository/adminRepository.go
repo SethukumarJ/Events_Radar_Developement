@@ -17,8 +17,13 @@ func (*adminRepository) FindAdmin(email string) (domain.AdminResponse, error) {
 }
 
 // InsertAdmin implements interfaces.AdminRepository
-func (*adminRepository) InsertAdmin(admin domain.Admins) (int, error) {
-	panic("unimplemented")
+func (c *adminRepository) CreateAdmin(admin domain.Admins) (int, error) {
+	var id int
+	query := `INSERT INTO admins (admin_name,password)
+				VALUES($1, $2)
+				RETURNING admin_id;`
+	err := c.db.QueryRow(query, admin.AdminName,admin.Password,).Scan(&id)
+	return id ,err
 }
 
 

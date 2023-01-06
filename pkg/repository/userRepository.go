@@ -78,7 +78,7 @@ func (c *userRepository) VerifyAccount(email string, code int) error {
 	err := c.db.QueryRow(query, email, code).Scan(&useremail)
 
 	if err == sql.ErrNoRows {
-		return errors.New("Invalid verification code/Email")
+		return errors.New("invalid verification code/Email")
 	}
 
 	if err != nil {

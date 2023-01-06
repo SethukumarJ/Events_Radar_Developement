@@ -21,12 +21,6 @@ type middleware struct {
 	jwtService usecases.JWTUsecase
 }
 
-func NewMiddlewareAdmin(jwtAdminService usecases.JWTUsecase) Middleware {
-	return &middleware{
-		jwtService: jwtAdminService,
-	}
-
-}
 
 func NewMiddlewareUser(jwtUserService usecases.JWTUsecase) Middleware {
 	return &middleware{

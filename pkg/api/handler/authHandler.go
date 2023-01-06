@@ -24,8 +24,8 @@ func NewAuthHandler(
 	userUsecase usecase.UserUseCase,
 	authUsecase usecase.AuthUsecase,
 
-) *AuthHandler {
-	return &AuthHandler{
+) AuthHandler {
+	return AuthHandler{
 		jwtUserUsecase: jwtUserUsecase,
 		authUsecase:    authUsecase,
 		userUsecase:    userUsecase,

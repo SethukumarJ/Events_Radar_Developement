@@ -7,6 +7,7 @@ import (
 	"github.com/google/wire"
 	http "github.com/thnkrn/go-gin-clean-arch/pkg/api"
 	handler "github.com/thnkrn/go-gin-clean-arch/pkg/api/handler"
+	middleware "github.com/thnkrn/go-gin-clean-arch/pkg/api/middleware"
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	db "github.com/thnkrn/go-gin-clean-arch/pkg/db"
 	repository "github.com/thnkrn/go-gin-clean-arch/pkg/repository"
@@ -16,8 +17,13 @@ import (
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	wire.Build(db.ConnectDatabase, 
 			repository.NewUserRepository, 
+			config.NewMailConfig,
+			usecase.NewJWTUsecase,
+			usecase.NewAuthUsecase,
 			usecase.NewUserUseCase, 
-			handler.NewUserHandler, 
+			handler.NewUserHandler,
+			handler.NewAuthHandler,
+			middleware.NewMiddlewareUser,
 			http.NewServerHTTP)
 
 	return &http.ServerHTTP{}, nil

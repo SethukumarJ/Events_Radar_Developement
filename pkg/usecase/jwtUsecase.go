@@ -80,12 +80,13 @@ func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetail
 	if token.Valid {
 		if e := claims.Valid(); e == nil {
 			return true, claims
-		}
-	}
-	return false, claims
 }
+}
+return false , claims
+}
+	
 
-func NewJwtUsecase() usecase.JWTUsecase {
+func NewJWTUsecase() usecase.JWTUsecase {
 	return &jwtUsecase{
 		SecretKey: os.Getenv("USER_KEY"),
 	}

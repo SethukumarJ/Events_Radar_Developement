@@ -91,3 +91,9 @@ func NewJWTUsecase() usecase.JWTUsecase {
 		SecretKey: os.Getenv("USER_KEY"),
 	}
 }
+
+func NewJWTAdminService() usecase.JWTUsecase {
+	return &jwtUsecase{
+		SecretKey: os.Getenv("ADMIN_KEY"),
+	}
+}

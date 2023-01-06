@@ -1,22 +1,36 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
-
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
+	"log"
+	_ "github.com/lib/pq"
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 )
 
-func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
-	psqlInfo := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DBHost, cfg.DBUser, cfg.DBName, cfg.DBPort, cfg.DBPassword)
-	db, dbErr := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{
-		SkipDefaultTransaction: true,
-	})
+func ConnectDatabase(cfg config.Config) *sql.DB {
 
-	db.AutoMigrate(&domain.Users{})
+	databaseName := cfg.DBName
 
-	return db, dbErr
+	dbURI := cfg.DBSOURCE
+
+	//Opens database
+	db, err := sql.Open("postgres", dbURI)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// verifies connection to the database is still alive
+	err = db.Ping()
+	if err != nil {
+		fmt.Println("error in pinging")
+		log.Fatal(err)
+
+	}
+
+	log.Println("\nConnected to database:", databaseName)
+
+	return db
+
 }

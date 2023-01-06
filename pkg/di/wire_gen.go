@@ -9,6 +9,7 @@ package di
 import (
 	"github.com/thnkrn/go-gin-clean-arch/pkg/api"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/api/handler"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/api/middleware"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/db"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/repository"
@@ -18,13 +19,15 @@ import (
 // Injectors from wire.go:
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
-	gormDB, err := db.ConnectDatabase(cfg)
-	if err != nil {
-		return nil, err
-	}
-	userRepository := repository.NewUserRepository(gormDB)
-	userUseCase := usecase.NewUserUseCase(userRepository)
+	sqlDB := db.ConnectDatabase(cfg)
+	userRepository := repository.NewUserRepository(sqlDB)
+	mailConfig := config.NewMailConfig()
+	userUseCase := usecase.NewUserUseCase(userRepository, mailConfig, cfg)
 	userHandler := handler.NewUserHandler(userUseCase)
-	serverHTTP := http.NewServerHTTP(userHandler)
+	jwtUsecase := usecase.NewJWTUsecase()
+	authUsecase := usecase.NewAuthUsecase(userRepository)
+	authHandler := handler.NewAuthHandler(jwtUsecase, userUseCase, authUsecase)
+	middlewareMiddleware := middleware.NewMiddlewareUser(jwtUsecase)
+	serverHTTP := http.NewServerHTTP(userHandler, authHandler, middlewareMiddleware)
 	return serverHTTP, nil
 }

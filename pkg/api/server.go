@@ -14,7 +14,9 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(userHandler *handler.UserHandler) *ServerHTTP {
+func NewServerHTTP(userHandler handler.UserHandler,
+	authHandler handler.AuthHandler,
+	middleware middleware.Middleware) *ServerHTTP {
 	engine := gin.New()
 
 	// Use logger from Gin
@@ -23,16 +25,19 @@ func NewServerHTTP(userHandler *handler.UserHandler) *ServerHTTP {
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	// Request JWT
-	engine.POST("/login", middleware.LoginHandler)
+	//userroutes
+	user := engine.Group("user")
+	{
+		user.POST("/signup", authHandler.UserSignup)
+		user.POST("/login", authHandler.UserLogin)
+		user.POST("/send/verification", userHandler.SendVerificationMail)
+		user.PATCH("/verify/account", userHandler.VerifyAccount)
 
-	// Auth middleware
-	api := engine.Group("/api", middleware.AuthorizationMiddleware)
-
-	api.GET("users", userHandler.FindAll)
-	api.GET("users/:id", userHandler.FindByID)
-	api.POST("users", userHandler.Save)
-	api.DELETE("users/:id", userHandler.Delete)
+		user.Use(middleware.AuthorizeJwt())
+		{
+			user.GET("/token/refresh", authHandler.UserRefreshToken)
+		}
+	}
 
 	return &ServerHTTP{engine: engine}
 }

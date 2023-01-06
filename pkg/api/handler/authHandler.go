@@ -15,13 +15,16 @@ import (
 
 type AuthHandler struct {
 	jwtUserUsecase usecase.JWTUsecase
+	jwtAdminUsecase usecase.JWTUsecase
 	authUsecase    usecase.AuthUsecase
+	adminUsecase usecase.AdminUsecase
 	userUsecase    usecase.UserUseCase
 }
 
 func NewAuthHandler(
 	jwtUserUsecase usecase.JWTUsecase,
 	userUsecase usecase.UserUseCase,
+	adminUsecase usecase.AdminUsecase,
 	authUsecase usecase.AuthUsecase,
 
 ) AuthHandler {
@@ -29,6 +32,7 @@ func NewAuthHandler(
 		jwtUserUsecase: jwtUserUsecase,
 		authUsecase:    authUsecase,
 		userUsecase:    userUsecase,
+		adminUsecase:   adminUsecase,
 	}
 }
 
@@ -114,5 +118,69 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
+
+}
+
+//Adminsiginup handles the user signup
+
+func (cr *AuthHandler) AdminSignup(c *gin.Context) {
+
+	var newAdmin domain.Admins
+	fmt.Println("user signup")
+	//fetching data
+	c.Bind(&newAdmin)
+
+	//check username exit or not
+
+	err := cr.adminUsecase.CreateAdmin(newAdmin)
+
+	log.Println(newAdmin)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create user", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	user, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
+	response := response.SuccessResponse(true, "SUCCESS", user)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
+// AdminLogin handles the admin login
+func (cr *AuthHandler) AdminLogin(c *gin.Context) {
+
+	var adminLogin domain.Admins
+
+	c.Bind(&adminLogin)
+
+	fmt.Println("adminLogin.passwrodk", adminLogin.Password)
+	fmt.Println("adminLogin.username", adminLogin.AdminName)
+	//verify User details
+	err := cr.authUsecase.VerifyAdmin(adminLogin.AdminName, adminLogin.Password)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to login", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	//fetching user details
+	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.AdminName)
+	token := cr.jwtAdminUsecase.GenerateToken(admin.AdminId, admin.AdminName, "admin")
+	admin.Password = ""
+	admin.Token = token
+	response := response.SuccessResponse(true, "SUCCESS", admin.Token)
+	utils.ResponseJSON(*c, response)
+
+	fmt.Println("login function returned successfully")
 
 }

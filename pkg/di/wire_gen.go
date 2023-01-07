@@ -29,7 +29,8 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	adminUsecase := usecase.NewAdminUsecase(adminRepository, mailConfig, cfg)
 	authUsecase := usecase.NewAuthUsecase(userRepository, adminRepository)
 	authHandler := handler.NewAuthHandler(jwtUsecase, userUseCase, adminUsecase, authUsecase)
+	adminHandler := handler.NewAdminHandler(adminUsecase, userUseCase)
 	middlewareMiddleware := middleware.NewMiddlewareUser(jwtUsecase)
-	serverHTTP := http.NewServerHTTP(userHandler, authHandler, middlewareMiddleware)
+	serverHTTP := http.NewServerHTTP(userHandler, authHandler, adminHandler, middlewareMiddleware)
 	return serverHTTP, nil
 }

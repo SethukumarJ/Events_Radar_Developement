@@ -16,6 +16,7 @@ type ServerHTTP struct {
 
 func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler handler.AuthHandler,
+	adminHandler handler.AdminHandler,
 	middleware middleware.Middleware) *ServerHTTP {
 	engine := gin.New()
 
@@ -45,6 +46,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	{
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
+		admin.GET("/listUsers",adminHandler.ViewAllUsers)
 		
 		admin.Use(middleware.AuthorizeJwt())
 		{

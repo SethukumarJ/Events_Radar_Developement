@@ -39,8 +39,21 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		}
 	}
 
-	return &ServerHTTP{engine: engine}
-}
+
+		//admin routes
+	admin := engine.Group("admin")
+	{
+		admin.POST("/signup", authHandler.AdminSignup)
+		admin.POST("/login", authHandler.AdminLogin)
+		
+		admin.Use(middleware.AuthorizeJwt())
+		{
+			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
+		}
+	}
+		
+			return &ServerHTTP{engine: engine}
+	}
 
 func (sh *ServerHTTP) Start() {
 	sh.engine.Run(":3000")

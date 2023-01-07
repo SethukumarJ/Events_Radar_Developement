@@ -3,21 +3,25 @@ package usecase
 import (
 	"errors"
 	"log"
-	"golang.org/x/crypto/bcrypt"
+
 	repository "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // authUsecase is the struct for the authentication service
 type authUsecase struct {
-	userRepo repository.UserRepository
+	userRepo  repository.UserRepository
+	adminRepo repository.AdminRepository
 }
 
 func NewAuthUsecase(
 	userRepo repository.UserRepository,
+	adminRepo repository.AdminRepository,
 ) usecase.AuthUsecase {
 	return &authUsecase{
-		userRepo: userRepo,
+		userRepo:  userRepo,
+		adminRepo: adminRepo,
 	}
 }
 
@@ -38,14 +42,22 @@ func (c *authUsecase) VerifyUser(email string, password string) error {
 	return nil
 }
 
-// // VerifyPassword verifies the password
-// func VerifyPassword(requestPassword, dbPassword string) bool {
+// VerifyUser verifies the user credentials
+func (c *authUsecase) VerifyAdmin(email string, password string) error {
 
-// 	fmt.Println(requestPassword)
-// 	requestPassword = HashPassword(requestPassword)
-// 	fmt.Println(requestPassword)
-// 	return requestPassword == dbPassword
-// }
+	admin, err := c.adminRepo.FindAdmin(email)
+
+	if err != nil {
+		return errors.New("failed to login. check your email")
+	}
+
+	isValidPassword := VerifyPassword(admin.Password, []byte(password))
+	if !isValidPassword {
+		return errors.New("failed to login. check your credential")
+	}
+
+	return nil
+}
 
 func VerifyPassword(hashedPwd string, plainPwd []byte) bool {
 	// Since we'll be getting the hashed password from the DB it

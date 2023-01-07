@@ -8,10 +8,16 @@ import (
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type userRepository struct {
 	db *sql.DB
+}
+
+// AllUsers implements interfaces.UserRepository
+func (*userRepository) AllUsers(pagenation utils.Filter) ([]domain.UserResponse, utils.Metadata, error) {
+	panic("unimplemented")
 }
 
 // FindUser implements interfaces.UserRepository
@@ -87,7 +93,7 @@ func (c *userRepository) VerifyAccount(email string, code int) error {
 
 	query = `UPDATE users SET verification = $1
 			WHERE email = $2 ;`
-			
+
 	err = c.db.QueryRow(query, true, email).Err()
 	log.Println("Updating User verification: ", err)
 	if err != nil {

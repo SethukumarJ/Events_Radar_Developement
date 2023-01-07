@@ -9,12 +9,25 @@ import (
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type adminUsecase struct {
 	adminRepo  interfaces.AdminRepository
+	userRepo    interfaces.UserRepository
 	mailConfig config.MailConfig
 	config     config.Config
+}
+
+// AllUsers implements interfaces.AdminUsecase
+func (c *adminUsecase) AllUsers(pagenation utils.Filter) (*[]domain.UserResponse, *utils.Metadata, error) {
+	
+	users, metadata, err := c.userRepo.AllUsers(pagenation)
+	if err != nil {
+		return nil, &metadata, err
+	}
+
+	return &users, &metadata, nil
 }
 
 // CreateUser implements interfaces.UserUseCase

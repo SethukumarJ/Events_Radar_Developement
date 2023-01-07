@@ -10,7 +10,7 @@ import (
 	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 	
-	usecases "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 )
 
 type Middleware interface {
@@ -18,16 +18,23 @@ type Middleware interface {
 }
 
 type middleware struct {
-	jwtService usecases.JWTUsecase
+	jwtUsecase usecase.JWTUsecase
 }
 
 
-func NewMiddlewareUser(jwtUserService usecases.JWTUsecase) Middleware {
+func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase) Middleware {
 	return &middleware{
-		jwtService: jwtUserService,
+		jwtUsecase: jwtUserUsecase,
 	}
 
 }
+
+// func NewMiddlewareAdmin(jwtAdminUsecase usecase.JWTUsecase) Middleware {
+// 	return &middleware{
+// 		jwtUsecase: jwtAdminUsecase,
+// 	}
+
+// }
 
 func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 	return (func(c *gin.Context) {
@@ -46,7 +53,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 		}
 
 		authtoken := bearerToken[1]
-		ok, claims := cr.jwtService.VerifyToken(authtoken)
+		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
 
 		if !ok {
 			err := errors.New("your token is not valid")

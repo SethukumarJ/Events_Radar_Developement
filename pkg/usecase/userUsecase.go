@@ -28,7 +28,7 @@ func (c *userUseCase) CreateUser(user domain.Users) error {
 	fmt.Println("found user", err)
 
 	if err == nil {
-		return errors.New("Username already exists")
+		return errors.New("username already exists")
 	}
 
 	if err != nil && err != sql.ErrNoRows {

@@ -17,9 +17,11 @@ import (
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	wire.Build(db.ConnectDatabase, 
 			repository.NewUserRepository, 
+			repository.NewAdminRespository,
 			config.NewMailConfig,
-			usecase.NewJWTUsecase,
+			usecase.NewJWTUserUsecase,
 			usecase.NewAuthUsecase,
+			usecase.NewAdminUsecase,
 			usecase.NewUserUseCase, 
 			handler.NewUserHandler,
 			handler.NewAuthHandler,

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -12,32 +12,41 @@ type adminRepository struct {
 	db *sql.DB
 }
 
-// FindAdmin implements interfaces.AdminRepository
-func (c *adminRepository) FindAdmin(adminName string) (domain.AdminResponse, error) {
-	log.Println("username of admin:", adminName)
+// FindUser implements interfaces.UserRepository
+func (c *adminRepository) FindAdmin(email string) (domain.AdminResponse, error) {
+
 	var admin domain.AdminResponse
 
-	query := `SELECT
-			admin_id, 
-			admin_name,
-			password
-			FROM admins WHERE admin_name = $1;`
+	query := `SELECT admin_id,admin_name,email,password,
+					phone_number FROM admins 
+					WHERE email = $1;`
 
-	err := c.db.QueryRow(query, adminName).Scan(
-		&admin.AdminId,
+	err := c.db.QueryRow(query, email).Scan(&admin.AdminId,
 		&admin.AdminName,
-		&admin.Password)
+		&admin.Email,
+		&admin.Password,
+		&admin.PhoneNumber,
+	)
 
+	fmt.Println("admin from find admin :", admin)
 	return admin, err
 }
 
-// InsertAdmin implements interfaces.AdminRepository
+// InsertUser implements interfaces.UserRepository
 func (c *adminRepository) CreateAdmin(admin domain.Admins) (int, error) {
 	var id int
-	query := `INSERT INTO admins (admin_name,password)
-				VALUES($1, $2)
-				RETURNING admin_id;`
-	err := c.db.QueryRow(query, admin.AdminName, admin.Password).Scan(&id)
+
+	query := `INSERT INTO admins(admin_name,
+								email,phone_number,password)VALUES($1, $2, $3, $4)
+								RETURNING admin_id;`
+
+	err := c.db.QueryRow(query, admin.AdminName,
+
+		admin.Email,
+		admin.PhoneNumber,
+		admin.Password).Scan(&id)
+
+	fmt.Println("id", id)
 	return id, err
 }
 

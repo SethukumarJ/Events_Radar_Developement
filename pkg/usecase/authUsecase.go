@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	repository "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -18,9 +17,11 @@ type authUsecase struct {
 
 func NewAuthUsecase(
 	userRepo repository.UserRepository,
+	adminRepo repository.AdminRepository,
 ) usecase.AuthUsecase {
 	return &authUsecase{
-		userRepo: userRepo,
+		userRepo:  userRepo,
+		adminRepo: adminRepo,
 	}
 }
 
@@ -41,23 +42,18 @@ func (c *authUsecase) VerifyUser(email string, password string) error {
 	return nil
 }
 
-// VerifyAdmin verifies the admin credentials
-func (c *authUsecase) VerifyAdmin(email, password string) error {
+// VerifyUser verifies the user credentials
+func (c *authUsecase) VerifyAdmin(email string, password string) error {
 
 	admin, err := c.adminRepo.FindAdmin(email)
 
-	//_, err = c.adminRepo.FindAdmin(email)
-
 	if err != nil {
-		return errors.New("invalid Username/ password, failed to login")
+		return errors.New("failed to login. check your email")
 	}
-
-	fmt.Println("adminpassword", admin.Password)
-	fmt.Println("password:", password)
 
 	isValidPassword := VerifyPassword(admin.Password, []byte(password))
 	if !isValidPassword {
-		return errors.New("invalid username/ Password, failed to login")
+		return errors.New("failed to login. check your credential")
 	}
 
 	return nil

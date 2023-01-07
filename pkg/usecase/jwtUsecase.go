@@ -86,13 +86,13 @@ return false , claims
 }
 	
 
-func NewJWTUsecase() usecase.JWTUsecase {
+func NewJWTUserUsecase() usecase.JWTUsecase {
 	return &jwtUsecase{
 		SecretKey: os.Getenv("USER_KEY"),
 	}
 }
 
-func NewJWTAdminService() usecase.JWTUsecase {
+func NewJWTAdminUsecase() usecase.JWTUsecase {
 	return &jwtUsecase{
 		SecretKey: os.Getenv("ADMIN_KEY"),
 	}

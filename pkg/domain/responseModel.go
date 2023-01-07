@@ -15,7 +15,7 @@ type UserResponse struct {
 }
 
 type AdminResponse struct {
-	AdminId      uint   `json:"userid"`
+	AdminId      uint   `json:"adminid"`
 	AdminName    string `json:"username"`
 	Password     string `json:"password"`
 	Email        string `json:"email"`

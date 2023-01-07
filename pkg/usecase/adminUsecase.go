@@ -3,7 +3,7 @@ package usecase
 import (
 	"database/sql"
 	"errors"
-	"log"
+	"fmt"
 
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
@@ -11,18 +11,20 @@ import (
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 )
 
-type AdminUsecase struct {
+type adminUsecase struct {
 	adminRepo  interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
 }
 
-// CreateAdmin implements interfaces.AdminUsecase
-func (c *AdminUsecase) CreateAdmin(admin domain.Admins) error {
-	_, err := c.adminRepo.FindAdmin(admin.AdminName)
+// CreateUser implements interfaces.UserUseCase
+func (c *adminUsecase) CreateAdmin(admin domain.Admins) error {
+	fmt.Println("create admin from usecase")
+	_, err := c.adminRepo.FindAdmin(admin.Email)
+	fmt.Println("found admin", err)
 
 	if err == nil {
-		return errors.New("admin already exists")
+		return errors.New("adminname already exists")
 	}
 
 	if err != nil && err != sql.ErrNoRows {
@@ -31,25 +33,29 @@ func (c *AdminUsecase) CreateAdmin(admin domain.Admins) error {
 
 	//hashing password
 	admin.Password = HashPassword(admin.Password)
-	_,err = c.adminRepo.CreateAdmin(admin)
-
+	fmt.Println("password", admin.Password)
+	_, err = c.adminRepo.CreateAdmin(admin)
 	if err != nil {
-		log.Println(err)
-		return errors.New("error while signup")
+		return err
 	}
 	return nil
 }
 
-// FindAdmin implements interfaces.AdminUsecase
-func (*AdminUsecase) FindAdmin(email string) (*domain.AdminResponse, error) {
-	panic("unimplemented")
-}
+// FindUser implements interfaces.UserUseCase
+func (c *adminUsecase) FindAdmin(email string) (*domain.AdminResponse, error) {
+	user, err := c.adminRepo.FindAdmin(email)
 
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
 func NewAdminUsecase(
 	adminRepo interfaces.AdminRepository,
 	mailConfig config.MailConfig,
 	config config.Config) usecase.AdminUsecase {
-	return &AdminUsecase{
+	return &adminUsecase{
 		adminRepo:  adminRepo,
 		mailConfig: mailConfig,
 		config:     config,

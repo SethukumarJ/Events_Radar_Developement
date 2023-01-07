@@ -14,22 +14,21 @@ import (
 )
 
 type AuthHandler struct {
-	jwtUserUsecase usecase.JWTUsecase
-	jwtAdminUsecase usecase.JWTUsecase
+	jwtUsecase usecase.JWTUsecase
 	authUsecase    usecase.AuthUsecase
 	adminUsecase usecase.AdminUsecase
 	userUsecase    usecase.UserUseCase
 }
 
 func NewAuthHandler(
-	jwtUserUsecase usecase.JWTUsecase,
+	jwtUsecase usecase.JWTUsecase,
 	userUsecase usecase.UserUseCase,
 	adminUsecase usecase.AdminUsecase,
 	authUsecase usecase.AuthUsecase,
 
 ) AuthHandler {
 	return AuthHandler{
-		jwtUserUsecase: jwtUserUsecase,
+		jwtUsecase: jwtUsecase,
 		authUsecase:    authUsecase,
 		userUsecase:    userUsecase,
 		adminUsecase:   adminUsecase,
@@ -74,7 +73,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 	var userLogin domain.Users
 
 	c.Bind(&userLogin)
-
+	fmt.Println("userLOgin",userLogin.Password)
 	//verify User details
 	err := cr.authUsecase.VerifyUser(userLogin.Email, userLogin.Password)
 
@@ -88,7 +87,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 	//fetching user details
 	user, _ := cr.userUsecase.FindUser(userLogin.Email)
-	token := cr.jwtUserUsecase.GenerateToken(user.UserId, user.Email, "user")
+	token := cr.jwtUsecase.GenerateToken(user.UserId, user.Email, "user")
 	user.Token = token
 	response := response.SuccessResponse(true, "SUCCESS", user.Token)
 	utils.ResponseJSON(*c, response)
@@ -104,7 +103,7 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 	bearerToken := strings.Split(autheader, " ")
 	token := bearerToken[1]
 
-	refreshToken, err := cr.jwtUserUsecase.GenerateRefreshToken(token)
+	refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
 
 	if err != nil {
 		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
@@ -123,10 +122,14 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
 //Adminsiginup handles the user signup
 
+
+
+// UserSignup handles the user signup
+
 func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 
 	var newAdmin domain.Admins
-	fmt.Println("user signup")
+	fmt.Println("admin signup")
 	//fetching data
 	c.Bind(&newAdmin)
 
@@ -137,33 +140,31 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 	log.Println(newAdmin)
 
 	if err != nil {
-		response := response.ErrorResponse("Failed to create user", err.Error(), nil)
+		response := response.ErrorResponse("Failed to create admin", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
 		utils.ResponseJSON(*c, response)
 		return
 	}
 
-	user, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
-	response := response.SuccessResponse(true, "SUCCESS", user)
+	admin, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
+	response := response.SuccessResponse(true, "SUCCESS", admin)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
 
 }
 
+// UserLogin handles the user login
 
-// AdminLogin handles the admin login
 func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 
 	var adminLogin domain.Admins
 
 	c.Bind(&adminLogin)
-
-	fmt.Println("adminLogin.passwrodk", adminLogin.Password)
-	fmt.Println("adminLogin.username", adminLogin.AdminName)
+	fmt.Println("adminLoginpassword",adminLogin.Password)
 	//verify User details
-	err := cr.authUsecase.VerifyAdmin(adminLogin.AdminName, adminLogin.Password)
+	err := cr.authUsecase.VerifyAdmin(adminLogin.Email, adminLogin.Password)
 
 	if err != nil {
 		response := response.ErrorResponse("Failed to login", err.Error(), nil)
@@ -174,13 +175,36 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 	}
 
 	//fetching user details
-	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.AdminName)
-	token := cr.jwtAdminUsecase.GenerateToken(admin.AdminId, admin.AdminName, "admin")
-	admin.Password = ""
+	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
+	token := cr.jwtUsecase.GenerateToken(admin.AdminId, admin.Email, "admin")
 	admin.Token = token
 	response := response.SuccessResponse(true, "SUCCESS", admin.Token)
 	utils.ResponseJSON(*c, response)
 
 	fmt.Println("login function returned successfully")
+
+}
+
+// user refresh token
+func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
+
+	autheader := ("Authorization")
+	bearerToken := strings.Split(autheader, " ")
+	token := bearerToken[1]
+
+	refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
+
+	if err != nil {
+		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "SUCCESS", refreshToken)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
 
 }

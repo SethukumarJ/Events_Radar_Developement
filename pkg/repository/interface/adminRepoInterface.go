@@ -9,6 +9,7 @@ import (
 type AdminRepository interface {
 	FindAdmin(email string) (domain.AdminResponse, error)
 	AllUsers(pagenation utils.Filter) ([]domain.UserResponse, utils.Metadata, error)
+	AllEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error)
 	CreateAdmin(admin domain.Admins) (int, error)
 	VipUser(username string) error
 }

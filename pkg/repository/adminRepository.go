@@ -15,6 +15,91 @@ type adminRepository struct {
 	db *sql.DB
 }
 
+// AllEvents implements interfaces.AdminRepository
+func (c *adminRepository) AllEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error) {
+	fmt.Println("allevents called from repo")
+	var events []domain.EventResponse
+
+	query := `SELECT 
+					COUNT(*) OVER(),
+					event_id,
+					title,
+					organizer_name,
+					event_pic,
+					short_discription,
+					long_discription,
+					event_date,
+					location,
+					created_at,
+					approved,
+					paid,
+					sex,
+					cusat_only,
+					archived,
+					sub_events,
+					online,
+					max_applications,
+					application_closing_date,
+					application_link,
+					website_link FROM events 
+					LIMIT $1 OFFSET $2;`
+
+	rows, err := c.db.Query(query, pagenation.Limit(), pagenation.Offset())
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, utils.Metadata{}, err
+	}
+
+	fmt.Println("allevents called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("allevents called from repo")
+
+	for rows.Next() {
+		var event domain.EventResponse
+		fmt.Println("username :", event.Title)
+		err = rows.Scan(
+						&totalRecords,
+						&event.EventId, 
+						&event.Title, 
+						&event.OrganizerName,
+						&event.EventPic,
+						&event.ShortDiscription,
+						&event.LongDiscription,
+						&event.EventDate,
+						&event.Location,
+						&event.CreatedAt,
+						&event.Approved,
+						&event.Paid,
+						&event.Sex,
+						&event.CusatOnly,
+						&event.Archived,
+						&event.SubEvents,
+						&event.Online,
+						&event.MaxApplications,
+						&event.ApplicationClosingDate,
+						&event.ApplicationLink,
+						&event.WebsiteLink,
+		)
+
+		fmt.Println("title", event.Title)
+
+		if err != nil {
+			return events, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		events = append(events, event)
+	}
+
+	if err := rows.Err(); err != nil {
+		return events, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+	}
+	log.Println(events)
+	log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+	return events, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+}
+
 // VipUser implements interfaces.AdminRepository
 func (c *adminRepository) VipUser(username string) error {
 	var user_name string

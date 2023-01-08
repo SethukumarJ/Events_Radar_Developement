@@ -21,11 +21,11 @@ import (
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	sqlDB := db.ConnectDatabase(cfg)
 	userRepository := repository.NewUserRepository(sqlDB)
+	adminRepository := repository.NewAdminRespository(sqlDB)
 	mailConfig := config.NewMailConfig()
-	userUseCase := usecase.NewUserUseCase(userRepository, mailConfig, cfg)
+	userUseCase := usecase.NewUserUseCase(userRepository, adminRepository, mailConfig, cfg)
 	userHandler := handler.NewUserHandler(userUseCase)
 	jwtUsecase := usecase.NewJWTUserUsecase()
-	adminRepository := repository.NewAdminRespository(sqlDB)
 	adminUsecase := usecase.NewAdminUsecase(adminRepository, mailConfig, cfg)
 	authUsecase := usecase.NewAuthUsecase(userRepository, adminRepository)
 	authHandler := handler.NewAuthHandler(jwtUsecase, userUseCase, adminUsecase, authUsecase)

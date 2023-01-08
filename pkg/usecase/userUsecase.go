@@ -17,6 +17,7 @@ import (
 
 type userUseCase struct {
 	userRepo   interfaces.UserRepository
+	adminRepo interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
 }
@@ -96,10 +97,12 @@ func (c *userUseCase) VerifyAccount(email string, code int) error {
 
 func NewUserUseCase(
 	userRepo interfaces.UserRepository,
+	adminRepo interfaces.AdminRepository,
 	mailConfig config.MailConfig,
 	config config.Config) services.UserUseCase {
 	return &userUseCase{
 		userRepo: userRepo,
+		adminRepo: adminRepo,
 		mailConfig: mailConfig,
 		config: config,
 	}

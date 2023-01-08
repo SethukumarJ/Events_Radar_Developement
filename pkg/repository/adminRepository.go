@@ -3,13 +3,79 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type adminRepository struct {
 	db *sql.DB
+}
+
+// AllUsers implements interfaces.UserRepository
+func (c *adminRepository) AllUsers(pagenation utils.Filter) ([]domain.UserResponse, utils.Metadata, error) {
+
+	fmt.Println("allusers called from repo")
+	var users []domain.UserResponse
+
+	query := `SELECT 
+				COUNT(*) OVER(),
+				user_id,
+				first_name,
+				last_name,
+				user_name,
+				email,
+				phone_number,
+				vip,
+				profile
+				FROM users
+				LIMIT $1 OFFSET $2;`
+
+	rows, err := c.db.Query(query, pagenation.Limit(), pagenation.Offset())
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, utils.Metadata{}, err
+	}
+
+	fmt.Println("allusers called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("allusers called from repo")
+
+	for rows.Next() {
+		var User domain.UserResponse
+		fmt.Println("username :", User.UserName)
+		err = rows.Scan(
+			&totalRecords,
+			&User.UserId,
+			&User.FirstName,
+			&User.LastName,
+			&User.UserName,
+			&User.Email,
+			&User.PhoneNumber,
+			&User.Vip,
+			&User.Profile,
+		)
+
+		fmt.Println("username", User.UserName)
+
+		if err != nil {
+			return users, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		users = append(users, User)
+	}
+
+	if err := rows.Err(); err != nil {
+		return users, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+	}
+	log.Println(users)
+	log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+	return users, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+
 }
 
 // FindUser implements interfaces.UserRepository

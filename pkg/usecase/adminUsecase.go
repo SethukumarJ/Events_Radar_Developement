@@ -13,17 +13,19 @@ import (
 )
 
 type adminUsecase struct {
-	adminRepo  interfaces.AdminRepository
-	userRepo    interfaces.UserRepository
+	adminRepo interfaces.AdminRepository
+
 	mailConfig config.MailConfig
 	config     config.Config
 }
 
 // AllUsers implements interfaces.AdminUsecase
 func (c *adminUsecase) AllUsers(pagenation utils.Filter) (*[]domain.UserResponse, *utils.Metadata, error) {
-	
-	users, metadata, err := c.userRepo.AllUsers(pagenation)
+	fmt.Println("alluser from usecase called")
+	users, metadata, err := c.adminRepo.AllUsers(pagenation)
+	fmt.Println("users:", users)
 	if err != nil {
+		fmt.Println("error from alluserser usecase:", err)
 		return nil, &metadata, err
 	}
 

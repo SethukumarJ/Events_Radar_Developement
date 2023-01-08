@@ -23,6 +23,24 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	}
 }
 
+
+func (cr *EventHandler) DeleteEvent(c *gin.Context) {
+
+	title := c.Query("title")
+
+	err := cr.eventUsecase.DeleteEvent(title)
+
+	if err != nil {
+		response := response.ErrorResponse("Could not delete event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Deleted event successfully!", title)
+	utils.ResponseJSON(*c, response)
+
+}
 func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 	var updatedEvent domain.Events

@@ -45,7 +45,7 @@ type Events struct {
 	Sex                    string    `json:"sex" gorm:"default:any"`
 	CusatOnly              bool      `json:"cusatonly" gorm:"default:false"`
 	Archived               bool      `json:"archived"`
-	Subevents              string    `json:"subevents"`
+	SubEvents              string    `json:"subevents"`
 	Online                 bool      `json:"offline" gorm:"default:false"`
 	MaxApplications        int       `json:"maxapplications"`
 	ApplicationClosingDate string    `json:"applicationclosingdate"`

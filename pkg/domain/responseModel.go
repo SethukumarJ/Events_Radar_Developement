@@ -41,7 +41,7 @@ type EventResponse struct {
 	Sex                    string    `json:"sex" `
 	CusatOnly              bool      `json:"cusatonly"`
 	Archived               bool      `json:"archived"`
-	Subevents              string    `json:"subevents"`
+	SubEvents              string    `json:"subevents"`
 	Online                 bool      `json:"offline" `
 	MaxApplications        int       `json:"maxapplications"`
 	ApplicationClosingDate string    `json:"applicationclosingdate"`

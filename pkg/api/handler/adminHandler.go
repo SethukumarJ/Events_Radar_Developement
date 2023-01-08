@@ -77,6 +77,8 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 
+	approved:= c.Query("approved")
+
 	log.Println(page, "   ", pageSize)
 
 	fmt.Println("page :", page)
@@ -89,7 +91,7 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 	fmt.Println("pagenation", pagenation)
 
-	events, metadata, err := cr.adminUsecase.AllEvents(pagenation)
+	events, metadata, err := cr.adminUsecase.AllEvents(pagenation,approved)
 
 	fmt.Println("events:", events)
 

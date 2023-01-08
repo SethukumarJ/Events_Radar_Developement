@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -46,9 +47,13 @@ func (c *adminRepository) ApproveEvent(title string) error {
 }
 
 // AllEvents implements interfaces.AdminRepository
-func (c *adminRepository) AllEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error) {
+func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([]domain.EventResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
 	var events []domain.EventResponse
+
+	now := time.Now()
+	dateString := now.Format("2006-01-02")
+	fmt.Println("currentdate:",dateString)
 
 	query := `SELECT 
 					COUNT(*) OVER(),
@@ -71,10 +76,10 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter) ([]domain.EventResp
 					max_applications,
 					application_closing_date,
 					application_link,
-					website_link FROM events 
-					LIMIT $1 OFFSET $2;`
+					website_link FROM events WHERE event_date > $1 AND approved = $2
+					LIMIT $3 OFFSET $4;`
 
-	rows, err := c.db.Query(query, pagenation.Limit(), pagenation.Offset())
+	rows, err := c.db.Query(query, dateString,approved,pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, utils.Metadata{}, err

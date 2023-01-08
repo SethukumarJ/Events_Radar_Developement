@@ -15,6 +15,36 @@ type adminRepository struct {
 	db *sql.DB
 }
 
+// ApproveEvent implements interfaces.AdminRepository
+func (c *adminRepository) ApproveEvent(title string) error {
+	var event_name string
+
+	query := `SELECT title FROM 
+				events WHERE 
+				title = $1;`
+	err := c.db.QueryRow(query, title).Scan(&event_name)
+
+	if err == sql.ErrNoRows {
+		return errors.New("invalid title")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	query = `UPDATE events SET
+				approved = $1
+				WHERE
+				title = $2 ;`
+	err = c.db.QueryRow(query, true, title).Err()
+	log.Println("approved the event successfully", err)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // AllEvents implements interfaces.AdminRepository
 func (c *adminRepository) AllEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
@@ -61,27 +91,27 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter) ([]domain.EventResp
 		var event domain.EventResponse
 		fmt.Println("username :", event.Title)
 		err = rows.Scan(
-						&totalRecords,
-						&event.EventId, 
-						&event.Title, 
-						&event.OrganizerName,
-						&event.EventPic,
-						&event.ShortDiscription,
-						&event.LongDiscription,
-						&event.EventDate,
-						&event.Location,
-						&event.CreatedAt,
-						&event.Approved,
-						&event.Paid,
-						&event.Sex,
-						&event.CusatOnly,
-						&event.Archived,
-						&event.SubEvents,
-						&event.Online,
-						&event.MaxApplications,
-						&event.ApplicationClosingDate,
-						&event.ApplicationLink,
-						&event.WebsiteLink,
+			&totalRecords,
+			&event.EventId,
+			&event.Title,
+			&event.OrganizerName,
+			&event.EventPic,
+			&event.ShortDiscription,
+			&event.LongDiscription,
+			&event.EventDate,
+			&event.Location,
+			&event.CreatedAt,
+			&event.Approved,
+			&event.Paid,
+			&event.Sex,
+			&event.CusatOnly,
+			&event.Archived,
+			&event.SubEvents,
+			&event.Online,
+			&event.MaxApplications,
+			&event.ApplicationClosingDate,
+			&event.ApplicationLink,
+			&event.WebsiteLink,
 		)
 
 		fmt.Println("title", event.Title)

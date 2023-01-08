@@ -12,4 +12,5 @@ type AdminRepository interface {
 	AllEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error)
 	CreateAdmin(admin domain.Admins) (int, error)
 	VipUser(username string) error
+	ApproveEvent(title string) error
 }

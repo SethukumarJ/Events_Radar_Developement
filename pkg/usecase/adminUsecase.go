@@ -20,7 +20,7 @@ type adminUsecase struct {
 
 // ApproveEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) ApproveEvent(title string) error {
-	err := c.adminRepo.VipUser(title)
+	err := c.adminRepo.ApproveEvent(title)
 
 	if err != nil {
 		return err

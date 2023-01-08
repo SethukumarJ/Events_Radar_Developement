@@ -15,6 +15,49 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+// UpdateEvent implements interfaces.EventRepository
+func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, error) {
+	var id int
+
+	query := `UPDATE events SET
+								title = $1,
+								event_pic = $2,
+								short_discription = $3,
+								long_discription = $4,
+								event_date = $5,
+								location = $6,
+								paid = $7,
+								sex = $6,
+								cusat_only = $9,
+								sub_events = $10,
+								online = $11,
+								max_applications = $12,
+								application_closing_date = $13,
+								application_link = $14,
+								website_link = $15 WHERE title = $16
+								RETURNING event_id;`
+
+	err := c.db.QueryRow(query,
+		event.Title,
+		event.EventPic,
+		event.ShortDiscription,
+		event.LongDiscription,
+		event.EventDate,
+		event.Location,
+		event.Paid,
+		event.Sex,
+		event.CusatOnly,
+		event.SubEvents,
+		event.Online,
+		event.MaxApplications,
+		event.ApplicationClosingDate,
+		event.ApplicationLink,
+		event.WebsiteLink,title).Scan(&id)
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // AllApprovedEvents implements interfaces.EventRepository
 func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
@@ -48,7 +91,7 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.E
 					website_link FROM events WHERE event_date > $1 AND approved = true
 					LIMIT $2 OFFSET $3;`
 
-	rows, err := c.db.Query(query, dateString,pagenation.Limit(), pagenation.Offset())
+	rows, err := c.db.Query(query, dateString, pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, utils.Metadata{}, err

@@ -30,7 +30,7 @@ func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 		return err
 	}
 
-	_, err = c.eventRepo.UpdateEvent(event)
+	_, err = c.eventRepo.UpdateEvent(event,title)
 	if err != nil {
 		return err
 	}

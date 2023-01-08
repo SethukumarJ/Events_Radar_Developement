@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -15,7 +16,26 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// UpdateEvent implements interfaces.EventUsecase
+func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
+	fmt.Println("update event from service")
+	_, err := c.eventRepo.FindEvent(title)
+	fmt.Println("found event", err)
 
+	if err == nil {
+		log.Printf("found event")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	_, err = c.eventRepo.UpdateEvent(event)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // AllEvents implements interfaces.EventUsecase
 func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {

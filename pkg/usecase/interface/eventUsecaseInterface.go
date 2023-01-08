@@ -7,6 +7,7 @@ import (
 
 type EventUsecase interface {
 	CreateEvent(event domain.Events) error
+	UpdateEvent(event domain.Events,title string) error
 	FindEvent(title string) (*domain.EventResponse, error)
 	AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error)
 }

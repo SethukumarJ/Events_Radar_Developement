@@ -15,6 +15,21 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+// DeleteEvent implements interfaces.EventRepository
+func (c *eventRepository) DeleteEvent(title string) error {
+
+	var id int
+	query := `DELETE FROM events WHERE title = $1 RETURNING event_id;`
+
+	err := c.db.QueryRow(query,title).Scan(&id)
+	fmt.Println("id deleted:",id)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
 // UpdateEvent implements interfaces.EventRepository
 func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, error) {
 	var id int
@@ -52,7 +67,7 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 		event.MaxApplications,
 		event.ApplicationClosingDate,
 		event.ApplicationLink,
-		event.WebsiteLink,title).Scan(&id)
+		event.WebsiteLink, title).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err

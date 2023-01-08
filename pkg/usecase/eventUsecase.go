@@ -21,7 +21,7 @@ func (c *eventUsecase) DeleteEvent(title string) error {
 	err := c.eventRepo.DeleteEvent(title)
 
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	return nil

@@ -47,6 +47,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
 		admin.GET("/listUsers",adminHandler.ViewAllUsers)
+		admin.PATCH("/vipuser",adminHandler.VipUser)
 		
 		admin.Use(middleware.AuthorizeJwt())
 		{

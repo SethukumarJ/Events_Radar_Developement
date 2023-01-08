@@ -51,6 +51,26 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 }
 
 
+func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
+	
+	title := c.Query("title")
+
+	err := cr.adminUsecase.ApproveEvent(title)
+
+	if err != nil {
+		response := response.ErrorResponse("approving event failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "event approved", title)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
+
 func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

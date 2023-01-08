@@ -18,6 +18,16 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+// ApproveEvent implements interfaces.AdminUsecase
+func (c *adminUsecase) ApproveEvent(title string) error {
+	err := c.adminRepo.VipUser(title)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // AllEvents implements interfaces.AdminUsecase
 func (c *adminUsecase) AllEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {
 	fmt.Println("allevents from usecase called")

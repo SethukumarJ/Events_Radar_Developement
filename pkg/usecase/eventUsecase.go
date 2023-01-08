@@ -8,10 +8,16 @@ import (
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	usecases "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type eventUsecase struct {
 	eventRepo interfaces.EventRepository
+}
+
+// AllEvents implements interfaces.EventUsecase
+func (*eventUsecase) AllEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {
+	panic("unimplemented")
 }
 
 func NewEventUseCase(

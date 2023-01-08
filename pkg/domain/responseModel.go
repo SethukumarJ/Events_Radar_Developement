@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type UserResponse struct {
 	UserId       uint   `json:"userid"`
 	UserName     string `json:"username"`
@@ -22,4 +24,27 @@ type AdminResponse struct {
 	Verification bool   `json:"verification"`
 	PhoneNumber  string `json:"phonenumber"`
 	Token        string `json:"token"`
+}
+
+type EventResponse struct {
+	EventId                uint      `json:"eventid"`
+	Title                  string    `json:"title"`
+	OrganizerName          string    `json:"organizername" `
+	EventPic               string    `json:"eventpic" `
+	ShortDiscription       string    `json:"shortdiscription"`
+	LongDiscription        string    `json:"longdiscription"`
+	EventDate              string    `json:"eventdate"`
+	Location               string    `json:"location"`
+	CreatedAt              time.Time `json:"createdat"`
+	Approved               bool      `json:"approved"`
+	Paid                   bool      `json:"paid" `
+	Sex                    string    `json:"sex" `
+	CusatOnly              bool      `json:"cusatonly"`
+	Archived               bool      `json:"archived"`
+	SubEvents              string    `json:"subevents"`
+	Online                 bool      `json:"online"`
+	MaxApplications        int       `json:"maxapplications"`
+	ApplicationClosingDate string    `json:"applicationclosingdate"`
+	ApplicationLink        string    `json:"applicationlink"`
+	WebsiteLink            string    `json:"websitelink"`
 }

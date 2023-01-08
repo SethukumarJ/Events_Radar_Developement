@@ -17,6 +17,7 @@ type ServerHTTP struct {
 func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler handler.AuthHandler,
 	adminHandler handler.AdminHandler,
+	eventHandler handler.EventHandler,
 	middleware middleware.Middleware) *ServerHTTP {
 	engine := gin.New()
 
@@ -48,12 +49,27 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.POST("/login", authHandler.AdminLogin)
 		admin.GET("/listUsers",adminHandler.ViewAllUsers)
 		admin.PATCH("/vipuser",adminHandler.VipUser)
+		admin.GET("/listEvents", adminHandler.ViewAllEvents)
+		admin.PATCH("/approveevent",adminHandler.ApproveEvent)
 		
 		admin.Use(middleware.AuthorizeJwt())
 		{
 			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
 		}
 	}
+
+
+		//userroutes
+		event := engine.Group("event")
+		{
+			event.POST("/createevent", eventHandler.CreateEvent)
+			event.GET("/getApprovedEvents", eventHandler.ViewAllApprovedEvents)
+			event.GET("/getEventByTitle", eventHandler.GetEventByTitle)
+			event.PATCH("/updateEvent",eventHandler.UpdateEvent)
+			event.DELETE("/deleteEvent",eventHandler.DeleteEvent)
+			
+			
+		}
 		
 			return &ServerHTTP{engine: engine}
 	}

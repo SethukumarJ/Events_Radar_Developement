@@ -13,9 +13,19 @@ import (
 )
 
 type adminUsecase struct {
-	adminRepo interfaces.AdminRepository
+	adminRepo  interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
+}
+
+// Vip implements interfaces.AdminUsecase
+func (c *adminUsecase) VipUser(username string) error {
+	err := c.adminRepo.VipUser(username)
+
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // AllUsers implements interfaces.AdminUsecase

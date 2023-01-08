@@ -29,11 +29,11 @@ func NewAdminHandler(
 }
 
 
-func (cr *AdminHandler) vip(c *gin.Context)  {
+func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
 	username := c.Query("username")
 
-	err := cr.adminUsecase.vip(username)
+	err := cr.adminUsecase.VipUser(username)
 
 	if err != nil {
 		response := response.ErrorResponse("making user into vip faled!", err.Error(), nil)

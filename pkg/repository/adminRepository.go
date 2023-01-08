@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -12,6 +13,36 @@ import (
 
 type adminRepository struct {
 	db *sql.DB
+}
+
+// VipUser implements interfaces.AdminRepository
+func (c *adminRepository) VipUser(username string) error {
+	var user_name string
+
+	query := `SELECT user_name FROM 
+				users WHERE 
+				user_name = $1;`
+	err := c.db.QueryRow(query, username).Scan(&user_name)
+
+	if err == sql.ErrNoRows {
+		return errors.New("invalid title")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	query = `UPDATE users SET
+				vip = $1
+				WHERE
+				user_name = $2 ;`
+	err = c.db.QueryRow(query, true, username).Err()
+	log.Println("Updating vip status to true ", err)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // AllUsers implements interfaces.UserRepository

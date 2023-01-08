@@ -27,7 +27,7 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 								event_date = $5,
 								location = $6,
 								paid = $7,
-								sex = $6,
+								sex = $8,
 								cusat_only = $9,
 								sub_events = $10,
 								online = $11,

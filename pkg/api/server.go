@@ -50,6 +50,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.GET("/listUsers",adminHandler.ViewAllUsers)
 		admin.PATCH("/vipuser",adminHandler.VipUser)
 		admin.GET("/listEvents", adminHandler.ViewAllEvents)
+		admin.PATCH("/approveevent",adminHandler.ApproveEvent)
 		
 		admin.Use(middleware.AuthorizeJwt())
 		{

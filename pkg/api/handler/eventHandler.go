@@ -57,7 +57,7 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 	title := c.Query("title")
 
-	event, err := cr.eventUsecase.GetEventByTitle(title)
+	event, err := cr.eventUsecase.FindEvent(title)
 
 	fmt.Println("event:", event)
 

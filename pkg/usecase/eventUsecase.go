@@ -15,16 +15,7 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
-// GetEventByTitle implements interfaces.EventUsecase
-func (c *eventUsecase) GetEventByTitle(title string) (*domain.EventResponse, error) {
-	event, err := c.eventRepo.GetEventByTitle(title)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &event, nil
-}
 
 // AllEvents implements interfaces.EventUsecase
 func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {

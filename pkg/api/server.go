@@ -17,6 +17,7 @@ type ServerHTTP struct {
 func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler handler.AuthHandler,
 	adminHandler handler.AdminHandler,
+	eventHandler handler.EventHandler,
 	middleware middleware.Middleware) *ServerHTTP {
 	engine := gin.New()
 
@@ -54,6 +55,15 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
 		}
 	}
+
+
+		//userroutes
+		event := engine.Group("event")
+		{
+			event.POST("/createevent", eventHandler.CreateEvent)
+			
+			
+		}
 		
 			return &ServerHTTP{engine: engine}
 	}

@@ -16,8 +16,16 @@ type eventUsecase struct {
 }
 
 // AllEvents implements interfaces.EventUsecase
-func (*eventUsecase) AllEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {
-	panic("unimplemented")
+func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {
+	fmt.Println("allevents from usecase called")
+	events, metadata, err := c.eventRepo.AllApprovedEvents(pagenation)
+	fmt.Println("events:", events)
+	if err != nil {
+		fmt.Println("error from allevents usecase:", err)
+		return nil, &metadata, err
+	}
+
+	return &events, &metadata, nil
 }
 
 func NewEventUseCase(

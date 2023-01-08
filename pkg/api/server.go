@@ -66,6 +66,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			event.GET("/getApprovedEvents", eventHandler.ViewAllApprovedEvents)
 			event.GET("/getEventByTitle", eventHandler.GetEventByTitle)
 			event.PATCH("/updateEvent",eventHandler.UpdateEvent)
+			event.DELETE("/deleteEvent",eventHandler.DeleteEvent)
 			
 			
 		}

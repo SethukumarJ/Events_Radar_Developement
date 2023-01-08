@@ -13,10 +13,10 @@ import (
 )
 
 type EventHandler struct {
-	eventUsecase usecase.EventUseCase
+	eventUsecase usecase.EventUsecase
 }
 
-func NewEventHandler(usecase usecase.EventUseCase) EventHandler {
+func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	return EventHandler{
 		eventUsecase: usecase,
 	}

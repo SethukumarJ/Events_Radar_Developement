@@ -14,7 +14,6 @@ import (
 
 type adminUsecase struct {
 	adminRepo interfaces.AdminRepository
-
 	mailConfig config.MailConfig
 	config     config.Config
 }

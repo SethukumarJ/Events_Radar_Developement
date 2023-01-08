@@ -28,6 +28,26 @@ func NewAdminHandler(
 	}
 }
 
+
+func (cr *AdminHandler) vip(c *gin.Context)  {
+	
+	username := c.Query("username")
+
+	err := cr.adminUsecase.vip(username)
+
+	if err != nil {
+		response := response.ErrorResponse("making user into vip faled!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "User made into vip", username)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
 func (cr *AdminHandler) ViewAllUsers(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

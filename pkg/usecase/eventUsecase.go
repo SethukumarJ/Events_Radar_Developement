@@ -16,6 +16,17 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// DeleteEvent implements interfaces.EventUsecase
+func (c *eventUsecase) DeleteEvent(title string) error {
+	err := c.eventRepo.DeleteEvent(title)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil
+}
+
 // UpdateEvent implements interfaces.EventUsecase
 func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 	fmt.Println("update event from service")
@@ -30,7 +41,7 @@ func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 		return err
 	}
 
-	_, err = c.eventRepo.UpdateEvent(event,title)
+	_, err = c.eventRepo.UpdateEvent(event, title)
 	if err != nil {
 		return err
 	}

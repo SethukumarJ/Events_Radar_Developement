@@ -23,6 +23,37 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	}
 }
 
+func (cr *EventHandler) UpdateEvent(c *gin.Context) {
+
+	var updatedEvent domain.Events
+	fmt.Println("Updating event")
+	//fetching data
+	c.Bind(&updatedEvent)
+	fmt.Println("event id", updatedEvent.EventId)
+	title := c.Query("title")
+
+	//check event exit or not
+
+	err := cr.eventUsecase.UpdateEvent(updatedEvent,title)
+
+	log.Println(updatedEvent)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Update Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.eventUsecase.FindEvent(updatedEvent.Title)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
+
 func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 	var newEvent domain.Events

@@ -53,13 +53,32 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 }
 
+func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
+
+	title := c.Query("title")
+
+	event, err := cr.eventUsecase.GetEventByTitle(title)
+
+	fmt.Println("event:", event)
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting event from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Showing the event", event)
+	utils.ResponseJSON(*c, response)
+
+}
+
 func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))
 
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
-
-	
 
 	log.Println(page, "   ", pageSize)
 

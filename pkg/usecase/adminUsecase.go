@@ -18,6 +18,7 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+
 // ApproveEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) ApproveEvent(title string) error {
 	err := c.adminRepo.ApproveEvent(title)
@@ -29,9 +30,9 @@ func (c *adminUsecase) ApproveEvent(title string) error {
 }
 
 // AllEvents implements interfaces.AdminUsecase
-func (c *adminUsecase) AllEvents(pagenation utils.Filter,approved string) (*[]domain.EventResponse, *utils.Metadata, error) {
+func (c *adminUsecase) AllEvents(pagenation utils.Filter, approved string) (*[]domain.EventResponse, *utils.Metadata, error) {
 	fmt.Println("allevents from usecase called")
-	events, metadata, err := c.adminRepo.AllEvents(pagenation,approved)
+	events, metadata, err := c.adminRepo.AllEvents(pagenation, approved)
 	fmt.Println("events:", events)
 	if err != nil {
 		fmt.Println("error from allevents usecase:", err)

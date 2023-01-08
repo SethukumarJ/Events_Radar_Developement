@@ -43,6 +43,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	fmt.Println("user signup")
 	//fetching data
 	c.Bind(&newUser)
+	fmt.Println("userid",newUser.UserId)
 
 	//check username exit or not
 

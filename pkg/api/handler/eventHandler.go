@@ -28,8 +28,9 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
+	fmt.Println("event id",newEvent.EventId)
 
-	//check username exit or not
+	//check event exit or not
 
 	err := cr.eventUsecase.CreateEvent(newEvent)
 

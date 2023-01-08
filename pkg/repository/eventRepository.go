@@ -23,7 +23,7 @@ func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) 
 
 	var event domain.EventResponse
 
-	query := `SELECT event_id
+	query := `SELECT event_id,
 					title,
 					organizer_name,
 					event_pic,
@@ -38,7 +38,7 @@ func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) 
 					cusat_only,
 					archived,
 					sub_events,
-					offline,
+					online,
 					max_applications,
 					application_closing_date,
 					application_link,
@@ -76,7 +76,7 @@ func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) 
 func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
 
-	query := `INSERT INTO users(event_id
+	query := `INSERT INTO events(
 								title,
 								organizer_name,
 								event_pic,
@@ -91,14 +91,14 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 								cusat_only,
 								archived,
 								sub_events,
-								offline,
+								online,
 								max_applications,
 								application_closing_date,
 								application_link,
-								website_link)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19, $20)
+								website_link)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19)
 								RETURNING event_id;`
 
-	err := c.db.QueryRow(query, event.EventId, 
+	err := c.db.QueryRow(query, 
 						event.Title, 
 						event.OrganizerName,
 						event.EventPic,

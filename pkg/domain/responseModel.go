@@ -42,7 +42,7 @@ type EventResponse struct {
 	CusatOnly              bool      `json:"cusatonly"`
 	Archived               bool      `json:"archived"`
 	SubEvents              string    `json:"subevents"`
-	Online                 bool      `json:"offline" `
+	Online                 bool      `json:"online"`
 	MaxApplications        int       `json:"maxapplications"`
 	ApplicationClosingDate string    `json:"applicationclosingdate"`
 	ApplicationLink        string    `json:"applicationlink"`

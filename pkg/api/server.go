@@ -63,6 +63,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		event := engine.Group("event")
 		{
 			event.POST("/createevent", eventHandler.CreateEvent)
+			event.GET("/getApprovedEvents", eventHandler.ViewAllApprovedEvents)
 			
 			
 		}

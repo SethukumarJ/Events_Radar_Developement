@@ -48,6 +48,17 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+
+// @Summary update event
+// @ID Update event
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @param Updateevent body domain.Users{} true "update event with new body"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/update [patch]
 func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 	var updatedEvent domain.Events
@@ -88,7 +99,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @param CreateEvent body domain.Events{} true "Create event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/create [post]
+// @Router /user/event/create [post]
 // Create events
 func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
@@ -131,7 +142,7 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 // @Param  title   query  string  true  "Title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/geteventbytitle [delete]
+// @Router /event/geteventbytitle [get]
 func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 	title := c.Query("title")

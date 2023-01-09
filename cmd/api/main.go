@@ -25,6 +25,10 @@ import (
 // @in header
 // @name Authorization
 
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 // @host localhost:3000
 // @BasePath /
 // @query.collection.format multi

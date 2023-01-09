@@ -123,8 +123,8 @@ info:
     email: sethukumarj.76@gmail.com
     name: API Support
     url: sethukumarj.com
-  description: This is a sample server Job Portal server. You can visit the GitHub
-    repository at https://github.com/SethukumarJ/Events_Radar_Developement
+  description: This is an Events Radar project. You can visit the GitHub repository
+    at https://github.com/SethukumarJ/Events_Radar_Developement
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -151,6 +151,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: approves the event for admin
       tags:
       - Admin
@@ -184,6 +186,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: list all upcoming events for admin
       tags:
       - Admin
@@ -212,6 +216,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: list all active users for admin
       tags:
       - Admin
@@ -220,12 +226,12 @@ paths:
       operationId: Admin Login
       parameters:
       - description: 'admin email: '
-        in: query
+        in: path
         name: email
         required: true
         type: string
-      - description: 'user password: '
-        in: query
+      - description: 'admin password: '
+        in: path
         name: password
         required: true
         type: string
@@ -289,6 +295,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: Refresh token for admin
       tags:
       - Admin
@@ -313,6 +321,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: makes the user vip
       tags:
       - Admin
@@ -368,7 +378,7 @@ paths:
       tags:
       - Event
   /event/geteventbytitle:
-    delete:
+    get:
       operationId: Get event by id
       parameters:
       - description: 'Title: '
@@ -390,7 +400,36 @@ paths:
       summary: delete event
       tags:
       - Event
-  /user/create:
+  /event/update:
+    patch:
+      operationId: Update event
+      parameters:
+      - description: 'Title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: update event with new body
+        in: body
+        name: Updateevent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: update event
+      tags:
+      - User
+  /user/event/create:
     post:
       operationId: Create event
       parameters:
@@ -419,20 +458,16 @@ paths:
       summary: Create event
       tags:
       - User
-  /user/signup:
+  /user/login:
     post:
       operationId: User Login
       parameters:
-      - description: 'user email: '
-        in: query
-        name: email
+      - description: 'userlogin: '
+        in: body
+        name: UserLogin
         required: true
-        type: string
-      - description: 'user password: '
-        in: query
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/domain.Users'
       produces:
       - application/json
       responses:
@@ -447,6 +482,30 @@ paths:
       summary: Login for users
       tags:
       - User
+      - User
+  /user/signup:
+    post:
+      operationId: User SignUp
+      parameters:
+      - description: user signup with username, phonenumber email ,password
+        in: body
+        name: RegisterUser
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: SignUp for users
+      tags:
       - User
   /user/token/refresh:
     post:
@@ -468,6 +527,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: Refresh token for users
       tags:
       - User
@@ -502,6 +563,10 @@ paths:
       - User
 securityDefinitions:
   ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BearerAuth:
     in: header
     name: Authorization
     type: apiKey

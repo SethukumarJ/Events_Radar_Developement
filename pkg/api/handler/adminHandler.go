@@ -35,6 +35,7 @@ func NewAdminHandler(
 // @ID make vip user
 // @Tags Admin
 // @Produce json
+// @Security BearerAuth
 // @Param  username   query  string  true  "User Name : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -61,6 +62,7 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 // @ID approves event
 // @Tags Admin
 // @Produce json
+// @Security BearerAuth
 // @Param  title   query  string  true  "Event Name : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -88,6 +90,7 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 // @ID list all upcoming events
 // @Tags Admin
 // @Produce json
+// @Security BearerAuth
 // @Param  page   query  string  true  "Page number: "
 // @Param  pagesize   query  string  true  "Page capacity : "
 // @Param  approved   query  bool  true  "List event by approved non approved : "
@@ -144,6 +147,7 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 // @ID list all active users
 // @Tags Admin
 // @Produce json
+// @Security BearerAuth
 // @Param  page   query  string  true  "Page number: "
 // @Param  pagesize   query  string  true  "Page capacity : "
 // @Success 200 {object} response.Response{}

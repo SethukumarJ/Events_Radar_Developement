@@ -26,6 +26,11 @@ const docTemplate = `{
     "paths": {
         "/admin/approveevent": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -61,6 +66,11 @@ const docTemplate = `{
         },
         "/admin/listEvents": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -110,6 +120,11 @@ const docTemplate = `{
         },
         "/admin/listUsers": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -166,14 +181,14 @@ const docTemplate = `{
                         "type": "string",
                         "description": "admin email: ",
                         "name": "email",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "user password: ",
+                        "description": "admin password: ",
                         "name": "password",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -233,6 +248,11 @@ const docTemplate = `{
         },
         "/admin/token/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -269,6 +289,11 @@ const docTemplate = `{
         },
         "/admin/vipuser": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -380,7 +405,7 @@ const docTemplate = `{
             }
         },
         "/event/geteventbytitle": {
-            "delete": {
+            "get": {
                 "produces": [
                     "application/json"
                 ],
@@ -414,7 +439,51 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/create": {
+        "/event/update": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update event",
+                "operationId": "Update event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update event with new body",
+                        "name": "Updateevent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/event/create": {
             "post": {
                 "produces": [
                     "application/json"
@@ -458,7 +527,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/signup": {
+        "/user/login": {
             "post": {
                 "produces": [
                     "application/json"
@@ -471,18 +540,50 @@ const docTemplate = `{
                 "operationId": "User Login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "user email: ",
-                        "name": "email",
-                        "in": "query",
-                        "required": true
+                        "description": "userlogin: ",
+                        "name": "UserLogin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signup": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "SignUp for users",
+                "operationId": "User SignUp",
+                "parameters": [
                     {
-                        "type": "string",
-                        "description": "user password: ",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "user signup with username, phonenumber email ,password",
+                        "name": "RegisterUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
                     }
                 ],
                 "responses": {
@@ -503,6 +604,11 @@ const docTemplate = `{
         },
         "/user/token/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -754,6 +860,11 @@ const docTemplate = `{
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"
+        },
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -765,7 +876,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Go + Gin Radar API",
-	Description:      "This is a sample server Job Portal server. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
+	Description:      "This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

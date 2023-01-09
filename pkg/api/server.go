@@ -31,14 +31,15 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	user := engine.Group("user")
 	{
 		user.POST("/signup", authHandler.UserSignup)
-		user.POST("/login", authHandler.UserLogin)
-		user.POST("/send/verification", userHandler.SendVerificationMail)
 		user.PATCH("/verify/account", userHandler.VerifyAccount)
+		user.POST("/login", authHandler.UserLogin)
 
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.GET("/token/refresh", authHandler.UserRefreshToken)
-			user.POST("/createevent", eventHandler.CreateEvent)
+			user.POST("/event/create", eventHandler.CreateEvent)
+			
+			user.POST("/send/verification", userHandler.SendVerificationMail)
 		}
 	}
 
@@ -48,25 +49,26 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	{
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
-		admin.GET("/listUsers",adminHandler.ViewAllUsers)
-		admin.PATCH("/vipuser",adminHandler.VipUser)
-		admin.GET("/listEvents", adminHandler.ViewAllEvents)
-		admin.PATCH("/approveevent",adminHandler.ApproveEvent)
 		
-		admin.Use(middleware.AuthorizeJwt())
+	admin.Use(middleware.AuthorizeJwt())
 		{
 			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
+			admin.PATCH("/approveevent",adminHandler.ApproveEvent)
+			
+			admin.GET("/listUsers",adminHandler.ViewAllUsers)
+			admin.PATCH("/vipuser",adminHandler.VipUser)
+			admin.GET("/listEvents", adminHandler.ViewAllEvents)
 		}
 	}
 
 
-		//userroutes
+		//eventroutes
 		event := engine.Group("event")
 		{
 			
 			event.GET("/approved", eventHandler.ViewAllApprovedEvents)
 			event.GET("/geteventbytitle", eventHandler.GetEventByTitle)
-			event.PATCH("/updateEvent",eventHandler.UpdateEvent)
+			event.PATCH("/update",eventHandler.UpdateEvent)
 			event.DELETE("/delete",eventHandler.DeleteEvent)
 			
 			

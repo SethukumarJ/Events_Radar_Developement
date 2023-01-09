@@ -81,11 +81,10 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Tags User
-// @Param  email   query  string  true  "user email: "
-// @Param  password   query  string  true  "user password: "
+// @Param  UserLogin   body  domain.Users{}  true  "userlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/signup [post]
+// @Router /user/login [post]
 // UserLogin handles the user login
 func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
@@ -122,6 +121,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Tags User
+// @Security BearerAuth
 // @Param  Authorization   header  string  true  "token string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -203,8 +203,8 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 // @Tags Admin
 // @Produce json
 // @Tags Admin
-// @Param  email   query  string  true  "admin email: "
-// @Param  password   query  string  true  "user password: "
+// @Param  email   path  string  true  "admin email: "
+// @Param  password   path  string  true  "admin password: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/login [post]
@@ -243,6 +243,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 // @Tags Admin
 // @Produce json
 // @Tags Admin
+// @Security BearerAuth
 // @Param  Authorization   header  string  true  "token string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}

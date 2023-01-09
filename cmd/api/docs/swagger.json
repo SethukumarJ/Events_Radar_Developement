@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server Job Portal server. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
+        "description": "This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
         "title": "Go + Gin Radar API",
         "contact": {
             "name": "API Support",
@@ -19,6 +19,11 @@
     "paths": {
         "/admin/approveevent": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -54,6 +59,11 @@
         },
         "/admin/listEvents": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -103,6 +113,11 @@
         },
         "/admin/listUsers": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -159,14 +174,14 @@
                         "type": "string",
                         "description": "admin email: ",
                         "name": "email",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "user password: ",
+                        "description": "admin password: ",
                         "name": "password",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -226,6 +241,11 @@
         },
         "/admin/token/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -262,6 +282,11 @@
         },
         "/admin/vipuser": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -373,7 +398,7 @@
             }
         },
         "/event/geteventbytitle": {
-            "delete": {
+            "get": {
                 "produces": [
                     "application/json"
                 ],
@@ -407,7 +432,51 @@
                 }
             }
         },
-        "/user/create": {
+        "/event/update": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update event",
+                "operationId": "Update event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update event with new body",
+                        "name": "Updateevent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/event/create": {
             "post": {
                 "produces": [
                     "application/json"
@@ -451,7 +520,7 @@
                 }
             }
         },
-        "/user/signup": {
+        "/user/login": {
             "post": {
                 "produces": [
                     "application/json"
@@ -464,18 +533,50 @@
                 "operationId": "User Login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "user email: ",
-                        "name": "email",
-                        "in": "query",
-                        "required": true
+                        "description": "userlogin: ",
+                        "name": "UserLogin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signup": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "SignUp for users",
+                "operationId": "User SignUp",
+                "parameters": [
                     {
-                        "type": "string",
-                        "description": "user password: ",
-                        "name": "password",
-                        "in": "query",
-                        "required": true
+                        "description": "user signup with username, phonenumber email ,password",
+                        "name": "RegisterUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
                     }
                 ],
                 "responses": {
@@ -496,6 +597,11 @@
         },
         "/user/token/refresh": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -744,6 +850,11 @@
     },
     "securityDefinitions": {
         "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

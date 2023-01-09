@@ -23,7 +23,14 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	}
 }
 
-
+// @Summary delete event
+// @ID Delete event
+// @Tags Event
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/delete [delete]
 func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 
 	title := c.Query("title")
@@ -72,6 +79,17 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 }
 
+
+// @Summary Create event
+// @ID Create event
+// @Tags User
+// @Produce json
+// @Param  userName   header  string  true  "organizerName: "
+// @param CreateEvent body domain.Events{} true "Create event"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/create [post]
+// Create events
 func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 	var newEvent domain.Events
@@ -105,6 +123,15 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 }
 
+
+// @Summary delete event
+// @ID Get event by id
+// @Tags Event
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/geteventbytitle [delete]
 func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 	title := c.Query("title")
@@ -126,6 +153,16 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 }
 
+
+// @Summary list all approved upcoming events
+// @ID list all approved events
+// @Tags Event
+// @Produce json
+// @Param  page   query  string  true  "Page number: "
+// @Param  pagesize   query  string  true  "Page capacity : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/approved [get]
 func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

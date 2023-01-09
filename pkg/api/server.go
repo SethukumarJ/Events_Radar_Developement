@@ -64,10 +64,10 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		event := engine.Group("event")
 		{
 			
-			event.GET("/getApprovedEvents", eventHandler.ViewAllApprovedEvents)
-			event.GET("/getEventByTitle", eventHandler.GetEventByTitle)
+			event.GET("/approved", eventHandler.ViewAllApprovedEvents)
+			event.GET("/geteventbytitle", eventHandler.GetEventByTitle)
 			event.PATCH("/updateEvent",eventHandler.UpdateEvent)
-			event.DELETE("/deleteEvent",eventHandler.DeleteEvent)
+			event.DELETE("/delete",eventHandler.DeleteEvent)
 			
 			
 		}

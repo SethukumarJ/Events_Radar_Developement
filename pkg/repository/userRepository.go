@@ -21,7 +21,7 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 
 	query := `SELECT user_id,user_name,first_name,
 			  		last_name,email,password,
-					phone_number,profile FROM users 
+					phone_number,profile,verification FROM users 
 					WHERE email = $1;`
 
 	err := c.db.QueryRow(query, email).Scan(&user.UserId,
@@ -32,6 +32,7 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 		&user.Password,
 		&user.PhoneNumber,
 		&user.Profile,
+		&user.Verification,
 	)
 
 	fmt.Println("user from find user :", user)
@@ -77,6 +78,8 @@ func (c *userRepository) VerifyAccount(email string, code int) error {
 			  WHERE email = $1 AND code = $2;`
 	err := c.db.QueryRow(query, email, code).Scan(&useremail)
 
+	fmt.Println("useremail",useremail)
+
 	if err == sql.ErrNoRows {
 		return errors.New("invalid verification code/Email")
 	}
@@ -85,18 +88,17 @@ func (c *userRepository) VerifyAccount(email string, code int) error {
 		return err
 	}
 
-	query = `UPDATE users SET verification = $1
-			WHERE email = $2 ;`
+	query2 := `UPDATE users SET verification = $1 WHERE email = $2`
 
-	err = c.db.QueryRow(query, true, email).Err()
+	err = c.db.QueryRow(query2, true, email).Err()
 	log.Println("Updating User verification: ", err)
 	if err != nil {
 		return err
 	}
 
-	query = `DELETE FROM verifications WHERE email = $1;`
+	query3 := `DELETE FROM verifications WHERE email = $1;`
 
-	err = c.db.QueryRow(query, email).Err()
+	err = c.db.QueryRow(query3, email).Err()
 	fmt.Println("deleting the verification code.")
 	if err != nil {
 		return err

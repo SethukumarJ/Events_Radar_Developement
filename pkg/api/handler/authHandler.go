@@ -36,13 +36,10 @@ func NewAuthHandler(
 }
 
 // @Summary SignUp for users
-// @ID SignUp authentication
+// @ID User SignUp 
 // @Tags User
 // @Produce json
-// @Tags User
-// @Param Body body CreateThing true "The body to create a thing"
-// @Param        username   path      string  true  "User Name : "
-// @Param        password   path      string  true  "Password : "
+// @param RegisterUser body domain.Users{} true "user signup with username, phonenumber email ,password"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/signup [post]
@@ -79,6 +76,17 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 
 // UserLogin handles the user login
 
+// @Summary Login for users
+// @ID User Login 
+// @Tags User
+// @Produce json
+// @Tags User
+// @Param  email   query  string  true  "user email: "
+// @Param  password   query  string  true  "user password: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/signup [post]
+// UserLogin handles the user login
 func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 	var userLogin domain.Users
@@ -108,6 +116,17 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 }
 
 // user refresh token
+
+// @Summary Refresh token for users
+// @ID User RefreshToken 
+// @Tags User
+// @Produce json
+// @Tags User
+// @Param  Authorization   header  string  true  "token string: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/token/refresh [post]
+// UserLogin handles the user login
 func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
 	autheader := c.Request.Header["Authorization"]
@@ -137,8 +156,17 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
 
 
-// UserSignup handles the user signup
-
+// UserSignup handles the admin signup
+// @Summary SignUp for Admin
+// @ID SignUp authentication
+// @Tags Admin
+// @Produce json
+// @Tags Admin
+// @param RegisterAdmin body domain.Admins{} true "admin signup with username, phonenumber email ,password"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/signup [post]
+// AdminSignup handles the user signup
 func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 
 	var newAdmin domain.Admins
@@ -170,6 +198,17 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 
 // UserLogin handles the user login
 
+// @Summary Login for Admin
+// @ID Admin Login 
+// @Tags Admin
+// @Produce json
+// @Tags Admin
+// @Param  email   query  string  true  "admin email: "
+// @Param  password   query  string  true  "user password: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/login [post]
+// AdminLogin handles the user login
 func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 
 	var adminLogin domain.Admins
@@ -199,6 +238,15 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 }
 
 // user refresh token
+// @Summary Refresh token for admin
+// @ID Admin RefreshToken 
+// @Tags Admin
+// @Produce json
+// @Tags Admin
+// @Param  Authorization   header  string  true  "token string: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/token/refresh [post]
 func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 
 	autheader := ("Authorization")

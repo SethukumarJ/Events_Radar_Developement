@@ -1,32 +1,508 @@
+basePath: /
 definitions:
-  handler.Response:
+  domain.Admins:
     properties:
-      id:
+      adminid:
         type: integer
-      name:
+      adminname:
+        maxLength: 50
+        minLength: 2
         type: string
-      surname:
+      email:
         type: string
+      password:
+        type: string
+      phonenumber:
+        type: string
+      verification:
+        type: boolean
+    required:
+    - adminname
+    - email
+    - password
     type: object
+  domain.Events:
+    properties:
+      applicationclosingdate:
+        type: string
+      applicationlink:
+        type: string
+      approved:
+        type: boolean
+      archived:
+        type: boolean
+      createdat:
+        type: string
+      cusatonly:
+        type: boolean
+      eventdate:
+        type: string
+      eventid:
+        type: integer
+      eventpic:
+        type: string
+      location:
+        type: string
+      longdiscription:
+        type: string
+      maxapplications:
+        type: integer
+      online:
+        type: boolean
+      organizername:
+        type: string
+      paid:
+        type: boolean
+      sex:
+        type: string
+      shortdiscription:
+        type: string
+      subevents:
+        type: string
+      title:
+        maxLength: 50
+        minLength: 2
+        type: string
+      websitelink:
+        type: string
+    required:
+    - eventdate
+    - eventpic
+    - organizername
+    - title
+    type: object
+  domain.Users:
+    properties:
+      email:
+        type: string
+      eventid:
+        type: integer
+      firstname:
+        maxLength: 50
+        minLength: 2
+        type: string
+      lastname:
+        maxLength: 50
+        minLength: 1
+        type: string
+      password:
+        type: string
+      phonenumber:
+        type: string
+      profile:
+        type: string
+      userid:
+        type: integer
+      username:
+        maxLength: 50
+        minLength: 2
+        type: string
+      verification:
+        type: boolean
+      vip:
+        type: boolean
+    required:
+    - email
+    - firstname
+    - lastname
+    - password
+    - username
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+host: localhost:3000
 info:
-  contact: {}
+  contact:
+    email: sethukumarj.76@gmail.com
+    name: API Support
+    url: sethukumarj.com
+  description: This is a sample server Job Portal server. You can visit the GitHub
+    repository at https://github.com/SethukumarJ/Events_Radar_Developement
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Go + Gin Radar API
+  version: "1.0"
 paths:
-  /api/users:
-    get:
-      description: Get all users
-      operationId: FindAll
+  /admin/approveevent:
+    patch:
+      operationId: approves event
+      parameters:
+      - description: 'Event Name : '
+        in: query
+        name: title
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/handler.Response'
-            type: array
-      security:
-      - ApiKeyAuth: []
-      summary: Get all users
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: approves the event for admin
       tags:
-      - users
+      - Admin
+  /admin/listEvents:
+    get:
+      operationId: list all upcoming events
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      - description: 'List event by approved non approved : '
+        in: query
+        name: approved
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all upcoming events for admin
+      tags:
+      - Admin
+  /admin/listUsers:
+    get:
+      operationId: list all active users
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all active users for admin
+      tags:
+      - Admin
+  /admin/login:
+    post:
+      operationId: Admin Login
+      parameters:
+      - description: 'admin email: '
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: 'user password: '
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Login for Admin
+      tags:
+      - Admin
+      - Admin
+  /admin/signup:
+    post:
+      operationId: SignUp authentication
+      parameters:
+      - description: admin signup with username, phonenumber email ,password
+        in: body
+        name: RegisterAdmin
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Admins'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: SignUp for Admin
+      tags:
+      - Admin
+      - Admin
+  /admin/token/refresh:
+    post:
+      operationId: Admin RefreshToken
+      parameters:
+      - description: 'token string: '
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Refresh token for admin
+      tags:
+      - Admin
+      - Admin
+  /admin/vipuser:
+    patch:
+      operationId: make vip user
+      parameters:
+      - description: 'User Name : '
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: makes the user vip
+      tags:
+      - Admin
+  /event/approved:
+    get:
+      operationId: list all approved events
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: string
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all approved upcoming events
+      tags:
+      - Event
+  /event/delete:
+    delete:
+      operationId: Delete event
+      parameters:
+      - description: 'Title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: delete event
+      tags:
+      - Event
+  /event/geteventbytitle:
+    delete:
+      operationId: Get event by id
+      parameters:
+      - description: 'Title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: delete event
+      tags:
+      - Event
+  /user/create:
+    post:
+      operationId: Create event
+      parameters:
+      - description: 'organizerName: '
+        in: header
+        name: userName
+        required: true
+        type: string
+      - description: Create event
+        in: body
+        name: CreateEvent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Events'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create event
+      tags:
+      - User
+  /user/signup:
+    post:
+      operationId: User Login
+      parameters:
+      - description: 'user email: '
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: 'user password: '
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Login for users
+      tags:
+      - User
+      - User
+  /user/token/refresh:
+    post:
+      operationId: User RefreshToken
+      parameters:
+      - description: 'token string: '
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Refresh token for users
+      tags:
+      - User
+      - User
+  /user/verify/account:
+    delete:
+      operationId: Verify account
+      parameters:
+      - description: 'Email: '
+        in: query
+        name: Email
+        required: true
+        type: string
+      - description: 'code: '
+        in: query
+        name: Code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Verify account
+      tags:
+      - User
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

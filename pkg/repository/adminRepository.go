@@ -180,7 +180,8 @@ func (c *adminRepository) AllUsers(pagenation utils.Filter) ([]domain.UserRespon
 				email,
 				phone_number,
 				vip,
-				profile
+				profile,
+				verification
 				FROM users
 				LIMIT $1 OFFSET $2;`
 
@@ -210,6 +211,7 @@ func (c *adminRepository) AllUsers(pagenation utils.Filter) ([]domain.UserRespon
 			&User.PhoneNumber,
 			&User.Vip,
 			&User.Profile,
+			&User.Verification,
 		)
 
 		fmt.Println("username", User.UserName)

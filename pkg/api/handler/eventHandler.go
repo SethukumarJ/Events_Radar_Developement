@@ -23,7 +23,14 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	}
 }
 
-
+// @Summary delete event
+// @ID Delete event
+// @Tags Event
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/delete [delete]
 func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 
 	title := c.Query("title")
@@ -41,6 +48,17 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+
+// @Summary update event
+// @ID Update event
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @param Updateevent body domain.Users{} true "update event with new body"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/update [patch]
 func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 	var updatedEvent domain.Events
@@ -72,12 +90,26 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 }
 
+
+// @Summary Create event
+// @ID Create event
+// @Tags User
+// @Produce json
+// @Param  userName   header  string  true  "organizerName: "
+// @param CreateEvent body domain.Events{} true "Create event"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/event/create [post]
+// Create events
 func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 	var newEvent domain.Events
+	
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
+	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+
 	fmt.Println("event id", newEvent.EventId)
 
 	//check event exit or not
@@ -102,6 +134,15 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 }
 
+
+// @Summary delete event
+// @ID Get event by id
+// @Tags Event
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/geteventbytitle [get]
 func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 	title := c.Query("title")
@@ -123,6 +164,16 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 }
 
+
+// @Summary list all approved upcoming events
+// @ID list all approved events
+// @Tags Event
+// @Produce json
+// @Param  page   query  string  true  "Page number: "
+// @Param  pagesize   query  string  true  "Page capacity : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/approved [get]
 func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

@@ -39,6 +39,10 @@ func (c *authUsecase) VerifyUser(email string, password string) error {
 		return errors.New("failed to login. check your credential")
 	}
 
+	if !user.Verification  {
+		return errors.New("failed to login. user not verified")
+	}
+
 	return nil
 }
 

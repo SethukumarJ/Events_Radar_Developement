@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
-	
+
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 )
 
@@ -20,7 +20,6 @@ type Middleware interface {
 type middleware struct {
 	jwtUsecase usecase.JWTUsecase
 }
-
 
 func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase) Middleware {
 	return &middleware{
@@ -40,8 +39,10 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 	return (func(c *gin.Context) {
 
 		//getting from header
-		autheader := c.Writer.Header().Get("Authorization")
-		bearerToken := strings.Split(autheader, " ")
+		autheader := c.Request.Header["Authorization"]
+		auth := strings.Join(autheader, " ")
+		bearerToken := strings.Split(auth, " ")
+		fmt.Printf("\n\ntocen : %v\n\n", autheader)
 
 		if len(bearerToken) != 2 {
 			err := errors.New("request does not contain an access token")
@@ -64,8 +65,8 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			return
 		}
 
-		user_email := fmt.Sprint(claims.UserName)
-		c.Writer.Header().Set("email", user_email)
+		userName := fmt.Sprint(claims.UserName)
+		c.Writer.Header().Set("userName", userName)
 		c.Next()
 
 	})

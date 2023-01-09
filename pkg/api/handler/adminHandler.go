@@ -31,7 +31,15 @@ func NewAdminHandler(
 	}
 }
 
-
+// @Summary makes the user vip
+// @ID make vip user
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  username   query  string  true  "User Name : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/vipuser [patch]
 func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
 	username := c.Query("username")
@@ -50,7 +58,15 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 
 }
 
-
+// @Summary approves the event for admin
+// @ID approves event
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  title   query  string  true  "Event Name : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/approveevent [patch]
 func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 	
 	title := c.Query("title")
@@ -70,7 +86,17 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 }
 
 
-
+// @Summary list all upcoming events for admin
+// @ID list all upcoming events
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  page   query  string  true  "Page number: "
+// @Param  pagesize   query  string  true  "Page capacity : "
+// @Param  approved   query  bool  true  "List event by approved non approved : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/listEvents [get]
 func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))
@@ -117,7 +143,16 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 }
 
 
-
+// @Summary list all active users for admin
+// @ID list all active users
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  page   query  string  true  "Page number: "
+// @Param  pagesize   query  string  true  "Page capacity : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/listUsers [get]
 func (cr *AdminHandler) ViewAllUsers(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

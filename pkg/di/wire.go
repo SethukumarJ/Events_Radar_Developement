@@ -20,7 +20,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 			repository.NewAdminRespository,
 			repository.NewEventRepository,
 			config.NewMailConfig,
-			usecase.NewJWTUserUsecase,
+			usecase.NewJWTUsecase,
 			usecase.NewAuthUsecase,
 			usecase.NewAdminUsecase,
 			usecase.NewEventUseCase,

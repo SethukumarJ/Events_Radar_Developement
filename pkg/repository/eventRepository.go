@@ -226,7 +226,19 @@ func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) 
 func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
 
-	query := `INSERT INTO events(
+	userName := event.OrganizerName
+		var vip string
+		query2 := `SELECT vip FROM users WHERE user_name = $1;`
+		query3 := `UPDATE events SET approved = $1 WHERE title = $2;`
+
+		err :=  c.db.QueryRow(query2, userName).Scan(&vip)
+		fmt.Println("vip",vip)
+		if err != nil {
+			return 0 , err
+		}
+		
+	
+query := `INSERT INTO events(
 								title,
 								organizer_name,
 								event_pic,
@@ -248,7 +260,7 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 								website_link)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19)
 								RETURNING event_id;`
 
-	err := c.db.QueryRow(query,
+	err = c.db.QueryRow(query,
 		event.Title,
 		event.OrganizerName,
 		event.EventPic,
@@ -268,6 +280,20 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 		event.ApplicationClosingDate,
 		event.ApplicationLink,
 		event.WebsiteLink).Scan(&id)
+
+		if vip == "true" {
+
+			err =  c.db.QueryRow(query3,true, event.Title).Err()
+			if err != nil {
+				return 0 , err
+			}
+	}
+	
+
+		if err != nil {
+			return id ,err
+		}
+
 
 	fmt.Println("id", id)
 	return id, err

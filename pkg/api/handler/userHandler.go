@@ -52,6 +52,15 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 // verifyAccount verifies the account
 
+// @Summary Verify account
+// @ID Verify account
+// @Tags User
+// @Produce json
+// @Param  Email   query  string  true  "Email: "
+// @Param  Code   query  string  true  "code: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/verify/account [delete]
 func (cr *UserHandler) VerifyAccount(c *gin.Context) {
 
 	email := c.Query("Email")

@@ -31,7 +31,13 @@ func NewAdminHandler(
 	}
 }
 
-
+// @Summary makes the user vip
+// @ID make vip user
+// @Tags Admin
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/vipuser [patch]
 func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
 	username := c.Query("username")
@@ -50,6 +56,13 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 
 }
 
+// @Summary approves the event for admin
+// @ID approves event
+// @Tags Admin
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/approveevent [patch]
 
 func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 	
@@ -70,6 +83,13 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 }
 
 
+// @Summary list all upcoming events for admin
+// @ID list all upcoming events
+// @Tags Admin
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/listEvents [get]
 
 func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
@@ -117,6 +137,13 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 }
 
 
+// @Summary list all active users for admin
+// @ID list all active users
+// @Tags Admin
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/listUsers [get]
 
 func (cr *AdminHandler) ViewAllUsers(c *gin.Context) {
 

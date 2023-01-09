@@ -35,8 +35,18 @@ func NewAuthHandler(
 	}
 }
 
+// @Summary SignUp for users
+// @ID SignUp authentication
+// @Tags User
+// @Produce json
+// @Tags User
+// @Param Body body CreateThing true "The body to create a thing"
+// @Param        username   path      string  true  "User Name : "
+// @Param        password   path      string  true  "Password : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/signup [post]
 // UserSignup handles the user signup
-
 func (cr *AuthHandler) UserSignup(c *gin.Context) {
 
 	var newUser domain.Users
@@ -88,7 +98,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 	//fetching user details
 	user, _ := cr.userUsecase.FindUser(userLogin.Email)
-	token := cr.jwtUsecase.GenerateToken(user.UserId, user.Email, "user")
+	token := cr.jwtUsecase.GenerateToken(user.UserId, user.UserName, "user")
 	user.Token = token
 	response := response.SuccessResponse(true, "SUCCESS", user.Token)
 	utils.ResponseJSON(*c, response)
@@ -100,9 +110,11 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 // user refresh token
 func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
-	autheader := ("Authorization")
-	bearerToken := strings.Split(autheader, " ")
-	token := bearerToken[1]
+	autheader := c.Request.Header["Authorization"]
+		auth := strings.Join(autheader, " ")
+		bearerToken := strings.Split(auth, " ")
+		fmt.Printf("\n\ntocen : %v\n\n", autheader)
+		token := bearerToken[1]
 
 	refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
 

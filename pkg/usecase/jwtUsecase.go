@@ -29,7 +29,7 @@ func (j *jwtUserUsecase) GenerateRefreshToken(accessToken string) (string, error
 		return "", errors.New("too early to generate refresh token")
 	}
 
-	claims.ExpiresAt = time.Now().Local().Add(time.Minute * time.Duration(5)).Unix()
+	claims.ExpiresAt = time.Now().Local().Add(time.Hour * time.Duration(24)).Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -49,7 +49,7 @@ func (j *jwtUserUsecase) GenerateToken(userid uint, username string, role string
 		UserName: username,
 		Role:     role,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Local().Add(time.Minute * time.Duration(2)).Unix(),
+			ExpiresAt: time.Now().Local().Add(time.Minute * time.Duration(24)).Unix(),
 		},
 	}
 

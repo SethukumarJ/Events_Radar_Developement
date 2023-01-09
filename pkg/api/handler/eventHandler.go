@@ -75,9 +75,12 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 	var newEvent domain.Events
+	
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
+	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+
 	fmt.Println("event id", newEvent.EventId)
 
 	//check event exit or not

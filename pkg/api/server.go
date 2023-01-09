@@ -38,6 +38,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.GET("/token/refresh", authHandler.UserRefreshToken)
+			user.POST("/createevent", eventHandler.CreateEvent)
 		}
 	}
 
@@ -62,7 +63,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		//userroutes
 		event := engine.Group("event")
 		{
-			event.POST("/createevent", eventHandler.CreateEvent)
+			
 			event.GET("/getApprovedEvents", eventHandler.ViewAllApprovedEvents)
 			event.GET("/getEventByTitle", eventHandler.GetEventByTitle)
 			event.PATCH("/updateEvent",eventHandler.UpdateEvent)

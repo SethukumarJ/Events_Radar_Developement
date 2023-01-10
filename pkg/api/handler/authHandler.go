@@ -105,9 +105,13 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 	//fetching user details
 	user, _ := cr.userUsecase.FindUser(userLogin.Email)
-	token := cr.jwtUsecase.GenerateToken(user.UserId, user.UserName, "user")
-	user.Token = token
-	response := response.SuccessResponse(true, "SUCCESS", user.Token)
+	accesstoken := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+	user.AccessToken = accesstoken
+	refreshtoken := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+	user.RefreshToken = refreshtoken
+
+	Tokens := map[string]string{"AccessToken":user.AccessToken,"RefreshToken":user.RefreshToken}
+	response := response.SuccessResponse(true, "SUCCESS", Tokens)
 	utils.ResponseJSON(*c, response)
 
 	fmt.Println("login function returned successfully")

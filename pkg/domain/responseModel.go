@@ -13,7 +13,8 @@ type UserResponse struct {
 	Vip          bool   `json:"vip" `
 	PhoneNumber  string `json:"phonenumber"`
 	Profile      string `json:"profile"`
-	Token        string `json:"token"`
+	AccessToken  string `json:"accesstoken"`
+	RefreshToken string `json:"refreshtoken"`
 }
 
 type AdminResponse struct {

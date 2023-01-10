@@ -273,11 +273,30 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 		return
 	}
 
+	
 	//fetching user details
 	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
-	token, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.Email, "admin")
-	admin.Token = token
-	response := response.SuccessResponse(true, "SUCCESS", admin.Token)
+	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.AdminName, "admin")
+	if err != nil {
+		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	admin.AccessToken = accesstoken
+	refreshtoken, err := cr.jwtUsecase.GenerateRefreshToken(admin.AdminId, admin.AdminName, "admin")
+	if err != nil {
+		response := response.ErrorResponse("Failed to generate refresh token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	admin.RefreshToken = refreshtoken
+
+	Tokens := map[string]string{"AccessToken": admin.AccessToken, "RefreshToken": admin.RefreshToken}
+	response := response.SuccessResponse(true, "SUCCESS", Tokens)
 	utils.ResponseJSON(*c, response)
 
 	fmt.Println("login function returned successfully")

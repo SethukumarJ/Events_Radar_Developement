@@ -72,14 +72,14 @@ func NewEventUseCase(
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
 	fmt.Println("create event from service")
-	_, err := c.eventRepo.FindEvent(event.Title)
-	fmt.Println("found event", err)
+	events, err := c.eventRepo.FindEvent(event.Title)
+	fmt.Println("found event", events.Title)
 
 	if err == nil {
 		return errors.New("eventtitle already exists")
 	}
 
-	if err != nil && err != sql.ErrNoRows {
+	if err == nil && err != sql.ErrNoRows {
 		return err
 	}
 

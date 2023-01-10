@@ -433,11 +433,6 @@ paths:
     post:
       operationId: Create event
       parameters:
-      - description: 'organizerName: '
-        in: header
-        name: userName
-        required: true
-        type: string
       - description: Create event
         in: body
         name: CreateEvent
@@ -455,6 +450,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: Create event
       tags:
       - User
@@ -510,12 +507,6 @@ paths:
   /user/token/refresh:
     post:
       operationId: User RefreshToken
-      parameters:
-      - description: 'token string: '
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:

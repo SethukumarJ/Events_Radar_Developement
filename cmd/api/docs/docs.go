@@ -485,6 +485,11 @@ const docTemplate = `{
         },
         "/user/event/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -494,13 +499,6 @@ const docTemplate = `{
                 "summary": "Create event",
                 "operationId": "Create event",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "organizerName: ",
-                        "name": "userName",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Create event",
                         "name": "CreateEvent",
@@ -618,15 +616,6 @@ const docTemplate = `{
                 ],
                 "summary": "Refresh token for users",
                 "operationId": "User RefreshToken",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token string: ",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

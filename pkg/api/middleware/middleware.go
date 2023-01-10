@@ -55,15 +55,23 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 
 		authtoken := bearerToken[1]
 		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
+		source := fmt.Sprint(claims.Source)
 
-		if !ok {
-			err := errors.New("your token is not valid")
-			response := response.ErrorResponse("Error", err.Error(), nil)
+		if !ok && source == "accesstoken"{
+			err := errors.New("your access token is not valid")
+			response := response.ErrorResponse("Error", err.Error(), source)
 			c.Writer.Header().Add("Content-Type", "application/json")
 			c.Writer.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseJSON(*c, response)
 			return
-		}
+		} else if !ok && source == "refreshtoken" {
+			err := errors.New("your refresh token is not valid")
+			response := response.ErrorResponse("Error", err.Error(), source)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			return
+		} 
 
 		userName := fmt.Sprint(claims.UserName)
 		c.Writer.Header().Set("userName", userName)

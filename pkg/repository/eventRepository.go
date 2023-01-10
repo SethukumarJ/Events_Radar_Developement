@@ -21,8 +21,8 @@ func (c *eventRepository) DeleteEvent(title string) error {
 	var id int
 	query := `DELETE FROM events WHERE title = $1 RETURNING event_id;`
 
-	err := c.db.QueryRow(query,title).Scan(&id)
-	fmt.Println("id deleted:",id)
+	err := c.db.QueryRow(query, title).Scan(&id)
+	fmt.Println("id deleted:", id)
 	if err != nil {
 		return err
 	}
@@ -169,33 +169,33 @@ func NewEventRepository(db *sql.DB) interfaces.EventRepository {
 }
 
 // FindUser implements interfaces.UserRepository
-func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) {
-
+func (c *eventRepository) FindEvent(title string) (domain.EventResponse, error) {
 	var event domain.EventResponse
 
-	query := `SELECT event_id,
-					title,
-					organizer_name,
-					event_pic,
-					short_discription,
-					long_discription,
-					event_date,
-					location,
-					created_at,
-					approved,
-					paid,
-					sex,
-					cusat_only,
-					archived,
-					sub_events,
-					online,
-					max_applications,
-					application_closing_date,
-					application_link,
-					website_link FROM events 
+	query := `SELECT eventid
+	title
+	organizername
+	eventpic
+	shortdiscription
+	longdiscription
+	eventdate
+	location
+	createdat
+	approved
+	paid
+	sex
+	cusatonly
+	archived
+	subevents
+	online
+	maxapplications
+	applicationclosingdate
+	applicationlink
+	websitelink FROM events 
 					WHERE title = $1;`
 
-	err := c.db.QueryRow(query, email).Scan(
+	err := c.db.QueryRow(query, title).Scan(
+
 		&event.EventId,
 		&event.Title,
 		&event.OrganizerName,
@@ -218,7 +218,7 @@ func (c *eventRepository) FindEvent(email string) (domain.EventResponse, error) 
 		&event.WebsiteLink,
 	)
 
-	fmt.Println("event from find event :", event)
+	fmt.Println("event from find evnet :", event)
 	return event, err
 }
 
@@ -227,19 +227,18 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
 
 	userName := event.OrganizerName
-		var vip string
-		query2 := `SELECT vip FROM users WHERE user_name = $1;`
-		query3 := `UPDATE events SET approved = $1 WHERE title = $2;`
+	fmt.Println(userName,"////////////////////////////////////form create event repository")
+	var vip string
+	query2 := `SELECT vip FROM users WHERE user_name = $1;`
+	query3 := `UPDATE events SET approved = $1 WHERE title = $2;`
 
-		err :=  c.db.QueryRow(query2, userName).Scan(&vip)
-		fmt.Println("vip",vip)
-		if err != nil {
-			return 0 , err
-		}
-		
-	
-query := `INSERT INTO events(
-								title,
+	err := c.db.QueryRow(query2, userName).Scan(&vip)
+	fmt.Println("vip", vip)
+	if err != nil {
+		return 0, err
+	}
+
+	query := `INSERT INTO events(title,
 								organizer_name,
 								event_pic,
 								short_discription,
@@ -261,39 +260,39 @@ query := `INSERT INTO events(
 								RETURNING event_id;`
 
 	err = c.db.QueryRow(query,
-		event.Title,
-		event.OrganizerName,
-		event.EventPic,
-		event.ShortDiscription,
-		event.LongDiscription,
-		event.EventDate,
-		event.Location,
-		event.CreatedAt,
-		event.Approved,
-		event.Paid,
-		event.Sex,
-		event.CusatOnly,
-		event.Archived,
-		event.SubEvents,
-		event.Online,
-		event.MaxApplications,
-		event.ApplicationClosingDate,
-		event.ApplicationLink,
-		event.WebsiteLink).Scan(&id)
+						event.Title,
+						userName,
+						event.EventPic,
+						event.ShortDiscription,
+						event.LongDiscription,
+						event.EventDate,
+						event.Location,
+						event.CreatedAt,
+						event.Approved,
+						event.Paid,
+						event.Sex,
+						event.CusatOnly,
+						event.Archived,
+						event.SubEvents,
+						event.Online,
+						event.MaxApplications,
+						event.ApplicationClosingDate,
+						event.ApplicationLink,
+						event.WebsiteLink).Scan(&id)
 
-		if vip == "true" {
+	fmt.Println(event.Title, "from repository event title")
 
-			err =  c.db.QueryRow(query3,true, event.Title).Err()
-			if err != nil {
-				return 0 , err
-			}
-	}
-	
+	if vip == "true" {
 
+		err = c.db.QueryRow(query3, true, event.Title).Err()
 		if err != nil {
-			return id ,err
+			return 0, err
 		}
+	}
 
+	if err != nil {
+		return id, err
+	}
 
 	fmt.Println("id", id)
 	return id, err

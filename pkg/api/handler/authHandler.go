@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -14,10 +15,10 @@ import (
 )
 
 type AuthHandler struct {
-	jwtUsecase usecase.JWTUsecase
-	authUsecase    usecase.AuthUsecase
+	jwtUsecase   usecase.JWTUsecase
+	authUsecase  usecase.AuthUsecase
 	adminUsecase usecase.AdminUsecase
-	userUsecase    usecase.UserUseCase
+	userUsecase  usecase.UserUseCase
 }
 
 func NewAuthHandler(
@@ -28,15 +29,44 @@ func NewAuthHandler(
 
 ) AuthHandler {
 	return AuthHandler{
-		jwtUsecase: jwtUsecase,
-		authUsecase:    authUsecase,
-		userUsecase:    userUsecase,
-		adminUsecase:   adminUsecase,
+		jwtUsecase:   jwtUsecase,
+		authUsecase:  authUsecase,
+		userUsecase:  userUsecase,
+		adminUsecase: adminUsecase,
 	}
 }
 
+// verifyAccount verifies the account
+
+// @Summary Verify account
+// @ID Verify account
+// @Tags User
+// @Produce json
+// @Param  Email   query  string  true  "Email: "
+// @Param  Code   query  string  true  "code: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/verify/account [delete]
+func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
+	email := c.Query("email")
+	code,_ := strconv.Atoi(c.Query("code"))
+	err:= cr.authUsecase.VerifyAccount(email, code)
+
+	if err != nil {
+		response := response.ErrorResponse("Verification failed, Invalid OTP", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	
+	response := response.SuccessResponse(true, "Account verified successfully", email)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary SignUp for users
-// @ID User SignUp 
+// @ID User SignUp
 // @Tags User
 // @Produce json
 // @param RegisterUser body domain.Users{} true "user signup with username, phonenumber email ,password"
@@ -50,7 +80,6 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	fmt.Println("user signup")
 	//fetching data
 	c.Bind(&newUser)
-	fmt.Println("userid",newUser.UserId)
 
 	//check username exit or not
 
@@ -77,7 +106,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 // UserLogin handles the user login
 
 // @Summary Login for users
-// @ID User Login 
+// @ID User Login
 // @Tags User
 // @Produce json
 // @Tags User
@@ -91,7 +120,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 	var userLogin domain.Users
 
 	c.Bind(&userLogin)
-	fmt.Println("userLOgin",userLogin.Password)
+	fmt.Println("userLOgin", userLogin.Password)
 	//verify User details
 	err := cr.authUsecase.VerifyUser(userLogin.Email, userLogin.Password)
 
@@ -105,12 +134,26 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 	//fetching user details
 	user, _ := cr.userUsecase.FindUser(userLogin.Email)
-	accesstoken := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+	if err != nil {
+		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 	user.AccessToken = accesstoken
-	refreshtoken := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+	refreshtoken, err := cr.jwtUsecase.GenerateRefreshToken(user.UserId, user.UserName, "user")
+	if err != nil {
+		response := response.ErrorResponse("Failed to generate refresh token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnauthorized)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 	user.RefreshToken = refreshtoken
 
-	Tokens := map[string]string{"AccessToken":user.AccessToken,"RefreshToken":user.RefreshToken}
+	Tokens := map[string]string{"AccessToken": user.AccessToken, "RefreshToken": user.RefreshToken}
 	response := response.SuccessResponse(true, "SUCCESS", Tokens)
 	utils.ResponseJSON(*c, response)
 
@@ -121,12 +164,11 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 // user refresh token
 
 // @Summary Refresh token for users
-// @ID User RefreshToken 
+// @ID User RefreshToken
 // @Tags User
 // @Produce json
 // @Tags User
 // @Security BearerAuth
-// @Param  Authorization   header  string  true  "token string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/token/refresh [post]
@@ -134,12 +176,17 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
 	autheader := c.Request.Header["Authorization"]
-		auth := strings.Join(autheader, " ")
-		bearerToken := strings.Split(auth, " ")
-		fmt.Printf("\n\ntocen : %v\n\n", autheader)
-		token := bearerToken[1]
+	auth := strings.Join(autheader, " ")
+	bearerToken := strings.Split(auth, " ")
+	fmt.Printf("\n\ntocen : %v\n\n", autheader)
+	token := bearerToken[1]
+	ok, claims := cr.jwtUsecase.VerifyToken(token)
+	if !ok {
+		log.Fatal("referesh token not valid")
+	}
 
-	refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
+	fmt.Println("//////////////////////////////////",claims.UserName)
+	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(claims.UserId, claims.UserName, claims.Role)
 
 	if err != nil {
 		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
@@ -149,16 +196,12 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "SUCCESS", refreshToken)
+	response := response.SuccessResponse(true, "SUCCESS", accesstoken)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
 
 }
-
-//Adminsiginup handles the user signup
-
-
 
 // UserSignup handles the admin signup
 // @Summary SignUp for Admin
@@ -203,7 +246,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 // UserLogin handles the user login
 
 // @Summary Login for Admin
-// @ID Admin Login 
+// @ID Admin Login
 // @Tags Admin
 // @Produce json
 // @Tags Admin
@@ -218,7 +261,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 	var adminLogin domain.Admins
 
 	c.Bind(&adminLogin)
-	fmt.Println("adminLoginpassword",adminLogin.Password)
+	fmt.Println("adminLoginpassword", adminLogin.Password)
 	//verify User details
 	err := cr.authUsecase.VerifyAdmin(adminLogin.Email, adminLogin.Password)
 
@@ -232,7 +275,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 
 	//fetching user details
 	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
-	token := cr.jwtUsecase.GenerateToken(admin.AdminId, admin.Email, "admin")
+	token, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.Email, "admin")
 	admin.Token = token
 	response := response.SuccessResponse(true, "SUCCESS", admin.Token)
 	utils.ResponseJSON(*c, response)
@@ -243,7 +286,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 
 // user refresh token
 // @Summary Refresh token for admin
-// @ID Admin RefreshToken 
+// @ID Admin RefreshToken
 // @Tags Admin
 // @Produce json
 // @Tags Admin
@@ -254,23 +297,23 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 // @Router /admin/token/refresh [post]
 func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 
-	autheader := ("Authorization")
-	bearerToken := strings.Split(autheader, " ")
-	token := bearerToken[1]
+	// autheader := ("Authorization")
+	// bearerToken := strings.Split(autheader, " ")
+	// token := bearerToken[1]
 
-	refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
+	// // refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
 
-	if err != nil {
-		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-		utils.ResponseJSON(*c, response)
-		return
-	}
+	// // if err != nil {
+	// // 	response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
+	// // 	c.Writer.Header().Add("Content-Type", "application/json")
+	// // 	c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+	// // 	utils.ResponseJSON(*c, response)
+	// // 	return
+	// // }
 
-	response := response.SuccessResponse(true, "SUCCESS", refreshToken)
-	c.Writer.Header().Add("Content-Type", "application/json")
-	c.Writer.WriteHeader(http.StatusOK)
-	utils.ResponseJSON(*c, response)
+	// // response := response.SuccessResponse(true, "SUCCESS", refreshToken)
+	// // c.Writer.Header().Add("Content-Type", "application/json")
+	// // c.Writer.WriteHeader(http.StatusOK)
+	// // utils.ResponseJSON(*c, response)
 
 }

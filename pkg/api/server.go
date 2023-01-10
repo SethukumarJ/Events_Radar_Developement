@@ -31,14 +31,13 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	user := engine.Group("user")
 	{
 		user.POST("/signup", authHandler.UserSignup)
-		user.PATCH("/verify/account", userHandler.VerifyAccount)
 		user.POST("/login", authHandler.UserLogin)
+		// user.PATCH("/verify/account",authHandler.verifyAccount)
 
 		user.Use(middleware.AuthorizeJwt())
 		{
-			user.GET("/token/refresh", authHandler.UserRefreshToken)
+			user.POST("/token/refresh", authHandler.UserRefreshToken)
 			user.POST("/event/create", eventHandler.CreateEvent)
-			
 			user.POST("/send/verification", userHandler.SendVerificationMail)
 		}
 	}

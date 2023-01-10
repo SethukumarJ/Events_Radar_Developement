@@ -95,7 +95,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @ID Create event
 // @Tags User
 // @Produce json
-// @Param  userName   header  string  true  "organizerName: "
+// @Security BearerAuth
 // @param CreateEvent body domain.Events{} true "Create event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -110,7 +110,7 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 	c.Bind(&newEvent)
 	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 
-	fmt.Println("event id", newEvent.EventId)
+	fmt.Println("event", newEvent)
 
 	//check event exit or not
 

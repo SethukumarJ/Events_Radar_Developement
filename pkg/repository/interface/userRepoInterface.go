@@ -8,7 +8,6 @@ import (
 type UserRepository interface {
 	FindUser(email string) (domain.UserResponse, error)
 	InsertUser(user domain.Users) (int, error)
-
 	StoreVerificationDetails(email string, code int) error
-	VerifyAccount(email string, code int) error
+	VerifyAccount(email string, code int) (error)
 }

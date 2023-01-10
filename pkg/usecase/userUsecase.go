@@ -58,7 +58,7 @@ func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 }
 
 // SendVerificationEmail implements interfaces.UserUseCase
-func (c *userUseCase) SendVerificationEmail(email string) error {
+func (c *userUseCase) SendVerificationEmail(email string) (error) {
 	//to generate random code
 	rand.Seed(time.Now().UnixNano())
 	code := rand.Intn(100000)
@@ -85,15 +85,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 	return nil
 }
 
-// VerifyAccount implements interfaces.UserUseCase
-func (c *userUseCase) VerifyAccount(email string, code int) error {
-	err := c.userRepo.VerifyAccount(email, code)
 
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 func NewUserUseCase(
 	userRepo interfaces.UserRepository,

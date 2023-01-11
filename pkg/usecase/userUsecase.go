@@ -22,21 +22,21 @@ type userUseCase struct {
 	config     config.Config
 }
 
-// UpdateProfile implements interfaces.UserUseCase
-func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
-	fmt.Println("update event from service")
-	_, err := c.userRepo.FindUser(username)
-	fmt.Println("found user", err)
-
-	if err == nil {
-		log.Printf("found user")
-	}
-
-	if err != nil && err != sql.ErrNoRows {
+// UpdatePassword implements interfaces.UserUseCase
+func (c *userUseCase) UpdatePassword(user domain.Users, email string) error {
+	_, err := c.userRepo.UpdatePassword(user, email)
+	if err != nil {
 		return err
 	}
+	return nil
+}
 
-	_, err = c.userRepo.UpdateProfile(user, username)
+// UpdateProfile implements interfaces.UserUseCase
+func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
+	fmt.Println("update user from service")
+	
+
+	_, err := c.userRepo.UpdateProfile(user, username)
 	if err != nil {
 		return err
 	}
@@ -105,7 +105,6 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 
 	return nil
 }
-
 
 // HashPassword hashes the password
 func HashPassword(password string) string {

@@ -65,6 +65,45 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 }
 
+// @Summary update password
+// @ID Update password
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @param Updateevent body domain.Users{} true "update password with new body"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/update [patch]
+func (cr *UserHandler) UpdatePassword(c *gin.Context) {
+
+	var updatedPassword domain.Users
+	fmt.Println("Updating event")
+	//fetching data
+	c.Bind(&updatedPassword)
+	fmt.Println("userPassword", updatedPassword.UserName)
+	email := c.Query("email")
+
+	//check event exit or not
+
+	err := cr.userUseCase.UpdatePassword(updatedPassword, email)
+
+	fmt.Println(updatedPassword.Password)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Update Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	user, _ := cr.userUseCase.FindUser(email)
+	response := response.SuccessResponse(true, "SUCCESS", user)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
 
 
 // SendVerificationEmail sends the verification email

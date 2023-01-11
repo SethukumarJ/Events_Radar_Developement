@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -27,7 +26,8 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 	email := c.Query("Email")
-
+	var code int
+	fmt.Println(code)
 	_, err := cr.userUseCase.FindUser(email)
 	fmt.Println("email: ", email)
 	fmt.Println("err: ", err)
@@ -46,36 +46,6 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 		return
 	}
 	response := response.SuccessResponse(true, "Verification mail sent successfully", email)
-	utils.ResponseJSON(*c, response)
-
-}
-
-// verifyAccount verifies the account
-
-// @Summary Verify account
-// @ID Verify account
-// @Tags User
-// @Produce json
-// @Param  Email   query  string  true  "Email: "
-// @Param  Code   query  string  true  "code: "
-// @Success 200 {object} response.Response{}
-// @Failure 422 {object} response.Response{}
-// @Router /user/verify/account [delete]
-func (cr *UserHandler) VerifyAccount(c *gin.Context) {
-
-	email := c.Query("Email")
-	code, _ := strconv.Atoi(c.Query("Code"))
-
-	err := cr.userUseCase.VerifyAccount(email, code)
-
-	if err != nil {
-		response := response.ErrorResponse("Verification failed, Invalid OTP", err.Error(), nil)
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Writer.WriteHeader(http.StatusBadRequest)
-		utils.ResponseJSON(*c, response)
-		return
-	}
-	response := response.SuccessResponse(true, "Account verified successfully", email)
 	utils.ResponseJSON(*c, response)
 
 }

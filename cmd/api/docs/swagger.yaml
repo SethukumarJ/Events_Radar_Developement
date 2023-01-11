@@ -156,6 +156,32 @@ paths:
       summary: approves the event for admin
       tags:
       - Admin
+  /admin/event/create:
+    post:
+      operationId: Create event from admin
+      parameters:
+      - description: Create event
+        in: body
+        name: CreateEvent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Events'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create event
+      tags:
+      - Admin
   /admin/listEvents:
     get:
       operationId: list all upcoming events
@@ -225,16 +251,12 @@ paths:
     post:
       operationId: Admin Login
       parameters:
-      - description: 'admin email: '
-        in: path
-        name: email
+      - description: 'adminlogin: '
+        in: body
+        name: AdminLogin
         required: true
-        type: string
-      - description: 'admin password: '
-        in: path
-        name: password
-        required: true
-        type: string
+        schema:
+          $ref: '#/definitions/domain.Admins'
       produces:
       - application/json
       responses:
@@ -431,13 +453,8 @@ paths:
       - User
   /user/event/create:
     post:
-      operationId: Create event
+      operationId: Create event from user
       parameters:
-      - description: 'organizerName: '
-        in: header
-        name: userName
-        required: true
-        type: string
       - description: Create event
         in: body
         name: CreateEvent
@@ -455,6 +472,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: Create event
       tags:
       - User
@@ -510,12 +529,6 @@ paths:
   /user/token/refresh:
     post:
       operationId: User RefreshToken
-      parameters:
-      - description: 'token string: '
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:

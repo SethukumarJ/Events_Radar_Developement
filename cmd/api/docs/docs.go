@@ -64,6 +64,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/event/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create event",
+                "operationId": "Create event from admin",
+                "parameters": [
+                    {
+                        "description": "Create event",
+                        "name": "CreateEvent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Events"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/listEvents": {
             "get": {
                 "security": [
@@ -178,18 +220,13 @@ const docTemplate = `{
                 "operationId": "Admin Login",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "admin email: ",
-                        "name": "email",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "admin password: ",
-                        "name": "password",
-                        "in": "path",
-                        "required": true
+                        "description": "adminlogin: ",
+                        "name": "AdminLogin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Admins"
+                        }
                     }
                 ],
                 "responses": {
@@ -485,6 +522,11 @@ const docTemplate = `{
         },
         "/user/event/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -492,15 +534,8 @@ const docTemplate = `{
                     "User"
                 ],
                 "summary": "Create event",
-                "operationId": "Create event",
+                "operationId": "Create event from user",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "organizerName: ",
-                        "name": "userName",
-                        "in": "header",
-                        "required": true
-                    },
                     {
                         "description": "Create event",
                         "name": "CreateEvent",
@@ -618,15 +653,6 @@ const docTemplate = `{
                 ],
                 "summary": "Refresh token for users",
                 "operationId": "User RefreshToken",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token string: ",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

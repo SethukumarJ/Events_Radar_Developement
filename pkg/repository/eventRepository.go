@@ -15,6 +15,17 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+// FindUser implements interfaces.EventRepository
+func (c *eventRepository) FindUser(username string) (string ,error){
+	query := `SELECT vip FROM users WHERE user_name = $1;`
+	var vip string
+	err := c.db.QueryRow(query,username).Scan(&vip)
+	if err != nil {
+		return "", err
+	}
+	return vip, nil
+}
+
 // DeleteEvent implements interfaces.EventRepository
 func (c *eventRepository) DeleteEvent(title string) error {
 
@@ -160,17 +171,11 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.E
 	return events, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 }
 
-func NewEventRepository(db *sql.DB) interfaces.EventRepository {
-	return &eventRepository{
-		db: db,
-	}
-}
-
 // FindUser implements interfaces.UserRepository
 func (c *eventRepository) FindEvent(title string) (domain.EventResponse, error) {
 	var event domain.EventResponse
 
-	query := `SELECT event_id
+	query := `SELECT event_id,
 	title,
 	organizer_name,
 	event_pic,
@@ -225,16 +230,6 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
 
 	userName := event.OrganizerName
-	fmt.Println(userName,"////////////////////////////////////form create event repository")
-	var vip string
-	query2 := `SELECT vip FROM users WHERE user_name = $1;`
-	query3 := `UPDATE events SET approved = $1 WHERE title = $2;`
-
-	err := c.db.QueryRow(query2, userName).Scan(&vip)
-	fmt.Println("vip", vip)
-	if err != nil {
-		return 0, err
-	}
 
 	query := `INSERT INTO events(title,organizer_name,
 								event_pic,
@@ -256,40 +251,37 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 								website_link)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19)
 								RETURNING event_id;`
 
-	err = c.db.QueryRow(query,event.Title,
-						userName,
-						event.EventPic,
-						event.ShortDiscription,
-						event.LongDiscription,
-						event.EventDate,
-						event.Location,
-						event.CreatedAt,
-						event.Approved,
-						event.Paid,
-						event.Sex,
-						event.CusatOnly,
-						event.Archived,
-						event.SubEvents,
-						event.Online,
-						event.MaxApplications,
-						event.ApplicationClosingDate,
-						event.ApplicationLink,
-						event.WebsiteLink).Scan(&id)
+	err := c.db.QueryRow(query, event.Title,
+		userName,
+		event.EventPic,
+		event.ShortDiscription,
+		event.LongDiscription,
+		event.EventDate,
+		event.Location,
+		event.CreatedAt,
+		event.Approved,
+		event.Paid,
+		event.Sex,
+		event.CusatOnly,
+		event.Archived,
+		event.SubEvents,
+		event.Online,
+		event.MaxApplications,
+		event.ApplicationClosingDate,
+		event.ApplicationLink,
+		event.WebsiteLink).Scan(&id)
 
 	fmt.Println(event.Title, "from repository event title")
-
-	if vip == "true" {
-
-		err = c.db.QueryRow(query3, true, event.Title).Err()
-		if err != nil {
-			return 0, err
-		}
-	}
-
 	if err != nil {
 		return id, err
 	}
 
 	fmt.Println("id", id)
 	return id, err
+}
+
+func NewEventRepository(db *sql.DB) interfaces.EventRepository {
+	return &eventRepository{
+		db: db,
+	}
 }

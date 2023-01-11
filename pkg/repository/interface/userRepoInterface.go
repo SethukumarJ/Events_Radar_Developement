@@ -10,5 +10,5 @@ type UserRepository interface {
 	UpdateProfile(user domain.Bios,username string) (int, error)
 	InsertUser(user domain.Users) (int, error)
 	StoreVerificationDetails(email string, code int) error
-	VerifyAccount(email string, code int) (error)
+	VerifyAccount(email string, code string) (error)
 }

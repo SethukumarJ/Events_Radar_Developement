@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -43,14 +42,14 @@ func NewAuthHandler(
 // @Tags User
 // @Produce json
 // @Param  Email   query  string  true  "Email: "
-// @Param  Code   query  string  true  "code: "
+// @Param  code   query  string  true  "code: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/verify/account [patch]
 func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
-	email := c.Query("email")
-	code,_ := strconv.Atoi(c.Query("code"))
-	err:= cr.authUsecase.VerifyAccount(email, code)
+	email := c.Query("Email")
+	code := c.Query("code")
+	err := cr.authUsecase.VerifyAccount(email, code)
 
 	if err != nil {
 		response := response.ErrorResponse("Verification failed, Invalid OTP", err.Error(), nil)
@@ -59,7 +58,7 @@ func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	
+
 	response := response.SuccessResponse(true, "Account verified successfully", email)
 	utils.ResponseJSON(*c, response)
 
@@ -185,7 +184,7 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 		log.Fatal("referesh token not valid")
 	}
 
-	fmt.Println("//////////////////////////////////",claims.UserName)
+	fmt.Println("//////////////////////////////////", claims.UserName)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(claims.UserId, claims.UserName, claims.Role)
 
 	if err != nil {
@@ -272,7 +271,6 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 		return
 	}
 
-	
 	//fetching user details
 	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.AdminName, "admin")
@@ -325,7 +323,7 @@ func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 		log.Fatal("referesh token not valid")
 	}
 
-	fmt.Println("//////////////////////////////////",claims.UserName)
+	fmt.Println("//////////////////////////////////", claims.UserName)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(claims.UserId, claims.UserName, claims.Role)
 
 	if err != nil {

@@ -21,6 +21,33 @@ definitions:
     - email
     - password
     type: object
+  domain.Bios:
+    properties:
+      about:
+        type: string
+      bioid:
+        type: integer
+      devfolio:
+        type: string
+      githublink:
+        type: string
+      linkedin:
+        type: string
+      qualification:
+        type: string
+      skills:
+        type: string
+      twitterlink:
+        type: string
+      username:
+        maxLength: 50
+        minLength: 2
+        type: string
+      websitelink:
+        type: string
+    required:
+    - username
+    type: object
   domain.Events:
     properties:
       applicationclosingdate:
@@ -502,6 +529,29 @@ paths:
       tags:
       - User
       - User
+  /user/send/verification:
+    post:
+      operationId: Send verifiation code via email
+      parameters:
+      - description: 'Email: '
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Send verification
+      tags:
+      - User
   /user/signup:
     post:
       operationId: User SignUp
@@ -546,6 +596,32 @@ paths:
       tags:
       - User
       - User
+  /user/update/profile:
+    patch:
+      operationId: Update userprofile
+      parameters:
+      - description: update profile with new body
+        in: body
+        name: UpdateProfile
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Bios'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: update Profileabout
+      tags:
+      - User
   /user/verify/account:
     patch:
       operationId: Verify account
@@ -557,7 +633,7 @@ paths:
         type: string
       - description: 'code: '
         in: query
-        name: Code
+        name: code
         required: true
         type: string
       produces:

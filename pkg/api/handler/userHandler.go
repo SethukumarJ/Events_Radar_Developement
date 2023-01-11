@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -23,7 +24,6 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
-
 // @Summary update Profileabout
 // @ID Update userprofile
 // @Tags User
@@ -39,18 +39,18 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 	fmt.Println("Updating event")
 	//fetching data
 	c.Bind(&updatedProfile)
-	fmt.Println("event id", updatedProfile.UserName)
 
 	username := c.Writer.Header().Get("userName")
-
+	fmt.Println("username ", username)
 
 	//check event exit or not
 
 	err := cr.userUseCase.UpdateProfile(updatedProfile, username)
+	fmt.Println("error on updaed profile", err)
 
 	log.Println(updatedProfile)
 
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		response := response.ErrorResponse("Failed to Update Profile", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
@@ -67,7 +67,6 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 
 // SendVerificationEmail sends the verification email
 
-
 // @Summary Send verification
 // @ID Send verifiation code via email
 // @Tags User
@@ -78,7 +77,7 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 // @Router /user/send/verification [post]
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
-	email := c.Query("Email")
+	email := c.Query("email")
 	var code int
 	fmt.Println(code)
 	_, err := cr.userUseCase.FindUser(email)

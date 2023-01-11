@@ -26,7 +26,7 @@ func NewAuthUsecase(
 }
 
 // VerifyAccount implements interfaces.UserUseCase
-func (c *authUsecase) VerifyAccount(email string, code int) (error) {
+func (c *authUsecase) VerifyAccount(email string, code string) (error) {
 	err  := c.userRepo.VerifyAccount(email, code)
 
 	if err != nil {

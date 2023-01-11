@@ -50,6 +50,8 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			c.Writer.Header().Add("Content-Type", "application/json")
 			c.Writer.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseJSON(*c, response)
+			c.Abort()
+
 			return
 		}
 
@@ -63,6 +65,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			c.Writer.Header().Add("Content-Type", "application/json")
 			c.Writer.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseJSON(*c, response)
+			c.Abort()
 			return
 		} else if !ok && source == "refreshtoken" {
 			err := errors.New("your refresh token is not valid")
@@ -70,6 +73,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			c.Writer.Header().Add("Content-Type", "application/json")
 			c.Writer.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseJSON(*c, response)
+			c.Abort()
 			return
 		} 
 

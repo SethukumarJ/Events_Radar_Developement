@@ -19,19 +19,21 @@ func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (in
 	var id int
 	query := `UPDATE bios SET 
 							about=$1,
-							twitter_link=$2,
-							github_link=$3,
-							linked_in=$4,
-							skills=$5,
-							qualification=$,
-							devfolio=$,6
-							website_link=$7 WHERE user_name = $8;`
+							twitter = $2,
+							github = $3,
+							linked_in = $4,
+							skills =$5,
+							qualification=$6,
+							dev_folio=$7,
+							website_link=$8 WHERE user_name = $9;`
 	err := c.db.QueryRow(query, profile.About,
 		profile.Twitter,
 		profile.Github,
-		profile.Github,
+		profile.LinkedIn,
+		profile.Skills,
 		profile.Qualification,
-		profile.WebsiteLink).Scan(&id)
+		profile.DevFolio,
+		profile.WebsiteLink,username).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err
@@ -80,6 +82,9 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 		user.Password,
 		user.Profile).Scan(&id)
 
+		query2 := `INSERT INTO bios(user_name)VALUES($1);`
+		c.db.QueryRow(query2,user.UserName)
+
 	fmt.Println("id", id)
 	return id, err
 }
@@ -95,17 +100,25 @@ func (u *userRepository) StoreVerificationDetails(email string, code int) error 
 }
 
 // VerifyAccount implements interfaces.UserRepository
-func (c *userRepository) VerifyAccount(email string, code int) error {
+func (c *userRepository) VerifyAccount(email string, code string) error {
 	var useremail string
 
 	query := `SELECT email FROM verifications 
 			  WHERE email = $1 AND code = $2;`
+	 query3 := `DELETE FROM verifications WHERE email = $1;`
 	err := c.db.QueryRow(query, email, code).Scan(&useremail)
 
 	fmt.Println("useremail", useremail)
 
 	if err == sql.ErrNoRows {
+		err = c.db.QueryRow(query3, email).Err()
+		fmt.Println("deleting the verification code.")
+		if err != nil {
+			return err
+		}
+
 		return errors.New("invalid verification code/Email")
+		
 	}
 
 	if err != nil {
@@ -120,7 +133,7 @@ func (c *userRepository) VerifyAccount(email string, code int) error {
 		return err
 	}
 
-	query3 := `DELETE FROM verifications WHERE email = $1;`
+	
 
 	err = c.db.QueryRow(query3, email).Err()
 	fmt.Println("deleting the verification code.")

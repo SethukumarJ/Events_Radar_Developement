@@ -31,7 +31,7 @@ type Bios struct {
 
 type Verification struct {
 	Email string `json:"email" validate:"email"`
-	Code  int    `json:"code"`
+	Code  string `json:"code"`
 }
 
 type Admins struct {

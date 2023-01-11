@@ -23,20 +23,30 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+
+// @Summary update Profileabout
+// @ID Update userprofile
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param UpdateProfile body domain.Bios{} true "update profile with new body"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/update/profile [patch]
 func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 
-	var updatedProfile domain.Users
+	var updatedProfile domain.Bios
 	fmt.Println("Updating event")
 	//fetching data
 	c.Bind(&updatedProfile)
-	fmt.Println("event id", updatedProfile.UserId)
+	fmt.Println("event id", updatedProfile.UserName)
 
 	username := c.Writer.Header().Get("userName")
 
 
 	//check event exit or not
 
-	err := cr.userUsecase.UpdateProfile(updatedProfile, username)
+	err := cr.userUseCase.UpdateProfile(updatedProfile, username)
 
 	log.Println(updatedProfile)
 
@@ -48,7 +58,7 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	event, _ := cr.userUsecase.FindUser(updatedProfile.UserName)
+	event, _ := cr.userUseCase.FindUser(updatedProfile.UserName)
 	response := response.SuccessResponse(true, "SUCCESS", event)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -56,6 +66,16 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 }
 
 // SendVerificationEmail sends the verification email
+
+
+// @Summary Send verification
+// @ID Send verifiation code via email
+// @Tags User
+// @Produce json
+// @Param  email   query  string  true  "Email: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/send/verification [post]
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 	email := c.Query("Email")

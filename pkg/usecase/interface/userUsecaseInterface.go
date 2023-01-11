@@ -8,5 +8,5 @@ type UserUseCase interface {
 	CreateUser(user domain.Users) error
 	FindUser(email string) (*domain.UserResponse, error)
 	SendVerificationEmail(email string) (error)
-	UpdateProfile(user domain.Users, username string) error
+	UpdateProfile(user domain.Bios, username string) error
 }

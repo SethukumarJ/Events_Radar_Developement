@@ -23,7 +23,7 @@ type userUseCase struct {
 }
 
 // UpdateProfile implements interfaces.UserUseCase
-func (c *userUseCase) UpdateProfile(user domain.Users, username string) error {
+func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
 	fmt.Println("update event from service")
 	_, err := c.userRepo.FindUser(username)
 	fmt.Println("found user", err)

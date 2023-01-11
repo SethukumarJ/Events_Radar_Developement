@@ -16,9 +16,9 @@ type Users struct {
 	EventId      uint   `json:"eventid"`
 }
 
-type Bio struct {
+type Bios struct {
 	BioId         uint   `json:"bioid" gorm:"autoIncrement:true;unique"`
-	UserName      string `json:"username" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+	UserName      string `json:"username" validate:"required,min=2,max=50"`
 	About         string `json:"about"`
 	Twitter       string `json:"twitterlink"`
 	Github        string `json:"githublink"`

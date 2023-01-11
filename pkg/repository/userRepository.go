@@ -15,7 +15,7 @@ type userRepository struct {
 }
 
 // UpdateProfile implements interfaces.UserRepository
-func (c *userRepository) UpdateProfile(profile domain.Bio, username string) (int, error) {
+func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (int, error) {
 	var id int
 	query := `UPDATE bios SET 
 							about=$1,

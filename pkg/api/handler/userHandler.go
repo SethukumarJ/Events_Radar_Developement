@@ -65,6 +65,8 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 }
 
+
+
 // SendVerificationEmail sends the verification email
 
 // @Summary Send verification

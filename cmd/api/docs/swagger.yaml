@@ -547,7 +547,7 @@ paths:
       - User
       - User
   /user/verify/account:
-    delete:
+    patch:
       operationId: Verify account
       parameters:
       - description: 'Email: '

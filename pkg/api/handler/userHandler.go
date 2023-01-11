@@ -2,10 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
+	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
@@ -21,8 +23,39 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
-// SendVerificationEmail sends the verification email
+func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 
+	var updatedProfile domain.Users
+	fmt.Println("Updating event")
+	//fetching data
+	c.Bind(&updatedProfile)
+	fmt.Println("event id", updatedProfile.UserId)
+
+	username := c.Writer.Header().Get("userName")
+
+
+	//check event exit or not
+
+	err := cr.userUsecase.UpdateProfile(updatedProfile, username)
+
+	log.Println(updatedProfile)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Update Profile", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.userUsecase.FindUser(updatedProfile.UserName)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+}
+
+// SendVerificationEmail sends the verification email
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 	email := c.Query("Email")

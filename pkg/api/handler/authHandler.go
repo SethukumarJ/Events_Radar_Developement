@@ -46,7 +46,7 @@ func NewAuthHandler(
 // @Param  Code   query  string  true  "code: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/verify/account [delete]
+// @Router /user/verify/account [patch]
 func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	email := c.Query("email")
 	code,_ := strconv.Atoi(c.Query("code"))

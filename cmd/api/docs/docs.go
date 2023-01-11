@@ -670,7 +670,7 @@ const docTemplate = `{
             }
         },
         "/user/verify/account": {
-            "delete": {
+            "patch": {
                 "produces": [
                     "application/json"
                 ],

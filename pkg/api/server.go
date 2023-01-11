@@ -37,7 +37,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.POST("/token/refresh", authHandler.UserRefreshToken)
-			user.POST("/event/create", eventHandler.CreateEvent)
+			user.POST("/event/create", eventHandler.CreateEventUser)
 			user.POST("/send/verification", userHandler.SendVerificationMail)
 		}
 	}
@@ -53,7 +53,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		{
 			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approveevent",adminHandler.ApproveEvent)
-			
+			admin.POST("/event/create", eventHandler.CreateEventAdmin)
 			admin.GET("/listUsers",adminHandler.ViewAllUsers)
 			admin.PATCH("/vipuser",adminHandler.VipUser)
 			admin.GET("/listEvents", adminHandler.ViewAllEvents)

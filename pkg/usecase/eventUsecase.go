@@ -71,24 +71,27 @@ func NewEventUseCase(
 
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
-	fmt.Println("create event from service")
-	events, err := c.eventRepo.FindEvent(event.Title)
-	fmt.Println("found event", events.Title)
+	fmt.Println("create user from service")
+	_, err := c.eventRepo.FindEvent(event.Title)
+	fmt.Println("found event", err)
 
 	if err == nil {
-		return errors.New("eventtitle already exists")
+		return errors.New("event title already exists")
 	}
 
-	if err == nil && err != sql.ErrNoRows {
+	if err != nil && err != sql.ErrNoRows {
 		return err
+		
+		
 	}
-
 	_, err = c.eventRepo.CreateEvent(event)
 	if err != nil {
 		return err
+		
 	}
 	return nil
 }
+
 
 // FindUser implements interfaces.UserUseCase
 func (c *eventUsecase) FindEvent(title string) (*domain.EventResponse, error) {

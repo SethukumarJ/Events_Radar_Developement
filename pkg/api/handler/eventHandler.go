@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
@@ -49,7 +50,6 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 
 }
 
-
 // @Summary update event
 // @ID Update event
 // @Tags User
@@ -70,7 +70,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 	//check event exit or not
 
-	err := cr.eventUsecase.UpdateEvent(updatedEvent,title)
+	err := cr.eventUsecase.UpdateEvent(updatedEvent, title)
 
 	log.Println(updatedEvent)
 
@@ -90,9 +90,8 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 
 }
 
-
 // @Summary Create event
-// @ID Create event
+// @ID Create event from user
 // @Tags User
 // @Produce json
 // @Security BearerAuth
@@ -101,13 +100,14 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @Failure 422 {object} response.Response{}
 // @Router /user/event/create [post]
 // Create events
-func (cr *EventHandler) CreateEvent(c *gin.Context) {
+func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
 	var newEvent domain.Events
-	
+
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
+
 	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 
 	fmt.Println("event", newEvent)
@@ -134,6 +134,48 @@ func (cr *EventHandler) CreateEvent(c *gin.Context) {
 
 }
 
+// @Summary Create event
+// @ID Create event from admin
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @param CreateEvent body domain.Events{} true "Create event"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/event/create [post]
+// Create events
+func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
+
+	var newEvent domain.Events
+
+	fmt.Println("Creating event")
+	//fetching data
+	c.Bind(&newEvent)
+	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+	newEvent.CreatedAt = time.Now()
+	fmt.Println("event", newEvent)
+
+	//check event exit or not
+
+	err := cr.eventUsecase.CreateEvent(newEvent)
+
+	log.Println(newEvent)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
 
 // @Summary delete event
 // @ID Get event by id
@@ -163,7 +205,6 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-
 
 // @Summary list all approved upcoming events
 // @ID list all approved events

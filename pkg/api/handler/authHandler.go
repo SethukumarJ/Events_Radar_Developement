@@ -250,8 +250,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 // @Tags Admin
 // @Produce json
 // @Tags Admin
-// @Param  email   path  string  true  "admin email: "
-// @Param  password   path  string  true  "admin password: "
+// @Param  AdminLogin   body  domain.Admins{}  true  "adminlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/login [post]
@@ -316,23 +315,30 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 // @Router /admin/token/refresh [post]
 func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 
-	// autheader := ("Authorization")
-	// bearerToken := strings.Split(autheader, " ")
-	// token := bearerToken[1]
+	autheader := c.Request.Header["Authorization"]
+	auth := strings.Join(autheader, " ")
+	bearerToken := strings.Split(auth, " ")
+	fmt.Printf("\n\ntocen : %v\n\n", autheader)
+	token := bearerToken[1]
+	ok, claims := cr.jwtUsecase.VerifyToken(token)
+	if !ok {
+		log.Fatal("referesh token not valid")
+	}
 
-	// // refreshToken, err := cr.jwtUsecase.GenerateRefreshToken(token)
+	fmt.Println("//////////////////////////////////",claims.UserName)
+	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(claims.UserId, claims.UserName, claims.Role)
 
-	// // if err != nil {
-	// // 	response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
-	// // 	c.Writer.Header().Add("Content-Type", "application/json")
-	// // 	c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-	// // 	utils.ResponseJSON(*c, response)
-	// // 	return
-	// // }
+	if err != nil {
+		response := response.ErrorResponse("error generating refresh token", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
-	// // response := response.SuccessResponse(true, "SUCCESS", refreshToken)
-	// // c.Writer.Header().Add("Content-Type", "application/json")
-	// // c.Writer.WriteHeader(http.StatusOK)
-	// // utils.ResponseJSON(*c, response)
+	response := response.SuccessResponse(true, "SUCCESS", accesstoken)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
 
 }

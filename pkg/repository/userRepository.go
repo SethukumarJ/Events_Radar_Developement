@@ -14,6 +14,30 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// UpdateProfile implements interfaces.UserRepository
+func (c *userRepository) UpdateProfile(profile domain.Bio, username string) (int, error) {
+	var id int
+	query := `UPDATE bios SET 
+							about=$1,
+							twitter_link=$2,
+							github_link=$3,
+							linked_in=$4,
+							skills=$5,
+							qualification=$,
+							devfolio=$,6
+							website_link=$7 WHERE user_name = $8;`
+	err := c.db.QueryRow(query, profile.About,
+		profile.Twitter,
+		profile.Github,
+		profile.Github,
+		profile.Qualification,
+		profile.WebsiteLink).Scan(&id)
+
+	fmt.Println("id", id)
+	return id, err
+
+}
+
 // FindUser implements interfaces.UserRepository
 func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 

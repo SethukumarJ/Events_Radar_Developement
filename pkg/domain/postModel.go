@@ -16,9 +16,22 @@ type Users struct {
 	EventId      uint   `json:"eventid"`
 }
 
+type Bios struct {
+	BioId         uint   `json:"bioid" gorm:"autoIncrement:true;unique"`
+	UserName      string `json:"username" validate:"required,min=2,max=50"`
+	About         string `json:"about"`
+	Twitter       string `json:"twitterlink"`
+	Github        string `json:"githublink"`
+	LinkedIn      string `json:"linkedin"`
+	Skills        string `json:"skills"`
+	Qualification string `json:"qualification"`
+	DevFolio      string `json:"devfolio"`
+	WebsiteLink   string `json:"websitelink"`
+}
+
 type Verification struct {
 	Email string `json:"email" validate:"email"`
-	Code  int    `json:"code"`
+	Code  string `json:"code"`
 }
 
 type Admins struct {

@@ -600,6 +600,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/send/verification": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Send verification",
+                "operationId": "Send verifiation code via email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email: ",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/signup": {
             "post": {
                 "produces": [
@@ -669,8 +704,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/update/profile": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update Profileabout",
+                "operationId": "Update userprofile",
+                "parameters": [
+                    {
+                        "description": "update profile with new body",
+                        "name": "UpdateProfile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Bios"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/verify/account": {
-            "delete": {
+            "patch": {
                 "produces": [
                     "application/json"
                 ],
@@ -690,7 +767,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "code: ",
-                        "name": "Code",
+                        "name": "code",
                         "in": "query",
                         "required": true
                     }
@@ -740,6 +817,46 @@ const docTemplate = `{
                 },
                 "verification": {
                     "type": "boolean"
+                }
+            }
+        },
+        "domain.Bios": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "about": {
+                    "type": "string"
+                },
+                "bioid": {
+                    "type": "integer"
+                },
+                "devfolio": {
+                    "type": "string"
+                },
+                "githublink": {
+                    "type": "string"
+                },
+                "linkedin": {
+                    "type": "string"
+                },
+                "qualification": {
+                    "type": "string"
+                },
+                "skills": {
+                    "type": "string"
+                },
+                "twitterlink": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "websitelink": {
+                    "type": "string"
                 }
             }
         },

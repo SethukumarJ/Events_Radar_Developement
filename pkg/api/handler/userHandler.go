@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
+	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
 	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
@@ -21,11 +24,60 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// @Summary update Profileabout
+// @ID Update userprofile
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param UpdateProfile body domain.Bios{} true "update profile with new body"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/update/profile [patch]
+func (cr *UserHandler) UpdateProfile(c *gin.Context) {
+
+	var updatedProfile domain.Bios
+	fmt.Println("Updating event")
+	//fetching data
+	c.Bind(&updatedProfile)
+
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+
+	//check event exit or not
+
+	err := cr.userUseCase.UpdateProfile(updatedProfile, username)
+	fmt.Println("error on updaed profile", err)
+
+	log.Println(updatedProfile)
+
+	if err != nil && err != sql.ErrNoRows {
+		response := response.ErrorResponse("Failed to Update Profile", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.userUseCase.FindUser(updatedProfile.UserName)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+}
+
 // SendVerificationEmail sends the verification email
 
+// @Summary Send verification
+// @ID Send verifiation code via email
+// @Tags User
+// @Produce json
+// @Param  email   query  string  true  "Email: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/send/verification [post]
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
-	email := c.Query("Email")
+	email := c.Query("email")
 	var code int
 	fmt.Println(code)
 	_, err := cr.userUseCase.FindUser(email)

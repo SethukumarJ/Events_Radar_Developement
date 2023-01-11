@@ -65,7 +65,7 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 					long_discription,
 					event_date,
 					location,
-				
+					created_at,
 					approved,
 					paid,
 					sex,
@@ -105,7 +105,7 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 			&event.LongDiscription,
 			&event.EventDate,
 			&event.Location,
-			
+			&event.CreatedAt,
 			&event.Approved,
 			&event.Paid,
 			&event.Sex,

@@ -17,9 +17,30 @@ import (
 
 type userUseCase struct {
 	userRepo   interfaces.UserRepository
-	adminRepo interfaces.AdminRepository
+	adminRepo  interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
+}
+
+// UpdateProfile implements interfaces.UserUseCase
+func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
+	fmt.Println("update event from service")
+	_, err := c.userRepo.FindUser(username)
+	fmt.Println("found user", err)
+
+	if err == nil {
+		log.Printf("found user")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	_, err = c.userRepo.UpdateProfile(user, username)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // CreateUser implements interfaces.UserUseCase
@@ -58,7 +79,7 @@ func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 }
 
 // SendVerificationEmail implements interfaces.UserUseCase
-func (c *userUseCase) SendVerificationEmail(email string) (error) {
+func (c *userUseCase) SendVerificationEmail(email string) error {
 	//to generate random code
 	rand.Seed(time.Now().UnixNano())
 	code := rand.Intn(100000)
@@ -86,20 +107,6 @@ func (c *userUseCase) SendVerificationEmail(email string) (error) {
 }
 
 
-
-func NewUserUseCase(
-	userRepo interfaces.UserRepository,
-	adminRepo interfaces.AdminRepository,
-	mailConfig config.MailConfig,
-	config config.Config) services.UserUseCase {
-	return &userUseCase{
-		userRepo: userRepo,
-		adminRepo: adminRepo,
-		mailConfig: mailConfig,
-		config: config,
-	}
-}
-
 // HashPassword hashes the password
 func HashPassword(password string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
@@ -108,4 +115,17 @@ func HashPassword(password string) string {
 	}
 
 	return string(hash)
+}
+
+func NewUserUseCase(
+	userRepo interfaces.UserRepository,
+	adminRepo interfaces.AdminRepository,
+	mailConfig config.MailConfig,
+	config config.Config) services.UserUseCase {
+	return &userUseCase{
+		userRepo:   userRepo,
+		adminRepo:  adminRepo,
+		mailConfig: mailConfig,
+		config:     config,
+	}
 }

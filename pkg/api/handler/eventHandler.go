@@ -110,11 +110,21 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
 	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 
+	vip,err:= cr.eventUsecase.FindUser(newEvent.OrganizerName)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if vip {
+		newEvent.Approved = true
+	}
+
+
 	fmt.Println("event", newEvent)
 
 	//check event exit or not
 
-	err := cr.eventUsecase.CreateEvent(newEvent)
+	err = cr.eventUsecase.CreateEvent(newEvent)
 
 	log.Println(newEvent)
 
@@ -153,6 +163,7 @@ func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 	c.Bind(&newEvent)
 	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 	newEvent.CreatedAt = time.Now()
+	newEvent.Approved = true
 	fmt.Println("event", newEvent)
 
 	//check event exit or not

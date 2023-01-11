@@ -16,6 +16,21 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// FindUser implements interfaces.EventUsecase
+func (c *eventUsecase) FindUser(username string) (bool, error) {
+	vip,err := c.eventRepo.FindUser(username) 
+	if err != nil {
+		return false ,err
+	}
+
+	if vip == "false"{
+		return false,nil
+	} 
+	return true, nil
+
+
+}
+
 // DeleteEvent implements interfaces.EventUsecase
 func (c *eventUsecase) DeleteEvent(title string) error {
 	err := c.eventRepo.DeleteEvent(title)
@@ -61,14 +76,6 @@ func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter) (*[]domain.Eve
 	return &events, &metadata, nil
 }
 
-func NewEventUseCase(
-	eventRepo interfaces.EventRepository,
-) usecases.EventUsecase {
-	return &eventUsecase{
-		eventRepo: eventRepo,
-	}
-}
-
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
 	fmt.Println("create user from service")
@@ -81,17 +88,14 @@ func (c *eventUsecase) CreateEvent(event domain.Events) error {
 
 	if err != nil && err != sql.ErrNoRows {
 		return err
-		
-		
 	}
 	_, err = c.eventRepo.CreateEvent(event)
 	if err != nil {
 		return err
-		
+
 	}
 	return nil
 }
-
 
 // FindUser implements interfaces.UserUseCase
 func (c *eventUsecase) FindEvent(title string) (*domain.EventResponse, error) {
@@ -102,4 +106,12 @@ func (c *eventUsecase) FindEvent(title string) (*domain.EventResponse, error) {
 	}
 
 	return &event, nil
+}
+
+func NewEventUseCase(
+	eventRepo interfaces.EventRepository,
+) usecases.EventUsecase {
+	return &eventUsecase{
+		eventRepo: eventRepo,
+	}
 }

@@ -14,6 +14,65 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// GetPublicFaqas implements interfaces.UserRepository
+func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, error) {
+	fmt.Println("faqas called from repo")
+	var Faqas []domain.FaqaResponse
+
+	
+	
+
+
+	query := `SELECT 
+					COUNT(*) OVER(),
+					faqa_id,
+					question,
+					answer,
+					title,
+					created_at,
+					user_name,
+					organizer_name FROM faqas WHERE public = $1 AND tittle = $2;`
+
+	rows, err := c.db.Query(query,true,title)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("faqas called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("faqas called from repo")
+
+	for rows.Next() {
+		var faqas domain.FaqaResponse
+		fmt.Println("username :", faqas.Title)
+		err = rows.Scan(
+			&totalRecords,
+			&faqas.FaqaId,
+			&faqas.Question,
+			&faqas.Answer,
+			&faqas.CreatedAt,
+			&faqas.OrganizerName)
+
+		fmt.Println("title", faqas.Title)
+
+		if err != nil {
+			return Faqas, err
+		}
+		Faqas = append(Faqas, faqas)
+	}
+
+	if err := rows.Err(); err != nil {
+		return Faqas, err
+	}
+	log.Println(Faqas)
+	
+	return Faqas, nil
+}
+
 // PostQuestion implements interfaces.UserRepository
 func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
 	var id int
@@ -23,7 +82,7 @@ func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
 		created_at,
 		user_name,
 		organizer_name
-		)VALUES($1, $2, $3, $4)RETURNING faqa_id;`
+		)VALUES($1, $2, $3, $4,$5)RETURNING faqa_id;`
 
 	err := c.db.QueryRow(query,
 		question.Question,

@@ -52,9 +52,9 @@ type EventResponse struct {
 }
 
 type FaqaResponse struct {
-	FaqatId       uint      `json:"eventid" gorm:"autoIncrement:true;unique"`
-	Question      string    `json:"question" validate:"required,min=2,max=50"`
-	Answer        string    `json:"answer" validate:"required,min=2,max=50"`
+	FaqaId       uint      `json:"faqaid"`
+	Question      string    `json:"question"`
+	Answer        string    `json:"answer"`
 	Title         string    `json:"title"`
 	CreatedAt     time.Time `json:"createdat"`
 	UserName      string    `json:"username"`

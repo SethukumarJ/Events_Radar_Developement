@@ -167,7 +167,7 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Listed All Events", result)
+	response := response.SuccessResponse(true, "Listed All Events", faqas)
 	utils.ResponseJSON(*c, response)
 
 }

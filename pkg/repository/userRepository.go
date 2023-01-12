@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -14,12 +15,31 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// PostAnswer implements interfaces.UserRepository
+func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, error) {
+	var id int
+
+	query := `INSERT INTO Answer(answer)VALUES($1)RETURNING answer_id;`
+
+	err := c.db.QueryRow(query,
+		answer.Answer).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+	query2 := `UPDATE faqas SET = $1, public = $2 WHERE faqas_id = $3`
+	err = c.db.QueryRow(query2,
+		id,true,true).Err()
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // GetPublicFaqas implements interfaces.UserRepository
 func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, error) {
 	fmt.Println("faqas called from repo")
 	var Faqas []domain.FaqaResponse
 
-	
 	query := `SELECT 
 					COUNT(*) OVER(),
 					faqa_id,
@@ -30,7 +50,7 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 					user_name,
 					organizer_name FROM faqas WHERE public = $1 AND title = $2;`
 
-	rows, err := c.db.Query(query,true,title)
+	rows, err := c.db.Query(query, true, title)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -68,7 +88,7 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 		return Faqas, err
 	}
 	log.Println(Faqas)
-	
+
 	return Faqas, nil
 }
 

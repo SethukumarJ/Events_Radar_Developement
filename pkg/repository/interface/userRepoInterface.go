@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetPublicFaqas(approved string) ([]domain.FaqaResponse, error)
 	InsertUser(user domain.Users) (int, error)
 	PostQuestion(question domain.Faqas) (int, error)
+	PostAnswer(answer domain.Answers, question int) (int, error)
 	StoreVerificationDetails(email string, code int) error
 	VerifyAccount(email string, code string) (error)
 }

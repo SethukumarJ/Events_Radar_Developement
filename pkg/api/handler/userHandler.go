@@ -143,7 +143,17 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 }
 
-
+// @Summary Post Question function
+// @ID User Post Question
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param title query string true "Getting the title of the event"
+// @param PostQuestion body domain.Faqas{} true "Post question"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/event/post/question [post]
+// PostQuesition handles Posting events
 func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
 	var question domain.Faqas

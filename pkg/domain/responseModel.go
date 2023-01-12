@@ -50,3 +50,12 @@ type EventResponse struct {
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
 }
+
+type FaqaResponse struct {
+	FaqatId       uint      `json:"eventid" gorm:"autoIncrement:true;unique"`
+	Question      string    `json:"question" validate:"required,min=2,max=50"`
+	Answer        string    `json:"answer" validate:"required,min=2,max=50"`
+	Title         string    `json:"title"`
+	CreatedAt     time.Time `json:"createdat"`
+	UserName      string    `json:"username"`
+}

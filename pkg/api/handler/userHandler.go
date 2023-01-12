@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -105,7 +106,6 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 
 }
 
-
 // SendVerificationEmail sends the verification email
 
 // @Summary Send verification
@@ -139,6 +139,113 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 		return
 	}
 	response := response.SuccessResponse(true, "Verification mail sent successfully", email)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary list all Public faqas
+// @ID list all public faqas
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Event title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/list/faqas [get]
+func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
+
+	title := c.Query("title")
+	faqas, err := cr.userUseCase.GetPublicFaqas(title)
+	fmt.Println("faqas from handler",faqas)
+	if err != nil {
+		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All faqas", *faqas)
+	fmt.Println("response",response)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary Post Question function
+// @ID User Post Question
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param title query string true "Getting the title of the event"
+// @param organizername query string true "Getting the title of the event"
+// @param PostQuestion body domain.Faqas{} true "Post question"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/event/post/question [post]
+// PostQuesition handles Posting events
+func (cr *UserHandler) PostQuestion(c *gin.Context) {
+
+	var question domain.Faqas
+	title := c.Query("title")
+	organizerName := c.Query("organizername")
+	username := c.Writer.Header().Get("userName")
+	c.Bind(&question)
+
+	question.Title = title
+	question.UserName = username
+	question.OrganizerName = organizerName
+
+	err := cr.userUseCase.PostQuestion(question)
+
+	log.Println(question)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Post question", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "SUCCESS", question)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary Post Answer function
+// @ID User Post Answer
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param faqaid query string true "Getting the id of the question"
+// @param PostAnswer body domain.Answers{} true "Post Answer"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/event/post/answer [post]
+// PostQuesition handles Posting events
+func (cr *UserHandler) PostAnswer(c *gin.Context) {
+
+	var answer domain.Answers
+	question_id,_ := strconv.Atoi(c.Query("faqaid"))
+
+	c.Bind(&answer)
+
+	err := cr.userUseCase.PostAnswer(answer, question_id)
+
+	log.Println(question_id)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Post question", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "SUCCESS", answer)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
 
 }

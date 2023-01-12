@@ -14,21 +14,118 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// PostAnswer implements interfaces.UserRepository
+func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, error) {
+	var id int
+
+	query := `INSERT INTO answers(answer)VALUES($1)RETURNING answer_id;`
+
+	err := c.db.QueryRow(query,
+		answer.Answer).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+	query2 := `UPDATE faqas SET answer_id = $1 , public = $2 WHERE faqa_id = $3`
+	err = c.db.QueryRow(query2,
+		id, true, question).Err()
+
+	fmt.Println("id", id)
+	return id, err
+}
+
+// GetPublicFaqas implements interfaces.UserRepository
+func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse , error) {
+	fmt.Println("faqas called from repo")
+
+	var queanda []map[interface{}]interface{}
+	var qa []domain.QAResponse
+	
+	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,
+	que.title,que.created_at,que.user_name,que.organizer_name ,ans.answer 
+	FROM faqas AS que INNER JOIN answers AS ans 
+	ON que.answer_id = ans.answer_id WHERE que.public = $1 AND title = $2;`
+					
+
+	rows, err := c.db.Query(query, true, title)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("faqas called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("faqas called from repo")
+
+	for rows.Next() {
+		var faqas domain.QAResponse
+		fmt.Println("username :", faqas.Title)
+		err = rows.Scan(
+			&totalRecords,
+			&faqas.FaqaId,
+			&faqas.Question,
+			&faqas.AnswerId,
+			&faqas.Title,
+			&faqas.CreatedAt,
+			&faqas.OrganizerName,
+			&faqas.OrganizerName,
+		    &faqas.Answer)
+
+		fmt.Println("title", faqas.Title)
+		
+		if err != nil {
+			return nil, err
+		}
+		
+
+	
+	   qa = append(qa,faqas)
+	}
+	fmt.Println("queanda",queanda)
+	if err := rows.Err(); err != nil {
+		return qa, err
+	}
+	log.Println(qa)
+
+	return qa, nil
+}
+
+// PostQuestion implements interfaces.UserRepository
+func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
+	var id int
+
+	query := `INSERT INTO faqas(question,
+		title,
+		created_at,
+		user_name,
+		organizer_name
+		)VALUES($1, $2, $3, $4,$5)RETURNING faqa_id;`
+
+	err := c.db.QueryRow(query,
+		question.Question,
+		question.Title,
+		question.CreatedAt,
+		question.UserName,
+		question.OrganizerName).Scan(&id)
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // UpdatePassword implements interfaces.UserRepository
 func (c *userRepository) UpdatePassword(user domain.Users, email string) (int, error) {
-	
-
 
 	query := `UPDATE users SET password =$1 WHERE email = $2`
 
-
-	err := c.db.QueryRow(query,user.Password,email).Err()
+	err := c.db.QueryRow(query, user.Password, email).Err()
 
 	if err != nil {
-		return 0,err
+		return 0, err
 	}
-	return 0,nil
-
+	return 0, nil
 
 }
 

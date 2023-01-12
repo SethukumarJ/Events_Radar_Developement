@@ -21,6 +21,13 @@ definitions:
     - email
     - password
     type: object
+  domain.Answers:
+    properties:
+      answer:
+        type: string
+      answerid:
+        type: integer
+    type: object
   domain.Bios:
     properties:
       about:
@@ -97,6 +104,29 @@ definitions:
     - eventpic
     - organizername
     - title
+    type: object
+  domain.Faqas:
+    properties:
+      answerid:
+        type: integer
+      createdat:
+        type: string
+      faqaid:
+        type: integer
+      organizername:
+        type: string
+      public:
+        type: boolean
+      question:
+        maxLength: 50
+        minLength: 2
+        type: string
+      title:
+        type: string
+      username:
+        type: string
+    required:
+    - question
     type: object
   domain.Users:
     properties:
@@ -504,6 +534,96 @@ paths:
       security:
       - BearerAuth: []
       summary: Create event
+      tags:
+      - User
+  /user/event/post/answer:
+    post:
+      operationId: User Post Answer
+      parameters:
+      - description: Getting the id of the question
+        in: query
+        name: faqaid
+        required: true
+        type: string
+      - description: Post Answer
+        in: body
+        name: PostAnswer
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Answers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Post Answer function
+      tags:
+      - User
+  /user/event/post/question:
+    post:
+      operationId: User Post Question
+      parameters:
+      - description: Getting the title of the event
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: Getting the title of the event
+        in: query
+        name: organizername
+        required: true
+        type: string
+      - description: Post question
+        in: body
+        name: PostQuestion
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Faqas'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Post Question function
+      tags:
+      - User
+  /user/list/faqas:
+    get:
+      operationId: list all public faqas
+      parameters:
+      - description: 'Event title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all Public faqas
       tags:
       - User
   /user/login:

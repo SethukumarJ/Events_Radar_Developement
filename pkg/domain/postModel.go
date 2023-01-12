@@ -65,3 +65,19 @@ type Events struct {
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
 }
+
+type Faqas struct {
+	FaqaId        uint      `json:"faqaid" gorm:"autoIncrement:true;unique"`
+	Question      string    `json:"question" validate:"required,min=2,max=50"`
+	AnswerId      int       `json:"answerid" gorm:"default:0"`
+	Title         string    `json:"title"`
+	CreatedAt     time.Time `json:"createdat"`
+	UserName      string    `json:"username"`
+	OrganizerName string    `json:"organizername"`
+	Public        bool      `json:"public" gorm:"default:false"`
+}
+
+type Answers struct {
+	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique"`
+	Answer   string `json:"answer"`
+}

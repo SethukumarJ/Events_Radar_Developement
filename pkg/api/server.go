@@ -35,13 +35,15 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.POST("/send/verification", userHandler.SendVerificationMail)
 		user.PATCH("/verify/account",authHandler.VerifyAccount)
 		user.PATCH("/password/update",userHandler.UpdatePassword)
+		user.GET("/list/faqas",userHandler.GetPublicFaqas)
 
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.POST("/token/refresh", authHandler.UserRefreshToken)
 			user.POST("/event/create", eventHandler.CreateEventUser)
-			
+			user.POST("/event/post/question", userHandler.PostQuestion)
 			user.PATCH("/update/profile",userHandler.UpdateProfile)
+			user.POST("/event/post/answer",userHandler.PostAnswer)
 		}
 	}
 

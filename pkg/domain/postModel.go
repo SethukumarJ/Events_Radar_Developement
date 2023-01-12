@@ -76,3 +76,8 @@ type Faqas struct {
 	OrganizerName string    `json:"organizername"`
 	Public        bool      `json:"public" gorm:"default:false"`
 }
+
+type Answers struct {
+	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique"`
+	Answer   string `json:"answer"`
+}

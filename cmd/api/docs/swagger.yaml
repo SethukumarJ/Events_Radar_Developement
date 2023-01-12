@@ -626,6 +626,31 @@ paths:
       summary: list all Public faqas
       tags:
       - User
+  /user/list/questions:
+    get:
+      operationId: list all asked questions
+      parameters:
+      - description: 'Event title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: list all Asked questions
+      tags:
+      - User
   /user/login:
     post:
       operationId: User Login

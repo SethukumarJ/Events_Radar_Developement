@@ -22,9 +22,22 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// GetQuestions implements interfaces.UserUseCase
+func (c *userUseCase) GetQuestions(title string) (*[]domain.FaqaResponse, error) {
+	fmt.Println("get questions  from usecase called")
+	qustions, err := c.userRepo.GetQuestions(title)
+	fmt.Println("questioins:", qustions)
+	if err != nil {
+		fmt.Println("error from getpublicfaqas usecase:", err)
+		return nil, err
+	}
+
+	return &qustions, nil
+}
+
 // PostAnswer implements interfaces.UserUseCase
 func (c *userUseCase) PostAnswer(answer domain.Answers, question int) error {
-	_, err := c.userRepo.PostAnswer(answer,question)
+	_, err := c.userRepo.PostAnswer(answer, question)
 	if err != nil {
 		return err
 	}

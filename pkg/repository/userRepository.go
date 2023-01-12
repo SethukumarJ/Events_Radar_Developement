@@ -14,6 +14,53 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// GetQuestions implements interfaces.UserRepository
+func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, error) {
+	
+	var questions []domain.FaqaResponse
+
+	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer_id = '0';`
+
+	rows, err := c.db.Query(query, title)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("faqas called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("faqas called from repo")
+
+	for rows.Next() {
+		var faqas domain.FaqaResponse
+		fmt.Println("title :", faqas.Title)
+		err = rows.Scan(
+			&totalRecords,
+			&faqas.Question,
+			&faqas.CreatedAt,
+			&faqas.UserName,
+			)
+
+		fmt.Println("title", faqas.Title)
+
+		if err != nil {
+			return nil, err
+		}
+
+		questions = append(questions, faqas)
+	}
+	fmt.Println("FAQA", questions)
+	if err := rows.Err(); err != nil {
+		return questions, err
+	}
+	log.Println(questions)
+
+	return questions, nil
+
+}
+
 // PostAnswer implements interfaces.UserRepository
 func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, error) {
 	var id int
@@ -35,17 +82,16 @@ func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, e
 }
 
 // GetPublicFaqas implements interfaces.UserRepository
-func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse , error) {
+func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse, error) {
 	fmt.Println("faqas called from repo")
 
-	var queanda []map[interface{}]interface{}
-	var qa []domain.QAResponse
 	
+	var qa []domain.QAResponse
+
 	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,
 	que.title,que.created_at,que.user_name,que.organizer_name ,ans.answer 
 	FROM faqas AS que INNER JOIN answers AS ans 
 	ON que.answer_id = ans.answer_id WHERE que.public = $1 AND title = $2;`
-					
 
 	rows, err := c.db.Query(query, true, title)
 	fmt.Println("rows", rows)
@@ -72,19 +118,17 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse , err
 			&faqas.CreatedAt,
 			&faqas.OrganizerName,
 			&faqas.OrganizerName,
-		    &faqas.Answer)
+			&faqas.Answer)
 
 		fmt.Println("title", faqas.Title)
-		
+
 		if err != nil {
 			return nil, err
 		}
-		
 
-	
-	   qa = append(qa,faqas)
+		qa = append(qa, faqas)
 	}
-	fmt.Println("queanda",queanda)
+	fmt.Println("FAQA", qa)
 	if err := rows.Err(); err != nil {
 		return qa, err
 	}

@@ -143,12 +143,42 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 }
 
+
+
+// @Summary list all Public faqas
+// @ID list all public faqas
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Event title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router user/event/faqas/get [get]
+func (cr *EventHandler) GetPublicFaqas(c *gin.Context) {
+
+	title := c.Query("title")
+	faqas,err := cr.userUserCase.GetPublicFaqas(title)
+
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All Events", result)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary Post Question function
 // @ID User Post Question
 // @Tags User
 // @Produce json
 // @Security BearerAuth
 // @param title query string true "Getting the title of the event"
+// @param organizername query string true "Getting the title of the event"
 // @param PostQuestion body domain.Faqas{} true "Post question"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -158,11 +188,13 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
 	var question domain.Faqas
 	title := c.Query("title")
+	organizerName := c.Query("organizername")
 	username := c.Writer.Header().Get("userName")
 	c.Bind(&question)
 
 	question.Title = title
 	question.UserName = username
+	question.OrganizerName = organizerName
 
 	err := cr.userUseCase.PostQuestion(question)
 

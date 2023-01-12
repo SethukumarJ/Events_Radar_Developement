@@ -67,11 +67,12 @@ type Events struct {
 }
 
 type Faqas struct {
-	FaqaId    uint      `json:"faqaid" gorm:"autoIncrement:true;unique"`
-	Question  string    `json:"question" validate:"required,min=2,max=50"`
-	Answer    string    `json:"answer"`
-	Title     string    `json:"title"`
-	CreatedAt time.Time `json:"createdat"`
-	UserName  string    `json:"username"`
-	Public    bool      `json:"public" gorm:"default:false"`
+	FaqaId        uint      `json:"faqaid" gorm:"autoIncrement:true;unique"`
+	Question      string    `json:"question" validate:"required,min=2,max=50"`
+	Answer        string    `json:"answer"`
+	Title         string    `json:"title"`
+	CreatedAt     time.Time `json:"createdat"`
+	UserName      string    `json:"username"`
+	OrganizerName string    `json:"organizername"`
+	Public        bool      `json:"public" gorm:"default:false"`
 }

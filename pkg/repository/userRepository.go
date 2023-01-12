@@ -21,14 +21,16 @@ func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
 	query := `INSERT INTO faqas(question,
 		title,
 		created_at,
-		user_name
+		user_name,
+		organizer_name
 		)VALUES($1, $2, $3, $4)RETURNING faqa_id;`
 
 	err := c.db.QueryRow(query,
 		question.Question,
 		question.Title,
 		question.CreatedAt,
-		question.UserName).Scan(&id)
+		question.UserName,
+		question.OrganizerName).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err

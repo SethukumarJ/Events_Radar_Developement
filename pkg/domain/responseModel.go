@@ -58,4 +58,5 @@ type FaqaResponse struct {
 	Title         string    `json:"title"`
 	CreatedAt     time.Time `json:"createdat"`
 	UserName      string    `json:"username"`
+	OrganizerName string `json:"organizername"`
 }

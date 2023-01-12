@@ -10,5 +10,6 @@ type UserUseCase interface {
 	FindUser(email string) (*domain.UserResponse, error)
 	SendVerificationEmail(email string) (error)
 	PostQuestion(question domain.Faqas) error
+	GetPublicFaqas(title string) (*[]domain.FaqaResponse, error) 
 	UpdateProfile(user domain.Bios, username string) error
 }

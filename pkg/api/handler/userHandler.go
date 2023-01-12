@@ -153,10 +153,10 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router user/event/faqas/get [get]
-func (cr *EventHandler) GetPublicFaqas(c *gin.Context) {
+func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")
-	faqas,err := cr.userUserCase.GetPublicFaqas(title)
+	faqas,err := cr.userUseCase.GetPublicFaqas(title)
 
 
 	if err != nil {

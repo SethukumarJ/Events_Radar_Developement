@@ -9,5 +9,6 @@ type UserUseCase interface {
 	UpdatePassword(user domain.Users,email string) error
 	FindUser(email string) (*domain.UserResponse, error)
 	SendVerificationEmail(email string) (error)
+	PostQuestion(question domain.Faqa) error
 	UpdateProfile(user domain.Bios, username string) error
 }

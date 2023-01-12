@@ -22,6 +22,16 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// PostQuestion implements interfaces.UserUseCase
+func (c *userUseCase) PostQuestion(question domain.Faqa) error {
+
+	_, err := c.userRepo.InsertUser(question)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // UpdatePassword implements interfaces.UserUseCase
 func (c *userUseCase) UpdatePassword(user domain.Users, email string) error {
 	_, err := c.userRepo.UpdatePassword(user, email)
@@ -34,7 +44,6 @@ func (c *userUseCase) UpdatePassword(user domain.Users, email string) error {
 // UpdateProfile implements interfaces.UserUseCase
 func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
 	fmt.Println("update user from service")
-	
 
 	_, err := c.userRepo.UpdateProfile(user, username)
 	if err != nil {

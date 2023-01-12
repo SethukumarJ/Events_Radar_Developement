@@ -18,10 +18,6 @@ type adminUsecase struct {
 	config     config.Config
 }
 
-// AllEvdents implements interfaces.AdminUsecase
-func (*adminUsecase) AllEvdents(pagenation utils.Filter, approved string) (*[]domain.EventResponse, *utils.Metadata, error) {
-	panic("unimplemented")
-}
 
 // ApproveEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) ApproveEvent(title string) error {

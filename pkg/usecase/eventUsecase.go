@@ -46,7 +46,7 @@ func (c *eventUsecase) DeleteEvent(title string) error {
 func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 	fmt.Println("update event from service")
 	_, err := c.eventRepo.FindEvent(title)
-	fmt.Println("found event", err)
+	fmt.Println("found event", err,)
 
 	if err == nil {
 		log.Printf("found event")

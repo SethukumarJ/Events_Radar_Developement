@@ -217,12 +217,12 @@ paths:
         in: query
         name: page
         required: true
-        type: string
+        type: integer
       - description: 'Page capacity : '
         in: query
         name: pagesize
         required: true
-        type: string
+        type: integer
       - description: 'List event by approved non approved : '
         in: query
         name: approved
@@ -453,17 +453,17 @@ paths:
     patch:
       operationId: Update event
       parameters:
-      - description: 'Title: '
+      - description: event title
         in: query
         name: title
         required: true
         type: string
-      - description: update event with new body
+      - description: update Event with new body
         in: body
-        name: Updateevent
+        name: UpdateEvent
         required: true
         schema:
-          $ref: '#/definitions/domain.Users'
+          $ref: '#/definitions/domain.Events'
       produces:
       - application/json
       responses:
@@ -475,6 +475,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: update event
       tags:
       - User
@@ -528,6 +530,35 @@ paths:
       summary: Login for users
       tags:
       - User
+      - User
+  /user/password/update:
+    patch:
+      operationId: Update password
+      parameters:
+      - description: 'Email: '
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: update password with new body
+        in: body
+        name: Updateevent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: update password
+      tags:
       - User
   /user/send/verification:
     post:

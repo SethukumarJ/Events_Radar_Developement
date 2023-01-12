@@ -22,7 +22,7 @@ func (c *userRepository) UpdatePassword(user domain.Users, email string) (int, e
 	query := `UPDATE users SET password =$1 WHERE email = $2`
 
 
-	err := c.db.QueryRow(query,email).Err()
+	err := c.db.QueryRow(query,user.Password,email).Err()
 
 	if err != nil {
 		return 0,err

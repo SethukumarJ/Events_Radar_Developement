@@ -69,11 +69,11 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 // @ID Update password
 // @Tags User
 // @Produce json
-// @Param  title   query  string  true  "Title: "
+// @Param  email   query  string  true  "Email: "
 // @param Updateevent body domain.Users{} true "update password with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/update [patch]
+// @Router /user/password/update [patch]
 func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 
 	var updatedPassword domain.Users

@@ -40,7 +40,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		{
 			user.POST("/token/refresh", authHandler.UserRefreshToken)
 			user.POST("/event/create", eventHandler.CreateEventUser)
-			
+			user.POST("/event/post/question", userHandler.PostQuestion)
 			user.PATCH("/update/profile",userHandler.UpdateProfile)
 		}
 	}

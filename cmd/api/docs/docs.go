@@ -567,6 +567,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/event/post/question": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Post Question function",
+                "operationId": "User Post Question",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Getting the title of the event",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Post question",
+                        "name": "PostQuestion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Faqas"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/login": {
             "post": {
                 "produces": [
@@ -978,6 +1027,37 @@ const docTemplate = `{
                     "minLength": 2
                 },
                 "websitelink": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Faqas": {
+            "type": "object",
+            "required": [
+                "question"
+            ],
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "createdat": {
+                    "type": "string"
+                },
+                "faqaid": {
+                    "type": "integer"
+                },
+                "public": {
+                    "type": "boolean"
+                },
+                "question": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "title": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

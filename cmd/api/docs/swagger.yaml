@@ -98,6 +98,27 @@ definitions:
     - organizername
     - title
     type: object
+  domain.Faqas:
+    properties:
+      answer:
+        type: string
+      createdat:
+        type: string
+      faqaid:
+        type: integer
+      public:
+        type: boolean
+      question:
+        maxLength: 50
+        minLength: 2
+        type: string
+      title:
+        type: string
+      username:
+        type: string
+    required:
+    - question
+    type: object
   domain.Users:
     properties:
       email:
@@ -504,6 +525,37 @@ paths:
       security:
       - BearerAuth: []
       summary: Create event
+      tags:
+      - User
+  /user/event/post/question:
+    post:
+      operationId: User Post Question
+      parameters:
+      - description: Getting the title of the event
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: Post question
+        in: body
+        name: PostQuestion
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Faqas'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Post Question function
       tags:
       - User
   /user/login:

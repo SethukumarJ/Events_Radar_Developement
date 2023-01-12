@@ -591,6 +591,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Getting the title of the event",
+                        "name": "organizername",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "Post question",
                         "name": "PostQuestion",
                         "in": "body",
@@ -598,6 +605,41 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.Faqas"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/list/faqas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "list all Public faqas",
+                "operationId": "list all public faqas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1045,6 +1087,9 @@ const docTemplate = `{
                 },
                 "faqaid": {
                     "type": "integer"
+                },
+                "organizername": {
+                    "type": "string"
                 },
                 "public": {
                     "type": "boolean"

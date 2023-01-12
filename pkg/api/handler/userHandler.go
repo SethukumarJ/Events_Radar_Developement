@@ -152,7 +152,7 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 // @Param  title   query  string  true  "Event title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router user/event/faqas/get [get]
+// @Router /user/list/faqas [get]
 func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")

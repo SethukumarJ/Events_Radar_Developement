@@ -69,7 +69,7 @@ type Events struct {
 type Faqas struct {
 	FaqaId        uint      `json:"faqaid" gorm:"autoIncrement:true;unique"`
 	Question      string    `json:"question" validate:"required,min=2,max=50"`
-	Answer        string    `json:"answer"`
+	AnswerId      int       `json:"answerid" gorm:"default:0"`
 	Title         string    `json:"title"`
 	CreatedAt     time.Time `json:"createdat"`
 	UserName      string    `json:"username"`

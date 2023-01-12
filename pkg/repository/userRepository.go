@@ -20,18 +20,15 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 	var Faqas []domain.FaqaResponse
 
 	
-	
-
-
 	query := `SELECT 
 					COUNT(*) OVER(),
 					faqa_id,
 					question,
-					answer,
+					answer_id,
 					title,
 					created_at,
 					user_name,
-					organizer_name FROM faqas WHERE public = $1 AND tittle = $2;`
+					organizer_name FROM faqas WHERE public = $1 AND title = $2;`
 
 	rows, err := c.db.Query(query,true,title)
 	fmt.Println("rows", rows)
@@ -53,8 +50,10 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 			&totalRecords,
 			&faqas.FaqaId,
 			&faqas.Question,
-			&faqas.Answer,
+			&faqas.AnswerId,
+			&faqas.Title,
 			&faqas.CreatedAt,
+			&faqas.OrganizerName,
 			&faqas.OrganizerName)
 
 		fmt.Println("title", faqas.Title)

@@ -52,11 +52,11 @@ type EventResponse struct {
 }
 
 type FaqaResponse struct {
-	FaqaId       uint      `json:"faqaid"`
+	FaqaId        uint      `json:"faqaid"`
 	Question      string    `json:"question"`
-	Answer        string    `json:"answer"`
+	AnswerId      int       `json:"answerid"`
 	Title         string    `json:"title"`
 	CreatedAt     time.Time `json:"createdat"`
 	UserName      string    `json:"username"`
-	OrganizerName string `json:"organizername"`
+	OrganizerName string    `json:"organizername"`
 }

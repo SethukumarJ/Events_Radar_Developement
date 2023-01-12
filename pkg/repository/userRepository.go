@@ -19,7 +19,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 	
 	var questions []domain.FaqaResponse
 
-	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer = '0';`
+	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer_id = '0';`
 
 	rows, err := c.db.Query(query, title)
 	fmt.Println("rows", rows)
@@ -35,7 +35,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 
 	for rows.Next() {
 		var faqas domain.FaqaResponse
-		fmt.Println("username :", faqas.Title)
+		fmt.Println("title :", faqas.Title)
 		err = rows.Scan(
 			&totalRecords,
 			&faqas.Question,

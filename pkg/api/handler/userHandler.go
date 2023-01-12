@@ -175,10 +175,11 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 // @ID list all asked questions
 // @Tags User
 // @Produce json
+// @Security BearerAuth
 // @Param  title   query  string  true  "Event title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/list/faqas [get]
+// @Router /user/list/questions [get]
 func (cr *UserHandler) GetQuestions(c *gin.Context) {
 
 	title := c.Query("title")

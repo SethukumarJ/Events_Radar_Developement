@@ -164,7 +164,35 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Listed All faqas", *faqas)
+	response := response.SuccessResponse(true, "Listed All faqas", faqas)
+	fmt.Println("response",response)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
+// @Summary list all Asked questions
+// @ID list all asked questions
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Event title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/list/faqas [get]
+func (cr *UserHandler) GetQuestions(c *gin.Context) {
+
+	title := c.Query("title")
+	questions, err := cr.userUseCase.GetQuestions(title)
+	fmt.Println("Questions from handler",questions)
+	if err != nil {
+		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All faqas", questions)
 	fmt.Println("response",response)
 	utils.ResponseJSON(*c, response)
 
@@ -249,3 +277,5 @@ func (cr *UserHandler) PostAnswer(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+

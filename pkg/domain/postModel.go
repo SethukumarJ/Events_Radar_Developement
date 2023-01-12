@@ -81,3 +81,5 @@ type Answers struct {
 	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique"`
 	Answer   string `json:"answer"`
 }
+
+

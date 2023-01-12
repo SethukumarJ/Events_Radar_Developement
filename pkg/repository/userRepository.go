@@ -14,6 +14,10 @@ type userRepository struct {
 	db *sql.DB
 }
 
+
+
+
+
 // PostAnswer implements interfaces.UserRepository
 func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, error) {
 	var id int
@@ -80,9 +84,7 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse , err
 			return nil, err
 		}
 		
-
-	
-	   qa = append(qa,faqas)
+		qa = append(qa,faqas)
 	}
 	fmt.Println("queanda",queanda)
 	if err := rows.Err(); err != nil {

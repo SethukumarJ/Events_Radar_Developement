@@ -142,3 +142,36 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+
+func (cr *UserHandler) PostQuestion(c *gin.Context) {
+
+	var question domain.Faqa
+	title := c.Query("title")
+	username := c.Writer.Header().Get("userName")
+	c.Bind(&question)
+
+	question.Title = title
+	question.UserName = username
+
+	err := cr.userUsecase.PostQestion(question)
+
+	log.Println(question)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Post question", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	
+	response := response.SuccessResponse(true, "SUCCESS", question)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+
+
+}

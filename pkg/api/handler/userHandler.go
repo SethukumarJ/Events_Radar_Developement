@@ -172,6 +172,8 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 }
 
+
+
 // @Summary Post Question function
 // @ID User Post Question
 // @Tags User
@@ -210,6 +212,49 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
 	
 	response := response.SuccessResponse(true, "SUCCESS", question)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+
+
+}
+
+
+// @Summary Post Question function
+// @ID User Post Question
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param faqaid query string true "Getting the id of the question"
+// @param organizername query string true "Getting the title of the event"
+// @param PostAnswer body domain.Answer{} true "Post Answer"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/event/post/answer [post]
+// PostQuesition handles Posting events
+func (cr *UserHandler) PostAnswer(c *gin.Context) {
+
+	var answer domain.Answers
+	question_id := c.Query("faqaid")
+	
+
+	c.Bind(&answer)
+
+	err := cr.userUseCase.PostAnswer(question_id)
+
+	log.Println(question_id)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to Post question", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	
+	response := response.SuccessResponse(true, "SUCCESS", answer)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)

@@ -146,7 +146,7 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
-	var question domain.Faqa
+	var question domain.Faqas
 	title := c.Query("title")
 	username := c.Writer.Header().Get("userName")
 	c.Bind(&question)
@@ -154,7 +154,7 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 	question.Title = title
 	question.UserName = username
 
-	err := cr.userUsecase.PostQestion(question)
+	err := cr.userUseCase.PostQuestion(question)
 
 	log.Println(question)
 

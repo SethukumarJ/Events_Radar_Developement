@@ -23,9 +23,9 @@ type userUseCase struct {
 }
 
 // PostQuestion implements interfaces.UserUseCase
-func (c *userUseCase) PostQuestion(question domain.Faqa) error {
+func (c *userUseCase) PostQuestion(question domain.Faqas) error {
 
-	_, err := c.userRepo.InsertUser(question)
+	_, err := c.userRepo.PostQuestion(question)
 	if err != nil {
 		return err
 	}

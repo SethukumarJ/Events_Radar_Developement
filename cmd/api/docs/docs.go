@@ -123,14 +123,14 @@ const docTemplate = `{
                 "operationId": "list all upcoming events",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Page number: ",
                         "name": "page",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Page capacity : ",
                         "name": "pagesize",
                         "in": "query",
@@ -478,6 +478,11 @@ const docTemplate = `{
         },
         "/event/update": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -489,18 +494,18 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Title: ",
+                        "description": "event title",
                         "name": "title",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "update event with new body",
-                        "name": "Updateevent",
+                        "description": "update Event with new body",
+                        "name": "UpdateEvent",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Users"
+                            "$ref": "#/definitions/domain.Events"
                         }
                     }
                 ],
@@ -577,6 +582,50 @@ const docTemplate = `{
                     {
                         "description": "userlogin: ",
                         "name": "UserLogin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/password/update": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update password",
+                "operationId": "Update password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email: ",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update password with new body",
+                        "name": "Updateevent",
                         "in": "body",
                         "required": true,
                         "schema": {

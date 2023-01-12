@@ -91,8 +91,8 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 // @Tags Admin
 // @Produce json
 // @Security BearerAuth
-// @Param  page   query  string  true  "Page number: "
-// @Param  pagesize   query  string  true  "Page capacity : "
+// @Param  page   query  int  true  "Page number: "
+// @Param  pagesize   query  int  true  "Page capacity : "
 // @Param  approved   query  bool  true  "List event by approved non approved : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -104,6 +104,7 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 
 	approved:= c.Query("approved")
+	fmt.Println("approved",approved)
 
 	log.Println(page, "   ", pageSize)
 

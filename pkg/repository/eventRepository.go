@@ -46,25 +46,25 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 	var id int
 
 	query := `UPDATE events SET
-								title = $1,
-								event_pic = $2,
-								short_discription = $3,
-								long_discription = $4,
-								event_date = $5,
-								location = $6,
-								paid = $7,
-								sex = $8,
-								cusat_only = $9,
-								sub_events = $10,
-								online = $11,
-								max_applications = $12,
-								application_closing_date = $13,
-								application_link = $14,
-								website_link = $15 WHERE title = $16
-								RETURNING event_id;`
+								
+								event_pic = $1,
+								short_discription = $2,
+								long_discription = $3,
+								event_date = $4,
+								location = $5,
+								paid = $6,
+								sex = $7,
+								cusat_only = $8,
+								sub_events = $9,
+								online = $10,
+								max_applications = $11,
+								application_closing_date = $12,
+								application_link = $13,
+								title = $14,
+								website_link = $15 WHERE title = $16;`
 
 	err := c.db.QueryRow(query,
-		event.Title,
+		
 		event.EventPic,
 		event.ShortDiscription,
 		event.LongDiscription,
@@ -77,10 +77,10 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 		event.Online,
 		event.MaxApplications,
 		event.ApplicationClosingDate,
-		event.ApplicationLink,
-		event.WebsiteLink, title).Scan(&id)
+		event.ApplicationLink, event.Title,
+		event.WebsiteLink, title).Err()
 
-	fmt.Println("id", id)
+	fmt.Println("err", err)
 	return id, err
 }
 

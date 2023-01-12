@@ -14,6 +14,24 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// UpdatePassword implements interfaces.UserRepository
+func (c *userRepository) UpdatePassword(user domain.Users, email string) (int, error) {
+	
+
+
+	query := `UPDATE users SET password =$1 WHERE email = $2`
+
+
+	err := c.db.QueryRow(query,user.Password,email).Err()
+
+	if err != nil {
+		return 0,err
+	}
+	return 0,nil
+
+
+}
+
 // UpdateProfile implements interfaces.UserRepository
 func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (int, error) {
 	var id int
@@ -33,7 +51,7 @@ func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (in
 		profile.Skills,
 		profile.Qualification,
 		profile.DevFolio,
-		profile.WebsiteLink,username).Scan(&id)
+		profile.WebsiteLink, username).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err
@@ -82,8 +100,8 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 		user.Password,
 		user.Profile).Scan(&id)
 
-		query2 := `INSERT INTO bios(user_name)VALUES($1);`
-		c.db.QueryRow(query2,user.UserName)
+	query2 := `INSERT INTO bios(user_name)VALUES($1);`
+	c.db.QueryRow(query2, user.UserName)
 
 	fmt.Println("id", id)
 	return id, err
@@ -105,7 +123,7 @@ func (c *userRepository) VerifyAccount(email string, code string) error {
 
 	query := `SELECT email FROM verifications 
 			  WHERE email = $1 AND code = $2;`
-	 query3 := `DELETE FROM verifications WHERE email = $1;`
+	query3 := `DELETE FROM verifications WHERE email = $1;`
 	err := c.db.QueryRow(query, email, code).Scan(&useremail)
 
 	fmt.Println("useremail", useremail)
@@ -118,7 +136,7 @@ func (c *userRepository) VerifyAccount(email string, code string) error {
 		}
 
 		return errors.New("invalid verification code/Email")
-		
+
 	}
 
 	if err != nil {
@@ -132,8 +150,6 @@ func (c *userRepository) VerifyAccount(email string, code string) error {
 	if err != nil {
 		return err
 	}
-
-	
 
 	err = c.db.QueryRow(query3, email).Err()
 	fmt.Println("deleting the verification code.")

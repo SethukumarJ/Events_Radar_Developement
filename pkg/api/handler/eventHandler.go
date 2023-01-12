@@ -54,8 +54,9 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 // @ID Update event
 // @Tags User
 // @Produce json
-// @Param  title   query  string  true  "Title: "
-// @param Updateevent body domain.Users{} true "update event with new body"
+// @Security BearerAuth
+// @param title query string true "event title"
+// @param UpdateEvent body domain.Events{} true "update Event with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /event/update [patch]
@@ -64,13 +65,14 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 	var updatedEvent domain.Events
 	fmt.Println("Updating event")
 	//fetching data
-	c.Bind(&updatedEvent)
-	fmt.Println("event id", updatedEvent.EventId)
+	err:=c.Bind(&updatedEvent)
+
+	fmt.Println("event ////////////", updatedEvent, "errror",err)
 	title := c.Query("title")
 
 	//check event exit or not
 
-	err := cr.eventUsecase.UpdateEvent(updatedEvent, title)
+	err = cr.eventUsecase.UpdateEvent(updatedEvent, title)
 
 	log.Println(updatedEvent)
 
@@ -108,8 +110,10 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 	//fetching data
 	c.Bind(&newEvent)
 
-	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 
+	fmt.Println("event", newEvent)
+	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+	newEvent.CreatedAt = time.Now()
 	vip,err:= cr.eventUsecase.FindUser(newEvent.OrganizerName)
 	if err != nil {
 		fmt.Println(err)
@@ -119,8 +123,6 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 		newEvent.Approved = true
 	}
 
-
-	fmt.Println("event", newEvent)
 
 	//check event exit or not
 
@@ -157,14 +159,16 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 
 	var newEvent domain.Events
-
+	fmt.Println("event", newEvent)
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
 	newEvent.OrganizerName = c.Writer.Header().Get("userName")
 	newEvent.CreatedAt = time.Now()
 	newEvent.Approved = true
-	fmt.Println("event", newEvent)
+	
+
+	fmt.Println(newEvent.OrganizerName,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
 
 	//check event exit or not
 

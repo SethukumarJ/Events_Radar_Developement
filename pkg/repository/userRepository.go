@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"crypto/tls"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -19,7 +18,7 @@ type userRepository struct {
 func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, error) {
 	var id int
 
-	query := `INSERT INTO Answer(answer)VALUES($1)RETURNING answer_id;`
+	query := `INSERT INTO answers(answer)VALUES($1)RETURNING answer_id;`
 
 	err := c.db.QueryRow(query,
 		answer.Answer).Scan(&id)
@@ -27,28 +26,26 @@ func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, e
 	if err != nil {
 		return 0, err
 	}
-	query2 := `UPDATE faqas SET = $1, public = $2 WHERE faqas_id = $3`
+	query2 := `UPDATE faqas SET answer_id = $1 , public = $2 WHERE faqa_id = $3`
 	err = c.db.QueryRow(query2,
-		id,true,true).Err()
+		id, true, question).Err()
 
 	fmt.Println("id", id)
 	return id, err
 }
 
 // GetPublicFaqas implements interfaces.UserRepository
-func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, error) {
+func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse , error) {
 	fmt.Println("faqas called from repo")
-	var Faqas []domain.FaqaResponse
 
-	query := `SELECT 
-					COUNT(*) OVER(),
-					faqa_id,
-					question,
-					answer_id,
-					title,
-					created_at,
-					user_name,
-					organizer_name FROM faqas WHERE public = $1 AND title = $2;`
+	var queanda []map[interface{}]interface{}
+	var qa []domain.QAResponse
+	
+	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,
+	que.title,que.created_at,que.user_name,que.organizer_name ,ans.answer 
+	FROM faqas AS que INNER JOIN answers AS ans 
+	ON que.answer_id = ans.answer_id WHERE que.public = $1 AND title = $2;`
+					
 
 	rows, err := c.db.Query(query, true, title)
 	fmt.Println("rows", rows)
@@ -64,7 +61,7 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 	fmt.Println("faqas called from repo")
 
 	for rows.Next() {
-		var faqas domain.FaqaResponse
+		var faqas domain.QAResponse
 		fmt.Println("username :", faqas.Title)
 		err = rows.Scan(
 			&totalRecords,
@@ -74,22 +71,26 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.FaqaResponse, er
 			&faqas.Title,
 			&faqas.CreatedAt,
 			&faqas.OrganizerName,
-			&faqas.OrganizerName)
+			&faqas.OrganizerName,
+		    &faqas.Answer)
 
 		fmt.Println("title", faqas.Title)
-
+		
 		if err != nil {
-			return Faqas, err
+			return nil, err
 		}
-		Faqas = append(Faqas, faqas)
-	}
+		
 
+	
+	   qa = append(qa,faqas)
+	}
+	fmt.Println("queanda",queanda)
 	if err := rows.Err(); err != nil {
-		return Faqas, err
+		return qa, err
 	}
-	log.Println(Faqas)
+	log.Println(qa)
 
-	return Faqas, nil
+	return qa, nil
 }
 
 // PostQuestion implements interfaces.UserRepository

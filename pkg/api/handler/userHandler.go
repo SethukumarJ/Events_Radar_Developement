@@ -155,7 +155,7 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")
 	faqas, err := cr.userUseCase.GetPublicFaqas(title)
-
+	fmt.Println("faqas from handler",faqas)
 	if err != nil {
 		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -164,7 +164,8 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Listed All Events", faqas)
+	response := response.SuccessResponse(true, "Listed All faqas", *faqas)
+	fmt.Println("response",response)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -212,13 +213,13 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
 }
 
-// @Summary Post Question function
-// @ID User Post Question
+// @Summary Post Answer function
+// @ID User Post Answer
 // @Tags User
 // @Produce json
 // @Security BearerAuth
 // @param faqaid query string true "Getting the id of the question"
-// @param PostAnswer body domain.Answer{} true "Post Answer"
+// @param PostAnswer body domain.Answers{} true "Post Answer"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/event/post/answer [post]

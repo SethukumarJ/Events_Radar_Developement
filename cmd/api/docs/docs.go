@@ -567,6 +567,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/event/post/answer": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Post Answer function",
+                "operationId": "User Post Answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Getting the id of the question",
+                        "name": "faqaid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Post Answer",
+                        "name": "PostAnswer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Answers"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/event/post/question": {
             "post": {
                 "security": [
@@ -960,6 +1009,17 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Answers": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "answerid": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.Bios": {
             "type": "object",
             "required": [
@@ -1079,8 +1139,8 @@ const docTemplate = `{
                 "question"
             ],
             "properties": {
-                "answer": {
-                    "type": "string"
+                "answerid": {
+                    "type": "integer"
                 },
                 "createdat": {
                     "type": "string"

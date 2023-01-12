@@ -60,3 +60,14 @@ type FaqaResponse struct {
 	UserName      string    `json:"username"`
 	OrganizerName string    `json:"organizername"`
 }
+
+type QAResponse struct {
+	FaqaId        uint      `json:"faqaid"`
+	Question      string    `json:"question"`
+	AnswerId      int       `json:"answerid"`
+	Title         string    `json:"title"`
+	CreatedAt     time.Time `json:"createdat"`
+	UserName      string    `json:"username"`
+	OrganizerName string    `json:"organizername"`
+	Answer        string    `json:"answer"`
+}

@@ -21,6 +21,13 @@ definitions:
     - email
     - password
     type: object
+  domain.Answers:
+    properties:
+      answer:
+        type: string
+      answerid:
+        type: integer
+    type: object
   domain.Bios:
     properties:
       about:
@@ -100,8 +107,8 @@ definitions:
     type: object
   domain.Faqas:
     properties:
-      answer:
-        type: string
+      answerid:
+        type: integer
       createdat:
         type: string
       faqaid:
@@ -527,6 +534,37 @@ paths:
       security:
       - BearerAuth: []
       summary: Create event
+      tags:
+      - User
+  /user/event/post/answer:
+    post:
+      operationId: User Post Answer
+      parameters:
+      - description: Getting the id of the question
+        in: query
+        name: faqaid
+        required: true
+        type: string
+      - description: Post Answer
+        in: body
+        name: PostAnswer
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Answers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Post Answer function
       tags:
       - User
   /user/event/post/question:

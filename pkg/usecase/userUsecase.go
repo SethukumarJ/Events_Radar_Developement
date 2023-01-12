@@ -32,7 +32,7 @@ func (c *userUseCase) PostAnswer(answer domain.Answers, question int) error {
 }
 
 // GetPublicFaqas implements interfaces.UserUseCase
-func (c *userUseCase) GetPublicFaqas(title string) (*[]domain.FaqaResponse, error) {
+func (c *userUseCase) GetPublicFaqas(title string) (*[]domain.QAResponse, error) {
 	fmt.Println("get faqas  from usecase called")
 	faqas, err := c.userRepo.GetPublicFaqas(title)
 	fmt.Println("faqas:", faqas)

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -105,7 +106,6 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 
 }
 
-
 // SendVerificationEmail sends the verification email
 
 // @Summary Send verification
@@ -143,8 +143,6 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 }
 
-
-
 // @Summary list all Public faqas
 // @ID list all public faqas
 // @Tags User
@@ -156,8 +154,7 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")
-	faqas,err := cr.userUseCase.GetPublicFaqas(title)
-
+	faqas, err := cr.userUseCase.GetPublicFaqas(title)
 
 	if err != nil {
 		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
@@ -171,8 +168,6 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-
-
 
 // @Summary Post Question function
 // @ID User Post Question
@@ -210,16 +205,12 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 		return
 	}
 
-	
 	response := response.SuccessResponse(true, "SUCCESS", question)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
 
-
-
 }
-
 
 // @Summary Post Question function
 // @ID User Post Question
@@ -227,7 +218,6 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @param faqaid query string true "Getting the id of the question"
-// @param organizername query string true "Getting the title of the event"
 // @param PostAnswer body domain.Answer{} true "Post Answer"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -236,12 +226,11 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 func (cr *UserHandler) PostAnswer(c *gin.Context) {
 
 	var answer domain.Answers
-	question_id := c.Query("faqaid")
-	
+	question_id,_ := strconv.Atoi(c.Query("faqaid"))
 
 	c.Bind(&answer)
 
-	err := cr.userUseCase.PostAnswer(question_id)
+	err := cr.userUseCase.PostAnswer(answer, question_id)
 
 	log.Println(question_id)
 
@@ -253,12 +242,9 @@ func (cr *UserHandler) PostAnswer(c *gin.Context) {
 		return
 	}
 
-	
 	response := response.SuccessResponse(true, "SUCCESS", answer)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
-
-
 
 }

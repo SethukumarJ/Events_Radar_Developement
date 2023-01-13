@@ -46,7 +46,7 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 	
 	orgStatusId := c.Query("orgstatusid")
 
-	err := cr.adminUsecase.RegisterOrganization(orgstatusid)
+	err := cr.adminUsecase.RegisterOrganization(orgStatusId)
 
 	if err != nil {
 		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)
@@ -59,6 +59,33 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 	utils.ResponseJSON(*c, response)
 
 }
+// @Summary Rejects the organization
+// @ID Register organization
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  orgstatusid   query  int  true  "orgStatus id : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/organization/reject [patch]
+func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
+	
+	orgStatusId := c.Query("orgstatusid")
+
+	err := cr.adminUsecase.RegectOrganization(orgStatusId)
+
+	if err != nil {
+		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Organization registered", orgStatusId)
+	utils.ResponseJSON(*c, response)
+
+}
+
 
 // @Summary makes the user vip
 // @ID make vip user

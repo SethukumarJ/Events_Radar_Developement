@@ -14,6 +14,37 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// FindOrganization implements interfaces.UserRepository
+func (c *userRepository) FindOrganization(organizationName string) (domain.OrganizationsResponse, error) {
+	var organization domain.OrganizationsResponse
+
+	query := `SELECT organization_id
+					organization_name
+					created_by
+					logo
+					about
+					created_at
+					linked_in
+					website_link
+					verified FROM organizations 
+					WHERE organization_name = $1;`
+
+	err := c.db.QueryRow(query, organizationName).Scan(
+		organization.OrganizationId,
+		organization.OrganizationName,
+		organization.CreatedBy,
+		organization.Logo,
+		organization.About,
+		organization.CreatedAt,
+		organization.LinkedIn,
+		organization.WebsiteLink,
+		organization.Verified,
+	)
+
+	fmt.Println("user from find user :", organization)
+	return organization, err
+}
+
 // CreateOrganization implements interfaces.UserRepository
 func (c *userRepository) CreateOrganization(organization domain.Organizations) (int, error) {
 	var id int
@@ -27,11 +58,11 @@ func (c *userRepository) CreateOrganization(organization domain.Organizations) (
 										website_link)VALUES($1, $2, $3, $4, $5, $6,$7)
 										RETURNING organization_id;`
 
-	err := c.db.QueryRow(query, 
+	err := c.db.QueryRow(query,
 		organization.OrganizationName,
-		organization.CreatedBy ,
+		organization.CreatedBy,
 		organization.Logo,
-		organization.About, 
+		organization.About,
 		organization.CreatedAt,
 		organization.LinkedIn,
 		organization.WebsiteLink).Scan(&id)

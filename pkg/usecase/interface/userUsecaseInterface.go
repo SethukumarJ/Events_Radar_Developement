@@ -8,6 +8,7 @@ type UserUseCase interface {
 	CreateUser(user domain.Users) error
 	PostAnswer(answer domain.Answers, question int) error
 	CreateOrganization(organization domain.Organizations) error
+	FindOrganization(organizationName string) (*domain.OrganizationsResponse, error)
 	UpdatePassword(user domain.Users,email string) error
 	FindUser(email string) (*domain.UserResponse, error)
 	SendVerificationEmail(email string) (error)

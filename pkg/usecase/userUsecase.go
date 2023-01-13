@@ -22,6 +22,17 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// FindOrganization implements interfaces.UserUseCase
+func (c *userUseCase) FindOrganization(organizationName string) (*domain.OrganizationsResponse, error) {
+	organization, err := c.userRepo.FindOrganization(organizationName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
 // CreateOrganization implements interfaces.UserUseCase
 func (c *userUseCase) CreateOrganization(organization domain.Organizations) error {
 	fmt.Println("create organization from service")
@@ -35,7 +46,7 @@ func (c *userUseCase) CreateOrganization(organization domain.Organizations) erro
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
-	_, err = c.eventRepo.CreateOrganization(organization)
+	_, err = c.userRepo.CreateOrganization(organization)
 	if err != nil {
 		return err
 

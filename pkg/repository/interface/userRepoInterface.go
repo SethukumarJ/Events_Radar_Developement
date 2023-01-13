@@ -7,6 +7,7 @@ import (
 // UserRepository represent the users's repository contract
 type UserRepository interface {
 	FindUser(email string) (domain.UserResponse, error)
+	FindOrganization(organizationName string) (domain.OrganizationsResponse, error)
 	UpdateProfile(user domain.Bios,username string) (int, error)
 	UpdatePassword(user domain.Users,username string) (int, error)
 	GetPublicFaqas(approved string) ([]domain.QAResponse, error)

@@ -18,6 +18,25 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+// RegisterOrganization implements interfaces.AdminUsecase
+func (c *adminUsecase) RegisterOrganization(orgstatusId int) error {
+	err := c.adminRepo.ApproveEvent(orgstatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RejectOrganization implements interfaces.AdminUsecase
+func (c *adminUsecase) RejectOrganization(orgstatusId int) error {
+	err := c.adminRepo.ApproveEvent(orgstatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // ApproveEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) ApproveEvent(title string) error {

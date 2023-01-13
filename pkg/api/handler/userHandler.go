@@ -39,7 +39,7 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 	newOrganization.CreatedAt = time.Now()
 	
 
-	err := cr.UserUsecase.CreateOrganization(newOrganization)
+	err := cr.userUseCase.CreateOrganization(newOrganization)
 
 	log.Println(newOrganization)
 

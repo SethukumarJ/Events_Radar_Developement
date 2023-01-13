@@ -92,7 +92,7 @@ type Organizations struct {
 	EventId          string    `json:"eventid"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
-	Verified         bool `json:"verified"`
+	Verified         bool `json:"verified" gorm:"default:false"`
 }
 
 type OrgStatus struct {

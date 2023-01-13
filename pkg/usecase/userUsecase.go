@@ -22,6 +22,27 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// CreateOrganization implements interfaces.UserUseCase
+func (c *userUseCase) CreateOrganization(organization domain.Organizations) error {
+	fmt.Println("create organization from service")
+	_, err := c.userRepo.FindOrganization(organization.OrganizationName)
+	fmt.Println("found organization", err)
+
+	if err == nil {
+		return errors.New("Organization already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	_, err = c.eventRepo.CreateOrganization(organization)
+	if err != nil {
+		return err
+
+	}
+	return nil
+}
+
 // GetQuestions implements interfaces.UserUseCase
 func (c *userUseCase) GetQuestions(title string) (*[]domain.FaqaResponse, error) {
 	fmt.Println("get questions  from usecase called")

@@ -37,8 +37,23 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 }
 
 // RejectOrganization implements interfaces.AdminRepository
-func (*adminRepository) RejectOrganization(orgStatudId int) error {
-	panic("unimplemented")
+func (c *adminRepository) RejectOrganization(orgStatudId int) error {
+	var organizationName string
+	query := `SELECT pending FROM org_statuses WHERE org_status_id = $1;`
+	err := c.db.QueryRow(query, orgStatudId).Scan(&organizationName)
+	if err != nil {
+		return err
+	}
+
+	query2 := `UPDATE org_statuses SET pending = null, rejected = $1;`
+	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows{
+		fmt.Println("err",err)
+		return err
+		
+	}
+
+	return nil
 }
 
 // ApproveEvent implements interfaces.AdminRepository

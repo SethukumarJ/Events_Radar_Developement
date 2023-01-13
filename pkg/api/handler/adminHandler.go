@@ -44,7 +44,7 @@ func NewAdminHandler(
 // @Router /admin/organization/register [patch]
 func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 	
-	orgStatusId := c.Query("orgstatusid")
+	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
 
 	err := cr.adminUsecase.RegisterOrganization(orgStatusId)
 
@@ -70,9 +70,9 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 // @Router /admin/organization/reject [patch]
 func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 	
-	orgStatusId := c.Query("orgstatusid")
+	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
 
-	err := cr.adminUsecase.RegectOrganization(orgStatusId)
+	err := cr.adminUsecase.RejectOrganization(orgStatusId)
 
 	if err != nil {
 		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)

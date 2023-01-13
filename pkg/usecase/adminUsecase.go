@@ -20,7 +20,7 @@ type adminUsecase struct {
 
 // RegisterOrganization implements interfaces.AdminUsecase
 func (c *adminUsecase) RegisterOrganization(orgstatusId int) error {
-	err := c.adminRepo.ApproveEvent(orgstatusId)
+	err := c.adminRepo.RegisterOrganization(orgstatusId)
 
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func (c *adminUsecase) RegisterOrganization(orgstatusId int) error {
 
 // RejectOrganization implements interfaces.AdminUsecase
 func (c *adminUsecase) RejectOrganization(orgstatusId int) error {
-	err := c.adminRepo.ApproveEvent(orgstatusId)
+	err := c.adminRepo.RegisterOrganization(orgstatusId)
 
 	if err != nil {
 		return err

@@ -16,6 +16,31 @@ type adminRepository struct {
 	db *sql.DB
 }
 
+// RegisterOrganization implements interfaces.AdminRepository
+func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
+	var organizationName string
+	query := `SELECT pending FROM org_statuses WHERE org_status_id = $1;`
+	err := c.db.QueryRow(query, orgStatudId).Scan(&organizationName)
+	if err != nil {
+		return err
+	}
+
+	query2 := `UPDATE org_statuses SET pending = null, registered = $1;`
+	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows{
+		fmt.Println("err",err)
+		return err
+		
+	}
+
+	return nil
+}
+
+// RejectOrganization implements interfaces.AdminRepository
+func (*adminRepository) RejectOrganization(orgStatudId int) error {
+	panic("unimplemented")
+}
+
 // ApproveEvent implements interfaces.AdminRepository
 func (c *adminRepository) ApproveEvent(title string) error {
 	var event_name string
@@ -53,7 +78,7 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 
 	now := time.Now()
 	dateString := now.Format("2006-01-02")
-	fmt.Println("currentdate:",dateString)
+	fmt.Println("currentdate:", dateString)
 
 	query := `SELECT 
 					COUNT(*) OVER(),
@@ -79,7 +104,7 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 					website_link FROM events WHERE event_date > $1 AND approved = $2
 					LIMIT $3 OFFSET $4;`
 
-	rows, err := c.db.Query(query, dateString,approved,pagenation.Limit(), pagenation.Offset())
+	rows, err := c.db.Query(query, dateString, approved, pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, utils.Metadata{}, err

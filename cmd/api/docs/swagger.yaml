@@ -354,6 +354,56 @@ paths:
       tags:
       - Admin
       - Admin
+  /admin/organization/register:
+    patch:
+      operationId: Register organization
+      parameters:
+      - description: 'orgStatus id : '
+        in: query
+        name: orgstatusid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Resginter the organization
+      tags:
+      - Admin
+  /admin/organization/reject:
+    patch:
+      operationId: Rejects organization
+      parameters:
+      - description: 'orgStatus id : '
+        in: query
+        name: orgstatusid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Rejects the organization
+      tags:
+      - Admin
   /admin/signup:
     post:
       operationId: SignUp authentication

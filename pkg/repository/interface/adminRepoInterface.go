@@ -13,4 +13,6 @@ type AdminRepository interface {
 	CreateAdmin(admin domain.Admins) (int, error)
 	VipUser(username string) error
 	ApproveEvent(title string) error
+	RegisterOrganization(orgStatudId int) error
+	RejectOrganization(orgStatudId int) error
 }

@@ -64,6 +64,8 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			admin.GET("/listUsers",adminHandler.ViewAllUsers)
 			admin.PATCH("/vipuser",adminHandler.VipUser)
 			admin.GET("/listEvents", adminHandler.ViewAllEvents)
+			admin.PATCH("/organization/register",adminHandler.RegisterOrganization)
+			admin.PATCH("/organization/reject",adminHandler.RejectOrganization)
 		}
 	}
 

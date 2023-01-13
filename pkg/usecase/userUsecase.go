@@ -40,7 +40,7 @@ func (c *userUseCase) CreateOrganization(organization domain.Organizations) erro
 	fmt.Println("found organization", err)
 
 	if err == nil {
-		return errors.New("Organization already exists")
+		return errors.New("organization already exists")
 	}
 
 	if err != nil && err != sql.ErrNoRows {

@@ -785,6 +785,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/organization/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create Organization",
+                "operationId": "Create Organizatioin from user",
+                "parameters": [
+                    {
+                        "description": "Create organization",
+                        "name": "CreateOrganization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Organizations"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/password/update": {
             "patch": {
                 "produces": [
@@ -1203,6 +1245,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Organizations": {
+            "type": "object",
+            "required": [
+                "organizationname"
+            ],
+            "properties": {
+                "about": {
+                    "type": "string"
+                },
+                "createdat": {
+                    "type": "string"
+                },
+                "createdby": {
+                    "type": "string"
+                },
+                "linkedin": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "organizationid": {
+                    "type": "integer"
+                },
+                "organizationname": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "verified": {
+                    "type": "boolean"
+                },
+                "websitelink": {
                     "type": "string"
                 }
             }

@@ -18,27 +18,27 @@ type userRepository struct {
 func (c *userRepository) FindOrganization(organizationName string) (domain.OrganizationsResponse, error) {
 	var organization domain.OrganizationsResponse
 
-	query := `SELECT organization_id
-					organization_name
-					created_by
-					logo
-					about
-					created_at
-					linked_in
-					website_link
+	query := `SELECT organization_id,
+					organization_name,
+					created_by,
+					logo,
+					about,
+					created_at,
+					linked_in,
+					website_link,
 					verified FROM organizations 
 					WHERE organization_name = $1;`
 
 	err := c.db.QueryRow(query, organizationName).Scan(
-		organization.OrganizationId,
-		organization.OrganizationName,
-		organization.CreatedBy,
-		organization.Logo,
-		organization.About,
-		organization.CreatedAt,
-		organization.LinkedIn,
-		organization.WebsiteLink,
-		organization.Verified,
+		&organization.OrganizationId,
+		&organization.OrganizationName,
+		&organization.CreatedBy,
+		&organization.Logo,
+		&organization.About,
+		&organization.CreatedAt,
+		&organization.LinkedIn,
+		&organization.WebsiteLink,
+		&organization.Verified,
 	)
 
 	fmt.Println("user from find user :", organization)
@@ -67,7 +67,7 @@ func (c *userRepository) CreateOrganization(organization domain.Organizations) (
 		organization.LinkedIn,
 		organization.WebsiteLink).Scan(&id)
 
-	query2 := `INSERT INTO org_status(pending)VALUES($1);`
+	query2 := `INSERT INTO org_statuses(pending)VALUES($1);`
 	c.db.QueryRow(query2, organization.OrganizationName)
 
 	fmt.Println("id", id)

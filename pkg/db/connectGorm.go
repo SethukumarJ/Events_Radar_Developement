@@ -26,6 +26,8 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Bios{})
 	db.AutoMigrate(&domain.Faqas{})
 	db.AutoMigrate(&domain.Answers{})
+	db.AutoMigrate(&domain.Organizations{})
+	db.AutoMigrate(&domain.Org_Status{})
 
 	return db, dbErr
 }

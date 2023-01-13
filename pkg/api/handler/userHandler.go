@@ -26,6 +26,17 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+
+// @Summary Create Organization
+// @ID Create Organizatioin from user
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param CreateOrganization body domain.Organizations{} true "Create organization"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/organization/create [post]
+// Create Organization
 func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 
 	var newOrganization domain.Organizations

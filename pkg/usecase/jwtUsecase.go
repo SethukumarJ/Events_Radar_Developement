@@ -12,7 +12,8 @@ import (
 )
 
 type jwtUsecase struct {
-	SecretKey string
+	UserSecretKey string
+	AdminSecretKey string
 }
 
 // GenerateRefreshToken implements interfaces.JWTUsecase
@@ -29,7 +30,13 @@ func (j *jwtUsecase) GenerateRefreshToken(userid uint, username string, role str
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString([]byte(j.SecretKey))
+	signedToken, err := token.SignedString([]byte(j.UserSecretKey))
+
+	if role == "admin" {
+		signedToken, err = token.SignedString([]byte(j.AdminSecretKey))
+	}
+
+
 
 	if err != nil {
 		log.Println(err)
@@ -55,7 +62,10 @@ func (j *jwtUsecase) GenerateAccessToken(userid uint, username string, role stri
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	signedToken, err := token.SignedString([]byte(j.SecretKey))
+	signedToken, err := token.SignedString([]byte(j.UserSecretKey))
+	if role == "admin" {
+		signedToken, err =token.SignedString([]byte(j.AdminSecretKey))
+	}
 
 	if err != nil {
 		log.Println(err)
@@ -71,7 +81,7 @@ func (j *jwtUsecase) GetTokenFromString(signedToken string, claims *domain.Signe
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(j.SecretKey), nil
+		return []byte(j.UserSecretKey), nil
 	})
 
 }
@@ -91,6 +101,8 @@ func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetail
 
 func NewJWTUsecase() usecase.JWTUsecase {
 	return &jwtUsecase{
-		SecretKey: os.Getenv("USER_KEY"),
+		UserSecretKey: os.Getenv("USER_KEY"),
+		AdminSecretKey: os.Getenv("ADMIN_KEY"),
 	}
 }
+

@@ -128,6 +128,31 @@ definitions:
     required:
     - question
     type: object
+  domain.Organizations:
+    properties:
+      about:
+        type: string
+      createdat:
+        type: string
+      createdby:
+        type: string
+      linkedin:
+        type: string
+      logo:
+        type: string
+      organizationid:
+        type: integer
+      organizationname:
+        maxLength: 50
+        minLength: 2
+        type: string
+      verified:
+        type: boolean
+      websitelink:
+        type: string
+    required:
+    - organizationname
+    type: object
   domain.Users:
     properties:
       email:
@@ -675,6 +700,32 @@ paths:
       summary: Login for users
       tags:
       - User
+      - User
+  /user/organization/create:
+    post:
+      operationId: Create Organizatioin from user
+      parameters:
+      - description: Create organization
+        in: body
+        name: CreateOrganization
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Organizations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Organization
+      tags:
       - User
   /user/password/update:
     patch:

@@ -82,4 +82,29 @@ type Answers struct {
 	Answer   string `json:"answer"`
 }
 
+type Organizations struct {
+	OrganizationId   uint      `json:"organizationid" gorm:"autoIncrement:true;unique"`
+	OrganizationName string    `json:"OrganizationName" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+	CreatedBy        string    `json:"createdby"`
+	Logo             string    `json:"logo"`
+	About            string    `json:"about"`
+	CreatedAt        time.Time `json:"createdat"`
+	EventId          string    `json:"eventid"`
+	LinkedIn         string    `json:"linkedin"`
+	WebsiteLink      string    `json:"websitelink"`
+}
 
+type OrgStatus struct {
+	OrgStatusId      uint   `json:"orgstatusid" gorm:"autoIncrement:true;unique"`
+	Verified         string `json:"accepted"`
+	Pending          string `json:"pending"`
+	Rejected         string `json:"renected"`
+}
+
+type UserOrganizationConnections struct {
+	OrganizationId int           `json:"organizationid"`
+	Organizations  Organizations `gorm:"foreignKey:OrganizationId;references:OrganizationId"`
+	UserName       string        `json:"username"`
+	Users          Users         `gorm:"foreignKey:UserName;references:UserName"`
+	Role           string        `json:"role" gorm:"not null"`
+}

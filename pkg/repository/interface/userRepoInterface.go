@@ -16,4 +16,5 @@ type UserRepository interface {
 	PostAnswer(answer domain.Answers, question int) (int, error)
 	StoreVerificationDetails(email string, code int) error
 	VerifyAccount(email string, code string) (error)
+	CreateOrganization(organization domain.Organizations) (int, error)
 }

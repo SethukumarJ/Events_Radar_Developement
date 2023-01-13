@@ -79,7 +79,6 @@ type OrganizationsResponse struct {
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
 	CreatedAt        time.Time `json:"createdat"`
-	EventId          string    `json:"eventid"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
 }

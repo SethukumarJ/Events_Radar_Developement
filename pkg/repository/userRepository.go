@@ -14,9 +14,39 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// CreateOrganization implements interfaces.UserRepository
+func (c *userRepository) CreateOrganization(organization domain.Organizations) (int, error) {
+	var id int
+
+	query := `INSERT INTO organizations(organization_name,
+										created_by,
+										logo,
+										about,
+										created_at,
+										linked_in,
+										website_link)VALUES($1, $2, $3, $4, $5, $6,$7)
+										RETURNING organization_id;`
+
+	err := c.db.QueryRow(query, 
+		organization.OrganizationName,
+		organization.CreatedBy ,
+		organization.Logo,
+		organization.About, 
+		organization.CreatedAt,
+		organization.LinkedIn,
+		organization.WebsiteLink).Scan(&id)
+
+	query2 := `INSERT INTO org_status(pending)VALUES($1);`
+	c.db.QueryRow(query2, organization.OrganizationName)
+
+	fmt.Println("id", id)
+	return id, err
+
+}
+
 // GetQuestions implements interfaces.UserRepository
 func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, error) {
-	
+
 	var questions []domain.FaqaResponse
 
 	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer_id = '0';`
@@ -41,7 +71,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 			&faqas.Question,
 			&faqas.CreatedAt,
 			&faqas.UserName,
-			)
+		)
 
 		fmt.Println("title", faqas.Title)
 
@@ -85,7 +115,6 @@ func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, e
 func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse, error) {
 	fmt.Println("faqas called from repo")
 
-	
 	var qa []domain.QAResponse
 
 	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,

@@ -89,20 +89,19 @@ type Organizations struct {
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
 	CreatedAt        time.Time `json:"createdat"`
-	EventId          string    `json:"eventid"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
 	Verified         bool `json:"verified" gorm:"default:false"`
 }
 
-type OrgStatus struct {
+type Org_Status struct {
 	OrgStatusId uint   `json:"orgstatusid" gorm:"autoIncrement:true;unique"`
 	Registered  string `json:"registered"`
 	Pending     string `json:"pending"`
 	Rejected    string `json:"renected"`
 }
 
-type UserOrganizationConnections struct {
+type User_Organization_Connections struct {
 	OrganizationName string        `json:"organizationname"`
 	Organizations    Organizations `gorm:"foreignKey:OrganizationName;references:OrganizationName"`
 	UserName         string        `json:"username"`

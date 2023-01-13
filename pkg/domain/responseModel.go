@@ -81,7 +81,8 @@ type OrganizationsResponse struct {
 	CreatedAt        time.Time `json:"createdat"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
-	Verified bool `json:"verified"`
+	Verified         bool      `json:"verified"`
+	OrgStatusId      int       `json:"orgstatusid"`
 }
 
 type UserOrganizationConnectionResponse struct {

@@ -16,6 +16,167 @@ type adminRepository struct {
 	db *sql.DB
 }
 
+var listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.pending 
+	FROM organizations AS org INNER JOIN org_statuses AS status 
+	ON org.organization_name = status.pending;`
+
+var listregisterdOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.pending 
+	FROM organizations AS org INNER JOIN org_statuses AS status 
+	ON org.organization_name = status.registered;`
+
+var listRejectedOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
+	FROM organizations AS org INNER JOIN org_statuses AS status 
+	ON org.organization_name = status.rejected;`
+
+// ListOrgRequests implements interfaces.AdminRepository
+func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationStatus string) ([]domain.OrganizationsResponse, utils.Metadata, error) {
+	fmt.Println("allevents called from repo")
+	var organizations []domain.OrganizationsResponse
+
+	if applicationStatus == "pending" {
+
+		rows, err := c.db.Query(listPendingOrganizations, pagenation.Limit(), pagenation.Offset())
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List organizations called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("allevents called from repo")
+
+		for rows.Next() {
+			var organization domain.OrganizationsResponse
+			fmt.Println("username :", organization.OrganizationName)
+			err = rows.Scan(
+				&totalRecords,
+				&organization.OrganizationId,
+				&organization.OrganizationName,
+				&organization.CreatedBy,
+				&organization.Logo,
+				&organization.About,
+				&organization.CreatedAt,
+				&organization.LinkedIn,
+				&organization.WebsiteLink,
+				&organization.Verified,
+				&organization.OrgStatusId,
+			)
+
+			fmt.Println("organization", organization.OrganizationName)
+
+			if err != nil {
+				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			organizations = append(organizations, organization)
+		}
+
+		if err := rows.Err(); err != nil {
+			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(organizations)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+
+	} else if applicationStatus == "registered" {
+
+		rows, err := c.db.Query(listregisterdOrganizations, pagenation.Limit(), pagenation.Offset())
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List organizations called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("allevents called from repo")
+
+		for rows.Next() {
+			var organization domain.OrganizationsResponse
+			fmt.Println("username :", organization.OrganizationName)
+			err = rows.Scan(
+				&totalRecords,
+				&organization.OrganizationId,
+				&organization.OrganizationName,
+				&organization.CreatedBy,
+				&organization.Logo,
+				&organization.About,
+				&organization.CreatedAt,
+				&organization.LinkedIn,
+				&organization.WebsiteLink,
+				&organization.Verified,
+				&organization.OrgStatusId,
+			)
+
+			fmt.Println("organization", organization.OrganizationName)
+
+			if err != nil {
+				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			organizations = append(organizations, organization)
+		}
+
+		if err := rows.Err(); err != nil {
+			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(organizations)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+	} 
+
+	rows, err := c.db.Query(listRejectedOrganizations, pagenation.Limit(), pagenation.Offset())
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List organizations called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("allevents called from repo")
+
+		for rows.Next() {
+			var organization domain.OrganizationsResponse
+			fmt.Println("username :", organization.OrganizationName)
+			err = rows.Scan(
+				&totalRecords,
+				&organization.OrganizationId,
+				&organization.OrganizationName,
+				&organization.CreatedBy,
+				&organization.Logo,
+				&organization.About,
+				&organization.CreatedAt,
+				&organization.LinkedIn,
+				&organization.WebsiteLink,
+				&organization.Verified,
+				&organization.OrgStatusId,
+			)
+
+			fmt.Println("organization", organization.OrganizationName)
+
+			if err != nil {
+				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			organizations = append(organizations, organization)
+		}
+
+		if err := rows.Err(); err != nil {
+			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(organizations)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+}
+
 // RegisterOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 	var organizationName string
@@ -27,10 +188,10 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 
 	query2 := `UPDATE org_statuses SET pending = null, registered = $1;`
 	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
-	if err != nil && err != sql.ErrNoRows{
-		fmt.Println("err",err)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
 		return err
-		
+
 	}
 
 	return nil
@@ -47,10 +208,10 @@ func (c *adminRepository) RejectOrganization(orgStatudId int) error {
 
 	query2 := `UPDATE org_statuses SET pending = null, rejected = $1;`
 	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
-	if err != nil && err != sql.ErrNoRows{
-		fmt.Println("err",err)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
 		return err
-		
+
 	}
 
 	return nil

@@ -19,7 +19,7 @@ type adminUsecase struct {
 }
 
 // ListOrgRequests implements interfaces.AdminUsecase
-func (c *adminUsecase) ListOrgRequests(pagenation utils.Filter, applicationStatus string) (*[]domain.EventResponse, *utils.Metadata, error) {
+func (c *adminUsecase) ListOrgRequests(pagenation utils.Filter, applicationStatus string) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
 	fmt.Println("List requests from usecase called")
 	OrganizaionList, metadata, err := c.adminRepo.ListOrgRequests(pagenation, applicationStatus)
 	fmt.Println("events:", OrganizaionList)

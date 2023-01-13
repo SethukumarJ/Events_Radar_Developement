@@ -91,7 +91,7 @@ type Organizations struct {
 	CreatedAt        time.Time `json:"createdat"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
-	Verified         bool `json:"verified" gorm:"default:false"`
+	Verified         bool      `json:"verified" gorm:"default:false"`
 }
 
 type Org_Status struct {

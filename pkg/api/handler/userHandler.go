@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -23,6 +24,38 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	return UserHandler{
 		userUseCase: usecase,
 	}
+}
+
+func (cr *UserHandler) CreateOrganization(c *gin.Context) {
+
+	var newOrganization domain.Organizations
+
+	fmt.Println("Creating Organizations")
+	//fetching data
+	c.Bind(&newOrganization)
+
+	fmt.Println("event", newOrganization)
+	newOrganization.CreatedBy = c.Writer.Header().Get("userName")
+	newOrganization.CreatedAt = time.Now()
+	
+
+	err := cr.UserUsecase.CreateOrganization(newOrganization)
+
+	log.Println(newOrganization)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Organization", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	organization, _ := cr.userUseCase.FindOrganization(newOrganization.OrganizationName)
+	response := response.SuccessResponse(true, "SUCCESS", organization)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
 }
 
 // @Summary update Profileabout
@@ -155,7 +188,7 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")
 	faqas, err := cr.userUseCase.GetPublicFaqas(title)
-	fmt.Println("faqas from handler",faqas)
+	fmt.Println("faqas from handler", faqas)
 	if err != nil {
 		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -165,11 +198,10 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 	}
 
 	response := response.SuccessResponse(true, "Listed All faqas", faqas)
-	fmt.Println("response",response)
+	fmt.Println("response", response)
 	utils.ResponseJSON(*c, response)
 
 }
-
 
 // @Summary list all Asked questions
 // @ID list all asked questions
@@ -184,7 +216,7 @@ func (cr *UserHandler) GetQuestions(c *gin.Context) {
 
 	title := c.Query("title")
 	questions, err := cr.userUseCase.GetQuestions(title)
-	fmt.Println("Questions from handler",questions)
+	fmt.Println("Questions from handler", questions)
 	if err != nil {
 		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -194,7 +226,7 @@ func (cr *UserHandler) GetQuestions(c *gin.Context) {
 	}
 
 	response := response.SuccessResponse(true, "Listed All faqas", questions)
-	fmt.Println("response",response)
+	fmt.Println("response", response)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -256,7 +288,7 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 func (cr *UserHandler) PostAnswer(c *gin.Context) {
 
 	var answer domain.Answers
-	question_id,_ := strconv.Atoi(c.Query("faqaid"))
+	question_id, _ := strconv.Atoi(c.Query("faqaid"))
 
 	c.Bind(&answer)
 
@@ -278,5 +310,3 @@ func (cr *UserHandler) PostAnswer(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-
-

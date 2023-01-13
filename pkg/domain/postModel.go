@@ -84,7 +84,7 @@ type Answers struct {
 
 type Organizations struct {
 	OrganizationId   uint      `json:"organizationid" gorm:"autoIncrement:true;unique"`
-	OrganizationName string    `json:"Oorganizationname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+	OrganizationName string    `json:"organizationname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	CreatedBy        string    `json:"createdby"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
@@ -92,11 +92,12 @@ type Organizations struct {
 	EventId          string    `json:"eventid"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
+	Verified         bool `json:"verified"`
 }
 
 type OrgStatus struct {
 	OrgStatusId uint   `json:"orgstatusid" gorm:"autoIncrement:true;unique"`
-	Verified    string `json:"verified"`
+	Registered  string `json:"registered"`
 	Pending     string `json:"pending"`
 	Rejected    string `json:"renected"`
 }

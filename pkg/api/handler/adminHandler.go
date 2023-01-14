@@ -31,6 +31,119 @@ func NewAdminHandler(
 	}
 }
 
+// @Summary list all pending organizations for admin
+// @ID list all organization with status
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  page   query  int  true  "Page number: "
+// @Param  pagesize   query  int  true  "Page capacity : "
+// @Param  applicationStatus   query  string  true  "List organization based on status: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/list-organizations [get]
+func (cr *AdminHandler) ListOrgRequests(c *gin.Context) {
+
+
+	page, _ := strconv.Atoi(c.Query("page"))
+
+	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
+
+	applicationStatus:= c.Query("applicationStatus")
+	fmt.Println("applicationStatus",applicationStatus)
+
+	log.Println(page, "   ", pageSize)
+
+	fmt.Println("page :", page)
+	fmt.Println("pagesize", pageSize)
+
+	pagenation := utils.Filter{
+		Page:     page,
+		PageSize: pageSize,
+	}
+
+	fmt.Println("pagenation", pagenation)
+
+	organizations, metadata, err := cr.adminUsecase.ListOrgRequests(pagenation, applicationStatus)
+
+	fmt.Println("events:", organizations)
+
+	result := struct {
+		Organizations *[]domain.OrganizationsResponse
+		Meta  *utils.Metadata
+	}{
+		Organizations: organizations,
+		Meta:  metadata,
+	}
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting organization applications from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All Organization applications", result)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
+// @Summary Resginter the organization
+// @ID Register organization
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  orgstatusid   query  int  true  "orgStatus id : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/organization/register [patch]
+func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
+	
+	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
+
+	err := cr.adminUsecase.RegisterOrganization(orgStatusId)
+
+	if err != nil {
+		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Organization registered", orgStatusId)
+	utils.ResponseJSON(*c, response)
+
+}
+// @Summary Rejects the organization
+// @ID Reject organization
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  orgstatusid   query  int  true  "orgStatus id : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/organization/reject [patch]
+func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
+	
+	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
+
+	err := cr.adminUsecase.RejectOrganization(orgStatusId)
+
+	if err != nil {
+		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Organization rejected", orgStatusId)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
 // @Summary makes the user vip
 // @ID make vip user
 // @Tags Admin

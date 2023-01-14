@@ -8,15 +8,134 @@ import (
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type userRepository struct {
 	db *sql.DB
 }
 
+
+// ListOrganizations implements interfaces.UserRepository
+func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error) {
+	fmt.Println("allevents called from repo")
+	var organizations []domain.OrganizationsResponse
+
+	 ListregisteredOrganizations := `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
+	FROM organizations AS org INNER JOIN org_statuses AS status 
+	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
+
+	rows, err := c.db.Query(ListregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List organizations called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("allevents called from repo")
+
+		for rows.Next() {
+			var organization domain.OrganizationsResponse
+			fmt.Println("username :", organization.OrganizationName)
+			err = rows.Scan(
+				&totalRecords,
+				&organization.OrganizationId,
+				&organization.OrganizationName,
+				&organization.CreatedBy,
+				&organization.Logo,
+				&organization.About,
+				&organization.CreatedAt,
+				&organization.LinkedIn,
+				&organization.WebsiteLink,
+				&organization.Verified,
+				&organization.OrgStatusId,
+			)
+
+			fmt.Println("organization", organization.OrganizationName)
+
+			if err != nil {
+				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			organizations = append(organizations, organization)
+		}
+
+		if err := rows.Err(); err != nil {
+			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(organizations)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+}
+
+// FindOrganization implements interfaces.UserRepository
+func (c *userRepository) FindOrganization(organizationName string) (domain.OrganizationsResponse, error) {
+	var organization domain.OrganizationsResponse
+
+	query := `SELECT organization_id,
+					organization_name,
+					created_by,
+					logo,
+					about,
+					created_at,
+					linked_in,
+					website_link,
+					verified FROM organizations 
+					WHERE organization_name = $1;`
+
+	err := c.db.QueryRow(query, organizationName).Scan(
+		&organization.OrganizationId,
+		&organization.OrganizationName,
+		&organization.CreatedBy,
+		&organization.Logo,
+		&organization.About,
+		&organization.CreatedAt,
+		&organization.LinkedIn,
+		&organization.WebsiteLink,
+		&organization.Verified,
+	)
+
+	fmt.Println("user from find user :", organization)
+	return organization, err
+}
+
+// CreateOrganization implements interfaces.UserRepository
+func (c *userRepository) CreateOrganization(organization domain.Organizations) (int, error) {
+	var id int
+
+	query := `INSERT INTO organizations(organization_name,
+										created_by,
+										logo,
+										about,
+										created_at,
+										linked_in,
+										website_link)VALUES($1, $2, $3, $4, $5, $6,$7)
+										RETURNING organization_id;`
+
+	err := c.db.QueryRow(query,
+		organization.OrganizationName,
+		organization.CreatedBy,
+		organization.Logo,
+		organization.About,
+		organization.CreatedAt,
+		organization.LinkedIn,
+		organization.WebsiteLink).Scan(&id)
+
+	query2 := `INSERT INTO org_statuses(pending)VALUES($1);`
+	c.db.QueryRow(query2, organization.OrganizationName)
+
+	fmt.Println("id", id)
+	return id, err
+
+}
+
 // GetQuestions implements interfaces.UserRepository
 func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, error) {
-	
+
 	var questions []domain.FaqaResponse
 
 	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer_id = '0';`
@@ -41,7 +160,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 			&faqas.Question,
 			&faqas.CreatedAt,
 			&faqas.UserName,
-			)
+		)
 
 		fmt.Println("title", faqas.Title)
 
@@ -85,7 +204,6 @@ func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, e
 func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse, error) {
 	fmt.Println("faqas called from repo")
 
-	
 	var qa []domain.QAResponse
 
 	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,

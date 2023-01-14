@@ -71,3 +71,22 @@ type QAResponse struct {
 	OrganizerName string    `json:"organizername"`
 	Answer        string    `json:"answer"`
 }
+
+type OrganizationsResponse struct {
+	OrganizationId   uint      `json:"organizationid"`
+	OrganizationName string    `json:"Oorganizationname"`
+	CreatedBy        string    `json:"createdby"`
+	Logo             string    `json:"logo"`
+	About            string    `json:"about"`
+	CreatedAt        time.Time `json:"createdat"`
+	LinkedIn         string    `json:"linkedin"`
+	WebsiteLink      string    `json:"websitelink"`
+	Verified         bool      `json:"verified"`
+	OrgStatusId      int       `json:"orgstatusid"`
+}
+
+type UserOrganizationConnectionResponse struct {
+	OrganizationName string `json:"organizationname"`
+	UserName         string `json:"username"`
+	Role             string `json:"role" gorm:"not null"`
+}

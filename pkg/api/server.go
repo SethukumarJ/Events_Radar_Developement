@@ -36,6 +36,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.PATCH("/verify/account",authHandler.VerifyAccount)
 		user.PATCH("/password/update",userHandler.UpdatePassword)
 		user.GET("/list/faqas",userHandler.GetPublicFaqas)
+		user.GET("/list-organizations",userHandler.ListOrganizations)
 
 		user.Use(middleware.AuthorizeJwt())
 		{
@@ -45,6 +46,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.PATCH("/update/profile",userHandler.UpdateProfile)
 			user.POST("/event/post/answer",userHandler.PostAnswer)
 			user.GET("/list/questions",userHandler.GetQuestions)
+			user.POST("/organization/create", userHandler.CreateOrganization)
 		}
 	}
 
@@ -63,6 +65,9 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			admin.GET("/listUsers",adminHandler.ViewAllUsers)
 			admin.PATCH("/vipuser",adminHandler.VipUser)
 			admin.GET("/listEvents", adminHandler.ViewAllEvents)
+			admin.PATCH("/organization/register",adminHandler.RegisterOrganization)
+			admin.PATCH("/organization/reject",adminHandler.RejectOrganization)
+			admin.GET("/list-organizations",adminHandler.ListOrgRequests)
 		}
 	}
 

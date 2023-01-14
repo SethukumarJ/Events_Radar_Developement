@@ -12,6 +12,7 @@ import (
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,6 +21,51 @@ type userUseCase struct {
 	adminRepo  interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
+}
+
+// ListOrganizations implements interfaces.UserUseCase
+func (c *userUseCase) ListOrganizations(pagenation utils.Filter) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
+	fmt.Println("List Organization from usecase called")
+	OrganizaionList, metadata, err := c.userRepo.ListOrganizations(pagenation)
+	fmt.Println("organizations:", OrganizaionList)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, &metadata, err
+	}
+
+	return &OrganizaionList, &metadata, nil
+}
+
+// FindOrganization implements interfaces.UserUseCase
+func (c *userUseCase) FindOrganization(organizationName string) (*domain.OrganizationsResponse, error) {
+	organization, err := c.userRepo.FindOrganization(organizationName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
+// CreateOrganization implements interfaces.UserUseCase
+func (c *userUseCase) CreateOrganization(organization domain.Organizations) error {
+	fmt.Println("create organization from service")
+	_, err := c.userRepo.FindOrganization(organization.OrganizationName)
+	fmt.Println("found organization", err)
+
+	if err == nil {
+		return errors.New("organization already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	_, err = c.userRepo.CreateOrganization(organization)
+	if err != nil {
+		return err
+
+	}
+	return nil
 }
 
 // GetQuestions implements interfaces.UserUseCase

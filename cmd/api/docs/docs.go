@@ -106,6 +106,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/list-organizations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "list all pending organizations for admin",
+                "operationId": "list all organization with status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "List organization based on status: ",
+                        "name": "applicationStatus",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/listEvents": {
             "get": {
                 "security": [
@@ -227,6 +281,86 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.Admins"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/organization/register": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Resginter the organization",
+                "operationId": "Register organization",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "orgStatus id : ",
+                        "name": "orgstatusid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/organization/reject": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Rejects the organization",
+                "operationId": "Reject organization",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "orgStatus id : ",
+                        "name": "orgstatusid",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -672,6 +806,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/list-organizations": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "list all registered organizations for user",
+                "operationId": "list all registered organizations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/list/faqas": {
             "get": {
                 "produces": [
@@ -766,6 +942,48 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/organization/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create Organization",
+                "operationId": "Create Organizatioin from user",
+                "parameters": [
+                    {
+                        "description": "Create organization",
+                        "name": "CreateOrganization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Organizations"
                         }
                     }
                 ],
@@ -1203,6 +1421,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Organizations": {
+            "type": "object",
+            "required": [
+                "organizationname"
+            ],
+            "properties": {
+                "about": {
+                    "type": "string"
+                },
+                "createdat": {
+                    "type": "string"
+                },
+                "createdby": {
+                    "type": "string"
+                },
+                "linkedin": {
+                    "type": "string"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "organizationid": {
+                    "type": "integer"
+                },
+                "organizationname": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
+                },
+                "verified": {
+                    "type": "boolean"
+                },
+                "websitelink": {
                     "type": "string"
                 }
             }

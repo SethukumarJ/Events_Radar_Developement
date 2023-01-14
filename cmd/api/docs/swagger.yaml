@@ -128,6 +128,31 @@ definitions:
     required:
     - question
     type: object
+  domain.Organizations:
+    properties:
+      about:
+        type: string
+      createdat:
+        type: string
+      createdby:
+        type: string
+      linkedin:
+        type: string
+      logo:
+        type: string
+      organizationid:
+        type: integer
+      organizationname:
+        maxLength: 50
+        minLength: 2
+        type: string
+      verified:
+        type: boolean
+      websitelink:
+        type: string
+    required:
+    - organizationname
+    type: object
   domain.Users:
     properties:
       email:
@@ -239,6 +264,41 @@ paths:
       summary: Create event
       tags:
       - Admin
+  /admin/list-organizations:
+    get:
+      operationId: list all organization with status
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: integer
+      - description: 'List organization based on status: '
+        in: query
+        name: applicationStatus
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: list all pending organizations for admin
+      tags:
+      - Admin
   /admin/listEvents:
     get:
       operationId: list all upcoming events
@@ -328,6 +388,56 @@ paths:
       summary: Login for Admin
       tags:
       - Admin
+      - Admin
+  /admin/organization/register:
+    patch:
+      operationId: Register organization
+      parameters:
+      - description: 'orgStatus id : '
+        in: query
+        name: orgstatusid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Resginter the organization
+      tags:
+      - Admin
+  /admin/organization/reject:
+    patch:
+      operationId: Reject organization
+      parameters:
+      - description: 'orgStatus id : '
+        in: query
+        name: orgstatusid
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Rejects the organization
+      tags:
       - Admin
   /admin/signup:
     post:
@@ -603,6 +713,34 @@ paths:
       summary: Post Question function
       tags:
       - User
+  /user/list-organizations:
+    get:
+      operationId: list all registered organizations
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all registered organizations for user
+      tags:
+      - User
   /user/list/faqas:
     get:
       operationId: list all public faqas
@@ -675,6 +813,32 @@ paths:
       summary: Login for users
       tags:
       - User
+      - User
+  /user/organization/create:
+    post:
+      operationId: Create Organizatioin from user
+      parameters:
+      - description: Create organization
+        in: body
+        name: CreateOrganization
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Organizations'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Create Organization
+      tags:
       - User
   /user/password/update:
     patch:

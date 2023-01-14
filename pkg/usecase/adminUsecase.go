@@ -18,6 +18,38 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+// ListOrgRequests implements interfaces.AdminUsecase
+func (c *adminUsecase) ListOrgRequests(pagenation utils.Filter, applicationStatus string) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
+	fmt.Println("List requests from usecase called")
+	OrganizaionList, metadata, err := c.adminRepo.ListOrgRequests(pagenation, applicationStatus)
+	fmt.Println("events:", OrganizaionList)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, &metadata, err
+	}
+
+	return &OrganizaionList, &metadata, nil
+}
+
+// RegisterOrganization implements interfaces.AdminUsecase
+func (c *adminUsecase) RegisterOrganization(orgstatusId int) error {
+	err := c.adminRepo.RegisterOrganization(orgstatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// RejectOrganization implements interfaces.AdminUsecase
+func (c *adminUsecase) RejectOrganization(orgstatusId int) error {
+	err := c.adminRepo.RegisterOrganization(orgstatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // ApproveEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) ApproveEvent(title string) error {

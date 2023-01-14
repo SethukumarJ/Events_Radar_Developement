@@ -26,7 +26,7 @@ type userUseCase struct {
 // ListOrganizations implements interfaces.UserUseCase
 func (c *userUseCase) ListOrganizations(pagenation utils.Filter) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
 	fmt.Println("List Organization from usecase called")
-	OrganizaionList, metadata, err := c.adminRepo.ListOrganizations(pagenation)
+	OrganizaionList, metadata, err := c.userRepo.ListOrganizations(pagenation)
 	fmt.Println("organizations:", OrganizaionList)
 	if err != nil {
 		fmt.Println("error from list organization from usecase:", err)

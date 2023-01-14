@@ -8,10 +8,64 @@ import (
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 )
 
 type userRepository struct {
 	db *sql.DB
+}
+
+
+// ListOrganizations implements interfaces.UserRepository
+func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error) {
+
+	fmt.Println("allevents called from repo")
+	var organizations []domain.OrganizationsResponse
+
+	rows, err := c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List organizations called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("allevents called from repo")
+
+		for rows.Next() {
+			var organization domain.OrganizationsResponse
+			fmt.Println("username :", organization.OrganizationName)
+			err = rows.Scan(
+				&totalRecords,
+				&organization.OrganizationId,
+				&organization.OrganizationName,
+				&organization.CreatedBy,
+				&organization.Logo,
+				&organization.About,
+				&organization.CreatedAt,
+				&organization.LinkedIn,
+				&organization.WebsiteLink,
+				&organization.Verified,
+				&organization.OrgStatusId,
+			)
+
+			fmt.Println("organization", organization.OrganizationName)
+
+			if err != nil {
+				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			organizations = append(organizations, organization)
+		}
+
+		if err := rows.Err(); err != nil {
+			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(organizations)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 }
 
 // FindOrganization implements interfaces.UserRepository

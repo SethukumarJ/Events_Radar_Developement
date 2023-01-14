@@ -713,6 +713,34 @@ paths:
       summary: Post Question function
       tags:
       - User
+  /user/list-organizations:
+    get:
+      operationId: list all registered organizations
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all registered organizations for user
+      tags:
+      - User
   /user/list/faqas:
     get:
       operationId: list all public faqas

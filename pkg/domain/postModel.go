@@ -102,11 +102,10 @@ type Org_Status struct {
 }
 
 type User_Organization_Connections struct {
-	OrganizationName string        `json:"organizationname"`
-	Organizations    Organizations `gorm:"foreignKey:OrganizationName;references:OrganizationName"`
-	UserName         string        `json:"username"`
-	Users            Users         `gorm:"foreignKey:UserName;references:UserName"`
-	Role             string        `json:"role" gorm:"not null"`
+	UserOrganizationConnectionsId uint          `json:"organizationid" gorm:"autoIncrement:true;unique"`
+	OrganizationName              string        `json:"organizationname"`
+	Organizations                 Organizations `gorm:"foreignKey:OrganizationName;references:OrganizationName"`
+	UserName                      string        `json:"username"`
+	Users                         Users         `gorm:"foreignKey:UserName;references:UserName"`
+	Role                          string        `json:"role" gorm:"not null"`
 }
-
-

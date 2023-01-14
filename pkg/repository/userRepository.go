@@ -18,11 +18,15 @@ type userRepository struct {
 
 // ListOrganizations implements interfaces.UserRepository
 func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error) {
-
 	fmt.Println("allevents called from repo")
 	var organizations []domain.OrganizationsResponse
 
-	rows, err := c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
+	 ListregisteredOrganizations := `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
+	FROM organizations AS org INNER JOIN org_statuses AS status 
+	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
+
+	rows, err := c.db.Query(ListregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
 		fmt.Println("rows", rows)
 		if err != nil {
 			return nil, utils.Metadata{}, err

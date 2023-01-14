@@ -27,10 +27,9 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 }
 
 // @Summary list all registered organizations for user
-// @ID list all organization with status
+// @ID list all registered organizations
 // @Tags User
 // @Produce json
-// @Security BearerAuth
 // @Param  page   query  int  true  "Page number: "
 // @Param  pagesize   query  int  true  "Page capacity : "
 // @Success 200 {object} response.Response{}

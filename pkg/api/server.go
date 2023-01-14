@@ -36,6 +36,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.PATCH("/verify/account",authHandler.VerifyAccount)
 		user.PATCH("/password/update",userHandler.UpdatePassword)
 		user.GET("/list/faqas",userHandler.GetPublicFaqas)
+		user.GET("/list-organizations",userHandler.ListOrganizations)
 
 		user.Use(middleware.AuthorizeJwt())
 		{

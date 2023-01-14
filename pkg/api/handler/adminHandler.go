@@ -112,7 +112,7 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Organization rejected", orgStatusId)
+	response := response.SuccessResponse(true, "Organization registered", orgStatusId)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -138,7 +138,7 @@ func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Organization registered", orgStatusId)
+	response := response.SuccessResponse(true, "Organization rejected", orgStatusId)
 	utils.ResponseJSON(*c, response)
 
 }

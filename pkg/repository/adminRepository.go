@@ -180,14 +180,26 @@ func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationSt
 // RegisterOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 	var organizationName string
-	query := `SELECT pending FROM org_statuses WHERE org_status_id = $1;`
-	err := c.db.QueryRow(query, orgStatudId).Scan(&organizationName)
-	if err != nil {
+	var userName string
+
+	query := `SELECT org.created_by,status.pending
+				FROM organizations AS org INNER JOIN org_statuses AS status 
+				ON org.organization_name = status.pending WHERE status.org_status_id = $1;`
+	err := c.db.QueryRow(query, orgStatudId).Scan(&userName,&organizationName)
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
 	query2 := `UPDATE org_statuses SET pending = null, registered = $1;`
 	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+	query3 := `INSERT INTO User_organization_connections(organization_name,user_name,role)
+	VALUES($1,$2,$3);`
+	err = c.db.QueryRow(query3, organizationName,userName,"1").Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err

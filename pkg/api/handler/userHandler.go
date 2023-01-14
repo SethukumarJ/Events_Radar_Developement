@@ -32,15 +32,18 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Tags User
 // @Produce json
 // @Security BearerAuth
-// @Param  organizationName   query  string  true  "orgStatus id : "
+// @Param  organizationName   query  string  true  "organization name: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/organization/join [patch]
 func (cr *UserHandler) JoinOrganization(c *gin.Context)  {
+
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
 	
 	organizationName := (c.Query("organizationName"))
 
-	err := cr.userUseCase.JoinOrganization(organizationName)
+	err := cr.userUseCase.JoinOrganization(organizationName, username)
 
 	if err != nil {
 		response := response.ErrorResponse("Joining organization failed!", err.Error(), nil)

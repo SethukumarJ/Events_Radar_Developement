@@ -23,6 +23,16 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// JoinOrganization implements interfaces.UserUseCase
+func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
+	err := c.adminRepo.RegisterOrganization(organizationName,userName)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ListOrganizations implements interfaces.UserUseCase
 func (c *userUseCase) ListOrganizations(pagenation utils.Filter) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
 	fmt.Println("List Organization from usecase called")

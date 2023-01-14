@@ -101,6 +101,13 @@ type Org_Status struct {
 	Rejected    string `json:"renected"`
 }
 
+type Join_Status struct {
+	JoinStatusId uint   `json:"orgstatusid" gorm:"autoIncrement:true;unique"`
+	Joined       string `json:"joined"`
+	Pending      string `json:"pending"`
+	Rejected     string `json:"renected"`
+}
+
 type User_Organization_Connections struct {
 	UserOrganizationConnectionsId uint          `json:"organizationid" gorm:"autoIncrement:true;unique"`
 	OrganizationName              string        `json:"organizationname"`

@@ -26,6 +26,35 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+
+// @Summary Joining organization
+// @ID Join organization
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param  organizationName   query  string  true  "orgStatus id : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/organization/join [patch]
+func (cr *UserHandler) JoinOrganization(c *gin.Context)  {
+	
+	organizationName := (c.Query("organizationName"))
+
+	err := cr.userUseCase.JoinOrganization(organizationName)
+
+	if err != nil {
+		response := response.ErrorResponse("Joining organization failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Requested to join organization ", organizationName)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
 // @Summary list all registered organizations for user
 // @ID list all registered organizations
 // @Tags User

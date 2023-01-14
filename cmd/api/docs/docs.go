@@ -106,6 +106,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/list-organizations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "list all pending organizations for admin",
+                "operationId": "list all organization with status",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "List organization based on status: ",
+                        "name": "applicationStatus",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/listEvents": {
             "get": {
                 "security": [
@@ -299,7 +353,7 @@ const docTemplate = `{
                     "Admin"
                 ],
                 "summary": "Rejects the organization",
-                "operationId": "Rejects organization",
+                "operationId": "Reject organization",
                 "parameters": [
                     {
                         "type": "integer",

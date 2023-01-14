@@ -26,6 +26,60 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// @Summary list all registered organizations for user
+// @ID list all organization with status
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param  page   query  int  true  "Page number: "
+// @Param  pagesize   query  int  true  "Page capacity : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/list-organizations [get]
+func (cr *UserHandler) ListOrganizations(c *gin.Context) {
+
+
+	page, _ := strconv.Atoi(c.Query("page"))
+
+	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
+
+	log.Println(page, "   ", pageSize)
+
+	fmt.Println("page :", page)
+	fmt.Println("pagesize", pageSize)
+
+	pagenation := utils.Filter{
+		Page:     page,
+		PageSize: pageSize,
+	}
+
+	fmt.Println("pagenation", pagenation)
+
+	organizations, metadata, err := cr.userUseCase.ListOrganizations(pagenation)
+
+	fmt.Println("events:", organizations)
+
+	result := struct {
+		Organizations *[]domain.OrganizationsResponse
+		Meta  *utils.Metadata
+	}{
+		Organizations: organizations,
+		Meta:  metadata,
+	}
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting organization applications from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All Organization applications", result)
+	utils.ResponseJSON(*c, response)
+
+}
+
 
 // @Summary Create Organization
 // @ID Create Organizatioin from user

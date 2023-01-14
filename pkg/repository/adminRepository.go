@@ -17,19 +17,19 @@ type adminRepository struct {
 }
 
 var listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
-	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.pending 
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.pending;`
+	ON org.organization_name = status.pending LIMIT $1 OFFSET $2;`
 
-var listregisterdOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
-	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.pending 
+var listregisteredOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.registered;`
+	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
 
 var listRejectedOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.rejected;`
+	ON org.organization_name = status.rejected LIMIT $1 OFFSET $2;`
 
 // ListOrgRequests implements interfaces.AdminRepository
 func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationStatus string) ([]domain.OrganizationsResponse, utils.Metadata, error) {
@@ -85,7 +85,7 @@ func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationSt
 
 	} else if applicationStatus == "registered" {
 
-		rows, err := c.db.Query(listregisterdOrganizations, pagenation.Limit(), pagenation.Offset())
+		rows, err := c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
 		fmt.Println("rows", rows)
 		if err != nil {
 			return nil, utils.Metadata{}, err

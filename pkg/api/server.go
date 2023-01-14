@@ -66,6 +66,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			admin.GET("/listEvents", adminHandler.ViewAllEvents)
 			admin.PATCH("/organization/register",adminHandler.RegisterOrganization)
 			admin.PATCH("/organization/reject",adminHandler.RejectOrganization)
+			admin.GET("/list-organizations",adminHandler.ListOrgRequests)
 		}
 	}
 

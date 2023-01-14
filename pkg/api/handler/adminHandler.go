@@ -32,7 +32,7 @@ func NewAdminHandler(
 }
 
 // @Summary list all pending organizations for admin
-// @ID list all upcoming events
+// @ID list all organization with status
 // @Tags Admin
 // @Produce json
 // @Security BearerAuth
@@ -69,10 +69,10 @@ func (cr *AdminHandler) ListOrgRequests(c *gin.Context) {
 	fmt.Println("events:", organizations)
 
 	result := struct {
-		organizations *[]domain.OrganizationsResponse
+		Organizations *[]domain.OrganizationsResponse
 		Meta  *utils.Metadata
 	}{
-		organizations: organizations,
+		Organizations: organizations,
 		Meta:  metadata,
 	}
 
@@ -117,7 +117,7 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 
 }
 // @Summary Rejects the organization
-// @ID Register organization
+// @ID Reject organization
 // @Tags Admin
 // @Produce json
 // @Security BearerAuth

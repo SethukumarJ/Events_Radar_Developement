@@ -264,6 +264,41 @@ paths:
       summary: Create event
       tags:
       - Admin
+  /admin/list-organizations:
+    get:
+      operationId: list all organization with status
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: integer
+      - description: 'List organization based on status: '
+        in: query
+        name: applicationStatus
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: list all pending organizations for admin
+      tags:
+      - Admin
   /admin/listEvents:
     get:
       operationId: list all upcoming events
@@ -381,7 +416,7 @@ paths:
       - Admin
   /admin/organization/reject:
     patch:
-      operationId: Rejects organization
+      operationId: Reject organization
       parameters:
       - description: 'orgStatus id : '
         in: query

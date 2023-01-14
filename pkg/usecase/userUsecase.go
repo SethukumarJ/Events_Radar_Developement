@@ -12,6 +12,7 @@ import (
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
 	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,6 +21,19 @@ type userUseCase struct {
 	adminRepo  interfaces.AdminRepository
 	mailConfig config.MailConfig
 	config     config.Config
+}
+
+// ListOrganizations implements interfaces.UserUseCase
+func (c *userUseCase) ListOrganizations(pagenation utils.Filter) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
+	fmt.Println("List Organization from usecase called")
+	OrganizaionList, metadata, err := c.adminRepo.ListOrganizations(pagenation)
+	fmt.Println("organizations:", OrganizaionList)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, &metadata, err
+	}
+
+	return &OrganizaionList, &metadata, nil
 }
 
 // FindOrganization implements interfaces.UserUseCase

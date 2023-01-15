@@ -47,6 +47,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/event/post/answer",userHandler.PostAnswer)
 			user.GET("/list/questions",userHandler.GetQuestions)
 			user.POST("/organization/create", userHandler.CreateOrganization)
+			user.PATCH("/organization/join",userHandler.JoinOrganization)
 		}
 	}
 

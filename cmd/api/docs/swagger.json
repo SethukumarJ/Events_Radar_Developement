@@ -996,6 +996,46 @@
                 }
             }
         },
+        "/user/organization/join": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Joining organization",
+                "operationId": "Join organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization name: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/password/update": {
             "patch": {
                 "produces": [

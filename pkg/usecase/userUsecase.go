@@ -25,7 +25,7 @@ type userUseCase struct {
 
 // JoinOrganization implements interfaces.UserUseCase
 func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
-	err := c.adminRepo.RegisterOrganization(organizationName,userName)
+	_,err := c.userRepo.JoinOrganization(organizationName,userName)
 
 	if err != nil {
 		return err

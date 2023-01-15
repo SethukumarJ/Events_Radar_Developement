@@ -840,6 +840,31 @@ paths:
       summary: Create Organization
       tags:
       - User
+  /user/organization/join:
+    patch:
+      operationId: Join organization
+      parameters:
+      - description: 'organization name: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Joining organization
+      tags:
+      - User
   /user/password/update:
     patch:
       operationId: Update password

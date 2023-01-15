@@ -20,4 +20,5 @@ type UserRepository interface {
 	VerifyAccount(email string, code string) error
 	CreateOrganization(organization domain.Organizations) (int, error)
 	ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error)
+	JoinOrganization(organizatinName string , username string) (int, error)
 }

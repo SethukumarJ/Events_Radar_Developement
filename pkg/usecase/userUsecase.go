@@ -23,6 +23,20 @@ type userUseCase struct {
 	config     config.Config
 }
 
+
+
+
+func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error){
+
+	role, err := c.userRepo.FindRole(organizationName, username)
+
+	if err != nil {
+		return "", err
+	}
+
+	return role , nil
+}
+
 // JoinOrganization implements interfaces.UserUseCase
 func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
 	_,err := c.userRepo.JoinOrganization(organizationName,userName)

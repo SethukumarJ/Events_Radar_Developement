@@ -27,6 +27,19 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 }
 
 
+
+func (cr *UserHandler) GetOrganization(c *gin.Context) {
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+	organizationName := (c.Query("organizationName"))
+	fmt.Println("organizationName ", organizationName)
+	role := c.Param("role")
+	fmt.Println("role ", role)
+
+	
+}
+
+
 // @Summary Joining organization
 // @ID Join organization
 // @Tags User

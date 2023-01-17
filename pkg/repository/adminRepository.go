@@ -197,7 +197,7 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 		return err
 
 	}
-	query3 := `INSERT INTO User_organization_connections(organization_name,user_name,role)
+	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
 	VALUES($1,$2,$3);`
 	err = c.db.QueryRow(query3, organizationName,userName,"1").Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {

@@ -28,7 +28,7 @@ type userUseCase struct {
 
 func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error){
 
-	role, err := c.userRepo.FindRole(organizationName, username)
+	role, err := c.userRepo.FindRole(username, organizationName)
 
 	if err != nil {
 		return "", err

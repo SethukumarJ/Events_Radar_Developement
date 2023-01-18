@@ -23,8 +23,6 @@ type middleware struct {
 	userUsecase usecase.UserUseCase
 }
 
-
-
 func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase, userUsecase usecase.UserUseCase) Middleware {
 	return &middleware{
 		jwtUsecase:  jwtUserUsecase,
@@ -33,7 +31,6 @@ func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase, userUsecase usecase.Us
 
 }
 
-
 // AuthorizeOrg implements Middleware
 func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 	return (func(c *gin.Context) {
@@ -41,7 +38,10 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		//getting from header
 		autheader := c.Request.Header["Authorization"]
 		organizationName := c.Query("organizationName")
-		pathRole := c.Param("pathRole")
+		fmt.Println("organization Name from middleware",organizationName)
+		pathRole := c.Query("pathRole")
+
+		fmt.Println("role from middleware", pathRole)
 		auth := strings.Join(autheader, " ")
 		bearerToken := strings.Split(auth, " ")
 		fmt.Printf("\n\ntoken : %v\n\n", autheader)
@@ -80,11 +80,12 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		userName := fmt.Sprint(claims.UserName)
-
-		role , err := cr.userUsecase.VerifyRole(userName, organizationName)
-		fmt.Println(role, pathRole, "role and pathrole")
+		fmt.Println("username",userName)
+		role, err := cr.userUsecase.VerifyRole(userName, organizationName)
+		fmt.Println(role,"///////////", pathRole,err,"role and pathrole")
 		if role != pathRole {
-			response := response.ErrorResponse("Error", err.Error(), source)
+			err = errors.New("your role input is invalid")
+			response := response.ErrorResponse("Error", err.Error(), role)
 			c.Writer.Header().Add("Content-Type", "application/json")
 			c.Writer.WriteHeader(http.StatusUnauthorized)
 			utils.ResponseJSON(*c, response)
@@ -92,10 +93,9 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 			return
 		}
 
-
 		c.Writer.Header().Set("userName", userName)
-		c.Writer.Header().Set("organizationName",organizationName)
-		c.Writer.Header().Set("role",role)
+		c.Writer.Header().Set("organizationName", organizationName)
+		c.Writer.Header().Set("role", role)
 		c.Next()
 
 	})

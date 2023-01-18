@@ -659,6 +659,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/get-organization": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Get Organization",
+                "operationId": "Get Organizaition by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "role:",
+                        "name": "pathRole",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/event/create": {
             "post": {
                 "security": [

@@ -15,21 +15,21 @@ import (
 type adminRepository struct {
 	db *sql.DB
 }
-
-var listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+const (
+	listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
 	ON org.organization_name = status.pending LIMIT $1 OFFSET $2;`
-
-var listregisteredOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	listregisteredOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
 	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
-
-var listRejectedOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	listRejectedOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
 	ON org.organization_name = status.rejected LIMIT $1 OFFSET $2;`
+
+)
 
 // ListOrgRequests implements interfaces.AdminRepository
 func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationStatus string) ([]domain.OrganizationsResponse, utils.Metadata, error) {
@@ -197,7 +197,7 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 		return err
 
 	}
-	query3 := `INSERT INTO User_organization_connections(organization_name,user_name,role)
+	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
 	VALUES($1,$2,$3);`
 	err = c.db.QueryRow(query3, organizationName,userName,"1").Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {

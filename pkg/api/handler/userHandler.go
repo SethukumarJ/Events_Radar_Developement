@@ -26,6 +26,79 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// @Summary Get Organization
+// @ID Get Organizaition by name
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  organizationName   query  string  true  "OrganizationName: "
+// @Param  pathRole query string true "role:"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /get-organization [get]
+func (cr *UserHandler) GetOrganization(c *gin.Context) {
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+	organizationName := c.Writer.Header().Get("organizationName")
+	fmt.Println("organizationName ", organizationName)
+	role := c.Writer.Header().Get("role")
+	fmt.Println("role ", role)
+
+	if role > "4" {
+		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	organization, err := cr.userUseCase.FindOrganization(organizationName)
+
+	fmt.Println("organization:", organization)
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting event from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Showing the event", organization)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary Joining organization
+// @ID Join organization
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param  organizationName   query  string  true  "organization name: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/organization/join [patch]
+func (cr *UserHandler) JoinOrganization(c *gin.Context) {
+
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+
+	organizationName := (c.Query("organizationName"))
+
+	err := cr.userUseCase.JoinOrganization(organizationName, username)
+
+	if err != nil {
+		response := response.ErrorResponse("Joining organization failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Requested to join organization ", organizationName)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary list all registered organizations for user
 // @ID list all registered organizations
 // @Tags User
@@ -36,7 +109,6 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Failure 422 {object} response.Response{}
 // @Router /user/list-organizations [get]
 func (cr *UserHandler) ListOrganizations(c *gin.Context) {
-
 
 	page, _ := strconv.Atoi(c.Query("page"))
 
@@ -60,10 +132,10 @@ func (cr *UserHandler) ListOrganizations(c *gin.Context) {
 
 	result := struct {
 		Organizations *[]domain.OrganizationsResponse
-		Meta  *utils.Metadata
+		Meta          *utils.Metadata
 	}{
 		Organizations: organizations,
-		Meta:  metadata,
+		Meta:          metadata,
 	}
 
 	if err != nil {
@@ -78,7 +150,6 @@ func (cr *UserHandler) ListOrganizations(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-
 
 // @Summary Create Organization
 // @ID Create Organizatioin from user
@@ -101,7 +172,6 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 	fmt.Println("event", newOrganization)
 	newOrganization.CreatedBy = c.Writer.Header().Get("userName")
 	newOrganization.CreatedAt = time.Now()
-	
 
 	err := cr.userUseCase.CreateOrganization(newOrganization)
 

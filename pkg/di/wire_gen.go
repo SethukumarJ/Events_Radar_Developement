@@ -33,7 +33,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	eventUsecase := usecase.NewEventUseCase(eventRepository)
 	adminHandler := handler.NewAdminHandler(adminUsecase, userUseCase, eventUsecase)
 	eventHandler := handler.NewEventHandler(eventUsecase)
-	middlewareMiddleware := middleware.NewMiddlewareUser(jwtUsecase)
+	middlewareMiddleware := middleware.NewMiddlewareUser(jwtUsecase, userUseCase)
 	serverHTTP := http.NewServerHTTP(userHandler, authHandler, adminHandler, eventHandler, middlewareMiddleware)
 	return serverHTTP, nil
 }

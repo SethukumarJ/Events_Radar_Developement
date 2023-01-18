@@ -15,25 +15,91 @@ import (
 
 type Middleware interface {
 	AuthorizeJwt() gin.HandlerFunc
+	AuthorizeOrg() gin.HandlerFunc
 }
 
 type middleware struct {
-	jwtUsecase usecase.JWTUsecase
+	jwtUsecase  usecase.JWTUsecase
+	userUsecase usecase.UserUseCase
 }
 
-func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase) Middleware {
+func NewMiddlewareUser(jwtUserUsecase usecase.JWTUsecase, userUsecase usecase.UserUseCase) Middleware {
 	return &middleware{
-		jwtUsecase: jwtUserUsecase,
+		jwtUsecase:  jwtUserUsecase,
+		userUsecase: userUsecase,
 	}
 
 }
 
-// func NewMiddlewareAdmin(jwtAdminUsecase usecase.JWTUsecase) Middleware {
-// 	return &middleware{
-// 		jwtUsecase: jwtAdminUsecase,
-// 	}
+// AuthorizeOrg implements Middleware
+func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
+	return (func(c *gin.Context) {
 
-// }
+		//getting from header
+		autheader := c.Request.Header["Authorization"]
+		organizationName := c.Query("organizationName")
+		fmt.Println("organization Name from middleware",organizationName)
+		pathRole := c.Query("pathRole")
+
+		fmt.Println("role from middleware", pathRole)
+		auth := strings.Join(autheader, " ")
+		bearerToken := strings.Split(auth, " ")
+		fmt.Printf("\n\ntoken : %v\n\n", autheader)
+
+		if len(bearerToken) != 2 {
+			err := errors.New("request does not contain an access token")
+			response := response.ErrorResponse("Failed to autheticate jwt", err.Error(), nil)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			c.Abort()
+
+			return
+		}
+
+		authtoken := bearerToken[1]
+		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
+		source := fmt.Sprint(claims.Source)
+
+		if !ok && source == "accesstoken" {
+			err := errors.New("your access token is not valid")
+			response := response.ErrorResponse("Error", err.Error(), source)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			c.Abort()
+			return
+		} else if !ok && source == "refreshtoken" {
+			err := errors.New("your refresh token is not valid")
+			response := response.ErrorResponse("Error", err.Error(), source)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			c.Abort()
+			return
+		}
+
+		userName := fmt.Sprint(claims.UserName)
+		fmt.Println("username",userName)
+		role, err := cr.userUsecase.VerifyRole(userName, organizationName)
+		fmt.Println(role,"///////////", pathRole,err,"role and pathrole")
+		if role != pathRole {
+			err = errors.New("your role input is invalid")
+			response := response.ErrorResponse("Error", err.Error(), role)
+			c.Writer.Header().Add("Content-Type", "application/json")
+			c.Writer.WriteHeader(http.StatusUnauthorized)
+			utils.ResponseJSON(*c, response)
+			c.Abort()
+			return
+		}
+
+		c.Writer.Header().Set("userName", userName)
+		c.Writer.Header().Set("organizationName", organizationName)
+		c.Writer.Header().Set("role", role)
+		c.Next()
+
+	})
+}
 
 func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 	return (func(c *gin.Context) {
@@ -59,7 +125,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
 		source := fmt.Sprint(claims.Source)
 
-		if !ok && source == "accesstoken"{
+		if !ok && source == "accesstoken" {
 			err := errors.New("your access token is not valid")
 			response := response.ErrorResponse("Error", err.Error(), source)
 			c.Writer.Header().Add("Content-Type", "application/json")
@@ -75,7 +141,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 			utils.ResponseJSON(*c, response)
 			c.Abort()
 			return
-		} 
+		}
 
 		userName := fmt.Sprint(claims.UserName)
 		c.Writer.Header().Set("userName", userName)

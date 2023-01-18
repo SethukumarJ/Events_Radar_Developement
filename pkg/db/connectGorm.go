@@ -29,6 +29,7 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Organizations{})
 	db.AutoMigrate(&domain.Org_Status{})
 	db.AutoMigrate(&domain.User_Organization_Connections{})
+	db.AutoMigrate(&domain.Join_Status{})
 
 	return db, dbErr
 }

@@ -15,61 +15,84 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// FindRole implements interfaces.UserRepository
+func (c *userRepository) FindRole(username string, organizationName string) (string, error) {
+
+	var role string
+	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
+
+	err := c.db.QueryRow(findRole,organizationName,username).Scan(&role)
+	fmt.Println("role,",role)
+
+	return role, err
+}
+
+// JoinOrganization implements interfaces.UserRepository
+func (c *userRepository) JoinOrganization(organizatinName string, username string) (int, error) {
+	var id int
+
+	query := `INSERT INTO join_statuses(pending,organization_name)VALUES($1,$2);`
+	err := c.db.QueryRow(query, username, organizatinName).Err()
+
+	fmt.Println("id", id)
+	return id, err
+
+}
 
 // ListOrganizations implements interfaces.UserRepository
 func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
 	var organizations []domain.OrganizationsResponse
 
-	 ListregisteredOrganizations := `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
+	ListregisteredOrganizations := `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
 	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
 
 	rows, err := c.db.Query(ListregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
-		fmt.Println("rows", rows)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, utils.Metadata{}, err
+	}
+
+	fmt.Println("List organizations called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("allevents called from repo")
+
+	for rows.Next() {
+		var organization domain.OrganizationsResponse
+		fmt.Println("username :", organization.OrganizationName)
+		err = rows.Scan(
+			&totalRecords,
+			&organization.OrganizationId,
+			&organization.OrganizationName,
+			&organization.CreatedBy,
+			&organization.Logo,
+			&organization.About,
+			&organization.CreatedAt,
+			&organization.LinkedIn,
+			&organization.WebsiteLink,
+			&organization.Verified,
+			&organization.OrgStatusId,
+		)
+
+		fmt.Println("organization", organization.OrganizationName)
+
 		if err != nil {
-			return nil, utils.Metadata{}, err
-		}
-
-		fmt.Println("List organizations called from repo")
-
-		var totalRecords int
-
-		defer rows.Close()
-		fmt.Println("allevents called from repo")
-
-		for rows.Next() {
-			var organization domain.OrganizationsResponse
-			fmt.Println("username :", organization.OrganizationName)
-			err = rows.Scan(
-				&totalRecords,
-				&organization.OrganizationId,
-				&organization.OrganizationName,
-				&organization.CreatedBy,
-				&organization.Logo,
-				&organization.About,
-				&organization.CreatedAt,
-				&organization.LinkedIn,
-				&organization.WebsiteLink,
-				&organization.Verified,
-				&organization.OrgStatusId,
-			)
-
-			fmt.Println("organization", organization.OrganizationName)
-
-			if err != nil {
-				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-			}
-			organizations = append(organizations, organization)
-		}
-
-		if err := rows.Err(); err != nil {
 			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
 		}
-		log.Println(organizations)
-		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
-		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+		organizations = append(organizations, organization)
+	}
+
+	if err := rows.Err(); err != nil {
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+	}
+	log.Println(organizations)
+	log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+	return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 }
 
 // FindOrganization implements interfaces.UserRepository
@@ -424,15 +447,3 @@ func NewUserRepository(db *sql.DB) interfaces.UserRepository {
 		db: db,
 	}
 }
-
-// UserId       uint   `json:"userid"`
-// UserName     string `json:"username"`
-// FirstName    string `json:"firstname"`
-// LastName     string `json:"lastname"`
-// Password     string `json:"password"`
-// Email        string `json:"email"`
-// Verification bool   `json:"verification" `
-// Vip          bool   `json:"vip" `
-// PhoneNumber  string `json:"phonenumber"`
-// Profile      string `json:"profile"`
-// Token        string `json:"token"`

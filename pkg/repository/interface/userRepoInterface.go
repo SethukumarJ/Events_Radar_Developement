@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	FindUser(email string) (domain.UserResponse, error)
 	FindOrganization(organizationName string) (domain.OrganizationsResponse, error)
+	FindRole(username string, organizationName string) (string, error)
 	UpdateProfile(user domain.Bios, username string) (int, error)
 	UpdatePassword(user domain.Users, username string) (int, error)
 	GetPublicFaqas(approved string) ([]domain.QAResponse, error)
@@ -20,4 +21,5 @@ type UserRepository interface {
 	VerifyAccount(email string, code string) error
 	CreateOrganization(organization domain.Organizations) (int, error)
 	ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error)
+	JoinOrganization(organizatinName string , username string) (int, error)
 }

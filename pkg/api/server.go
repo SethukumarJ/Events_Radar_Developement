@@ -27,7 +27,8 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	//userroutes
+
+	
 	user := engine.Group("user")
 	{
 		user.POST("/signup", authHandler.UserSignup)
@@ -47,6 +48,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/event/post/answer",userHandler.PostAnswer)
 			user.GET("/list/questions",userHandler.GetQuestions)
 			user.POST("/organization/create", userHandler.CreateOrganization)
+			user.PATCH("/organization/join",userHandler.JoinOrganization)
 		}
 	}
 
@@ -83,9 +85,21 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			
 			
 		}
+
+		
+
+		engine.Use(middleware.AuthorizeOrg()) 
+	{
+		engine.GET("/get-organization/",userHandler.GetOrganization)
+
+	}
+	
+
 		
 			return &ServerHTTP{engine: engine}
 	}
+
+
 
 func (sh *ServerHTTP) Start() {
 	sh.engine.Run(":3000")

@@ -659,6 +659,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/get-organization": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Get Organization",
+                "operationId": "Get Organizaition by name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "role:",
+                        "name": "pathRole",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/event/create": {
             "post": {
                 "security": [
@@ -985,6 +1032,46 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.Organizations"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/organization/join": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Joining organization",
+                "operationId": "Join organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization name: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

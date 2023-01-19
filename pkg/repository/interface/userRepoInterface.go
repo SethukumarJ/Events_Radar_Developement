@@ -22,5 +22,5 @@ type UserRepository interface {
 	CreateOrganization(organization domain.Organizations) (int, error)
 	ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error)
 	JoinOrganization(organizatinName string , username string) (int, error)
-	AddMembers(username  string, memberRole string,organizationName  string) (int, error)
+	AddMembers(newMembers []string, memberRole string, organizationName string) (int, error)
 }

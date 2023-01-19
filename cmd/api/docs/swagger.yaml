@@ -213,34 +213,6 @@ info:
   title: Go + Gin Radar API
   version: "1.0"
 paths:
-  /Organization/add-admin:
-    patch:
-      operationId: Add admins for the organizaition
-      parameters:
-      - description: 'adminname:'
-        in: body
-        name: adminames
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: Add Admins
-      tags:
-      - Organization
   /admin/approveevent:
     patch:
       operationId: approves event
@@ -678,6 +650,49 @@ paths:
       summary: Get Organization
       tags:
       - Organization
+  /organization/add-members:
+    post:
+      operationId: Add admins for the organizaition
+      parameters:
+      - description: 'addMembers:'
+        in: body
+        name: addMembers
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - description: 'OrganizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Your role:'
+        in: query
+        name: pathRole
+        required: true
+        type: string
+      - description: member role
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add Admins
+      tags:
+      - Organization
   /user/event/create:
     post:
       operationId: Create event from user
@@ -1043,23 +1058,6 @@ paths:
       security:
       - BearerAuth: []
       summary: update Profileabout
-      tags:
-      - User
-  /user/verify/account:
-    patch:
-      operationId: Verify account
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Verify account
       tags:
       - User
 securityDefinitions:

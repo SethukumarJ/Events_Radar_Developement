@@ -32,11 +32,12 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Produce json
 // @Security BearerAuth
 // @Param addMembers body []string true "addMembers:"
-// @Param pathrole query string true "Your role:"
-// @Param role query striing true "member role"
+// @Param  organizationName   query  string  true  "OrganizationName: "
+// @Param pathRole query string true "Your role:"
+// @Param role query string true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /Organization/add-memebers [Post]
+// @Router /organization/add-members [Post]
 func (cr *UserHandler) AddMembers(c *gin.Context) {
 	
 	var newMembers []string
@@ -47,8 +48,9 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 	role := c.Writer.Header().Get("role")
 	memberRole := c.Query("role")
 	fmt.Println("role ", role)
-	c.Bind(&newMembers)
 
+	c.Bind(&newMembers)
+	fmt.Println("newMembers",newMembers)
 	if role > "1" {
 		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -57,7 +59,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 		return
 	}
 
-	err := cr.userUseCase.AddMembers(username, memberRole,organizationName)
+	err := cr.userUseCase.AddMembers(newMembers, memberRole,organizationName)
 	if err != nil {
 		response := response.ErrorResponse("error while adding memebers to the database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -213,12 +215,12 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 	//fetching data
 	c.Bind(&newOrganization)
 
-	fmt.Println("event", newOrganization)
+	fmt.Println("organization", newOrganization)
 	newOrganization.CreatedBy = c.Writer.Header().Get("userName")
 	newOrganization.CreatedAt = time.Now()
 
 	err := cr.userUseCase.CreateOrganization(newOrganization)
-
+	fmt.Println(err)
 	log.Println(newOrganization)
 
 	if err != nil {

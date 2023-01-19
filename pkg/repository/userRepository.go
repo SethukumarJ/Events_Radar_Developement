@@ -16,10 +16,17 @@ type userRepository struct {
 }
 
 // AddMembers implements interfaces.UserRepository
-func (c *userRepository) AddMembers(username string, memberRole string, organizationName string) (int, error) {
+func (c *userRepository) AddMembers(newMembers []string, memberRole string, organizationName string) (int, error) {
 	var id int
+	var err error
 	query := `INSERT INTO user_organization_connections(user_name,organization_name,role)VALUES($1,$2,$3);`
-	err := c.db.QueryRow(query, username, organizationName, memberRole).Err()
+
+	for _, v := range newMembers {
+		fmt.Println("Value:", v)
+		err = c.db.QueryRow(query, v, organizationName, memberRole).Err()
+		fmt.Println("err",err)
+	}
+	
 
 	fmt.Println("id", id)
 	return id, err
@@ -132,7 +139,7 @@ func (c *userRepository) FindOrganization(organizationName string) (domain.Organ
 		&organization.Verified,
 	)
 
-	fmt.Println("user from find user :", organization)
+	fmt.Println("organization from find orgnanization :", organization)
 	return organization, err
 }
 
@@ -358,9 +365,9 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 	query := `SELECT user_id,user_name,first_name,
 			  		last_name,email,password,
 					phone_number,profile,verification FROM users 
-					WHERE email = $1;`
+					WHERE email = $1 OR user_name = $2;`
 
-	err := c.db.QueryRow(query, email).Scan(&user.UserId,
+	err := c.db.QueryRow(query, email, email).Scan(&user.UserId,
 		&user.UserName,
 		&user.FirstName,
 		&user.LastName,

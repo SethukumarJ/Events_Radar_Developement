@@ -116,4 +116,5 @@ type User_Organization_Connections struct {
 	UserName                      string        `json:"username"`
 	Users                         Users         `gorm:"foreignKey:UserName;references:UserName"`
 	Role                          string        `json:"role" gorm:"not null"`
+	Accepted                      bool          `json:"accepted" gorm:"default:false"`
 }

@@ -24,8 +24,15 @@ type userUseCase struct {
 }
 
 // AddMembers implements interfaces.UserUseCase
-func (c *userUseCase) AddMembers(username string, memberRole string, organizationName string) error {
-	_ ,err := c.userRepo.AddMembers(username, memberRole,organizationName)
+func (c *userUseCase) AddMembers(newMembers []string,memberRole string, organizationName string) error {
+	_, err := c.userRepo.FindOrganization(organizationName)
+	fmt.Println("found organization", err)
+
+	if err != nil{
+		return err
+	}
+
+	_ ,err = c.userRepo.AddMembers(newMembers, memberRole,organizationName)
 
 	if err != nil {
 		return err
@@ -199,37 +206,6 @@ func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 	return &user, nil
 }
 
-// // SendVerificationEmail implements interfaces.UserUseCase
-// func (c *userUseCase) SendVerificationEmail(email string) error {
-// 	// generate a random verification token
-// 	token := make([]byte, 32)
-// 	_, err := rand.Read(token)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return err
-// 	}
-// 	// encode the token as a base64 string
-// 	tokenString := base64.StdEncoding.EncodeToString(token)
-// 	subject := "Account Verification"
-// 	body := "Please click on the link to verify your account: http://localhost:3000//verify/account?token=" + tokenString
-// 	message := "To: " + email + "\r\n" +
-// 		"Subject: " + subject + "\r\n" +
-// 		"\r\n" + body
-
-// 	// send random code to user's email
-// 	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
-// 		return err
-// 	}
-// 	fmt.Println("email sent: ", email)
-
-// 	err = c.userRepo.StoreVerificationDetails(email, tokenString)
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-//		return nil
-//	}
 func (c *userUseCase) SendVerificationEmail(email string) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

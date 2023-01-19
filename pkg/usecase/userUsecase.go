@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -23,10 +23,7 @@ type userUseCase struct {
 	config     config.Config
 }
 
-
-
-
-func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error){
+func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
 
 	role, err := c.userRepo.FindRole(username, organizationName)
 
@@ -34,12 +31,12 @@ func (c *userUseCase) VerifyRole(username string, organizationName string) (stri
 		return "", err
 	}
 
-	return role , nil
+	return role, nil
 }
 
 // JoinOrganization implements interfaces.UserUseCase
 func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
-	_,err := c.userRepo.JoinOrganization(organizationName,userName)
+	_, err := c.userRepo.JoinOrganization(organizationName, userName)
 
 	if err != nil {
 		return err
@@ -192,18 +189,55 @@ func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 	return &user, nil
 }
 
-// SendVerificationEmail implements interfaces.UserUseCase
+// // SendVerificationEmail implements interfaces.UserUseCase
+// func (c *userUseCase) SendVerificationEmail(email string) error {
+// 	// generate a random verification token
+// 	token := make([]byte, 32)
+// 	_, err := rand.Read(token)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return err
+// 	}
+// 	// encode the token as a base64 string
+// 	tokenString := base64.StdEncoding.EncodeToString(token)
+// 	subject := "Account Verification"
+// 	body := "Please click on the link to verify your account: http://localhost:3000//verify/account?token=" + tokenString
+// 	message := "To: " + email + "\r\n" +
+// 		"Subject: " + subject + "\r\n" +
+// 		"\r\n" + body
+
+// 	// send random code to user's email
+// 	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+// 		return err
+// 	}
+// 	fmt.Println("email sent: ", email)
+
+// 	err = c.userRepo.StoreVerificationDetails(email, tokenString)
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+//		return nil
+//	}
 func (c *userUseCase) SendVerificationEmail(email string) error {
-	//to generate random code
-	rand.Seed(time.Now().UnixNano())
-	code := rand.Intn(100000)
 
-	fmt.Println("code: ", code)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": email,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte("secret"))
+	fmt.Println("TokenString",tokenString)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
-	message := fmt.Sprintf(
-		"\nThe verification code is:\n\n%d.\nUse to verify your account.\n Thank you for usingEvents.\n with regards Team Events radar.",
-		code,
-	)
+	subject := "Account Verification"
+	body := "Please click on the link to verify your account: http://localhost:3000/user/verify/account?token=" + tokenString
+	message := "To: " + email + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + body
 
 	// send random code to user's email
 	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
@@ -211,7 +245,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 	}
 	fmt.Println("email sent: ", email)
 
-	err := c.userRepo.StoreVerificationDetails(email, code)
+	err = c.userRepo.StoreVerificationDetails(email, tokenString)
 
 	if err != nil {
 		return err

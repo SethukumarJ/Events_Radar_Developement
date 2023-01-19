@@ -24,6 +24,51 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/Organization/add-admin": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Add Admins",
+                "operationId": "Add admins for the organizaition",
+                "parameters": [
+                    {
+                        "description": "adminname:",
+                        "name": "adminames",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/approveevent": {
             "patch": {
                 "security": [
@@ -1290,22 +1335,6 @@ const docTemplate = `{
                 ],
                 "summary": "Verify account",
                 "operationId": "Verify account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Email: ",
-                        "name": "Email",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "code: ",
-                        "name": "code",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

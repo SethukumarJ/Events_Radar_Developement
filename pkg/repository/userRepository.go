@@ -390,7 +390,7 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 }
 
 // StoreVerificationDetails implements interfaces.UserRepository
-func (u *userRepository) StoreVerificationDetails(email string, code int) error {
+func (u *userRepository) StoreVerificationDetails(email string, code string) error {
 	var err error
 	query := `INSERT INTO verifications (email, code) 
 										VALUES ($1, $2);`

@@ -213,6 +213,34 @@ info:
   title: Go + Gin Radar API
   version: "1.0"
 paths:
+  /Organization/add-admin:
+    patch:
+      operationId: Add admins for the organizaition
+      parameters:
+      - description: 'adminname:'
+        in: body
+        name: adminames
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add Admins
+      tags:
+      - Organization
   /admin/approveevent:
     patch:
       operationId: approves event
@@ -1020,17 +1048,6 @@ paths:
   /user/verify/account:
     patch:
       operationId: Verify account
-      parameters:
-      - description: 'Email: '
-        in: query
-        name: Email
-        required: true
-        type: string
-      - description: 'code: '
-        in: query
-        name: code
-        required: true
-        type: string
       produces:
       - application/json
       responses:

@@ -15,6 +15,7 @@ import (
 type adminRepository struct {
 	db *sql.DB
 }
+
 const (
 	listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 

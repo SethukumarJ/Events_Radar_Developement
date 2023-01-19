@@ -26,6 +26,32 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// @Summary Add Admins
+// @ID Add admins for the organizaition
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param adminames body []string true "adminname:"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /Organization/add-admin [patch]
+func (cr *UserHandler) AddAdmins(c *gin.Context) {
+
+
+	var newAdmins []string
+	organizationName := c.Writer.Header().Get("organizationName")
+	fmt.Println("organizationName ", organizationName)
+
+	c.Bind(&newAdmins)
+
+	
+	response := response.SuccessResponse(true, "Showing the admins", newAdmins)
+	utils.ResponseJSON(*c, response)
+
+
+
+}
+
 // @Summary Get Organization
 // @ID Get Organizaition by name
 // @Tags Organization

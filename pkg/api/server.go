@@ -34,7 +34,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.POST("/signup", authHandler.UserSignup)
 		user.POST("/login", authHandler.UserLogin)
 		user.POST("/send/verification", userHandler.SendVerificationMail)
-		user.PATCH("/verify/account",authHandler.VerifyAccount)
+		user.GET("/verify/account",authHandler.VerifyAccount)
 		user.PATCH("/password/update",userHandler.UpdatePassword)
 		user.GET("/list/faqas",userHandler.GetPublicFaqas)
 		user.GET("/list-organizations",userHandler.ListOrganizations)
@@ -91,6 +91,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		engine.Use(middleware.AuthorizeOrg()) 
 	{
 		engine.GET("/get-organization/",userHandler.GetOrganization)
+		engine.PATCH("/Organization/add-admin",userHandler.AddAdmins)
 
 	}
 	

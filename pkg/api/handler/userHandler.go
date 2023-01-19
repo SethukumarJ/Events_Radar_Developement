@@ -31,21 +31,43 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param adminames body []string true "adminname:"
+// @Param addMembers body []string true "addMembers:"
+// @Param pathrole query string true "Your role:"
+// @Param role query striing true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /Organization/add-admin [patch]
-func (cr *UserHandler) AddAdmins(c *gin.Context) {
+// @Router /Organization/add-memebers [Post]
+func (cr *UserHandler) AddMembers(c *gin.Context) {
 
 
-	var newAdmins []string
+	var newMembers []string
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
 	organizationName := c.Writer.Header().Get("organizationName")
 	fmt.Println("organizationName ", organizationName)
+	role := c.Writer.Header().Get("role")
+	memberRole := c.Query("role")
+	fmt.Println("role ", role)
+	c.Bind(&newMembers)
 
-	c.Bind(&newAdmins)
+	if role > "4" {
+		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
-	
-	response := response.SuccessResponse(true, "Showing the admins", newAdmins)
+	err := cr.userUseCase.AddMembers(username, memberRole)
+	if err != nil {
+		response := response.ErrorResponse("error while adding memebers to the database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Showing the newly added members", newMembers)
 	utils.ResponseJSON(*c, response)
 
 

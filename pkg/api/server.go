@@ -91,7 +91,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		engine.Use(middleware.AuthorizeOrg()) 
 	{
 		engine.GET("/get-organization/",userHandler.GetOrganization)
-		engine.PATCH("/Organization/add-admin",userHandler.AddAdmins)
+		engine.PATCH("/Organization/add-admin",userHandler.AddMembers)
 
 	}
 	

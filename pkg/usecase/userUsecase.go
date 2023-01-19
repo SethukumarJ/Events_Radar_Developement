@@ -23,6 +23,16 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// AddMembers implements interfaces.UserUseCase
+func (c *userUseCase) AddMembers(username string, memberRole string, organizationName string) error {
+	_ ,err := c.userRepo.AddMembers(username, memberRole,organizationName)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
 
 	role, err := c.userRepo.FindRole(username, organizationName)
@@ -227,7 +237,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte("secret"))
-	fmt.Println("TokenString",tokenString)
+	fmt.Println("TokenString", tokenString)
 	if err != nil {
 		fmt.Println(err)
 		return err

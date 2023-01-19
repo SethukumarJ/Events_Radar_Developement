@@ -20,4 +20,5 @@ type UserUseCase interface {
 	GetPublicFaqas(title string) (*[]domain.QAResponse, error)
 	GetQuestions(title string) (*[]domain.FaqaResponse, error)
 	UpdateProfile(user domain.Bios, username string) error
+	AddMembers(username string, memberRole string,organizationName string) error
 }

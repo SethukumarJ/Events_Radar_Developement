@@ -15,14 +15,24 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// AddMembers implements interfaces.UserRepository
+func (c *userRepository) AddMembers(username string, memberRole string, organizationName string) (int, error) {
+	var id int
+	query := `INSERT INTO user_organization_connections(user_name,organization_name,role)VALUES($1,$2,$3);`
+	err := c.db.QueryRow(query, username, organizationName, memberRole).Err()
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // FindRole implements interfaces.UserRepository
 func (c *userRepository) FindRole(username string, organizationName string) (string, error) {
 
 	var role string
 	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
 
-	err := c.db.QueryRow(findRole,organizationName,username).Scan(&role)
-	fmt.Println("role,",role)
+	err := c.db.QueryRow(findRole, organizationName, username).Scan(&role)
+	fmt.Println("role,", role)
 
 	return role, err
 }

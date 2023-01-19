@@ -38,8 +38,7 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Failure 422 {object} response.Response{}
 // @Router /Organization/add-memebers [Post]
 func (cr *UserHandler) AddMembers(c *gin.Context) {
-
-
+	
 	var newMembers []string
 	username := c.Writer.Header().Get("userName")
 	fmt.Println("username ", username)
@@ -50,7 +49,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 	fmt.Println("role ", role)
 	c.Bind(&newMembers)
 
-	if role > "4" {
+	if role > "1" {
 		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
@@ -58,7 +57,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 		return
 	}
 
-	err := cr.userUseCase.AddMembers(username, memberRole)
+	err := cr.userUseCase.AddMembers(username, memberRole,organizationName)
 	if err != nil {
 		response := response.ErrorResponse("error while adding memebers to the database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -69,9 +68,6 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 
 	response := response.SuccessResponse(true, "Showing the newly added members", newMembers)
 	utils.ResponseJSON(*c, response)
-
-
-
 }
 
 // @Summary Get Organization

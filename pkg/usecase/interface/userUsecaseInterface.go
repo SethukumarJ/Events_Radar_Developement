@@ -18,6 +18,7 @@ type UserUseCase interface {
 	SendVerificationEmail(email string) error
 	PostQuestion(question domain.Faqas) error
 	GetPublicFaqas(title string) (*[]domain.QAResponse, error)
+	ListJoinRequests(username string,organizationName string) (*[]domain.Join_StatusResponse, error)
 	GetQuestions(title string) (*[]domain.FaqaResponse, error)
 	UpdateProfile(user domain.Bios, username string) error
 	AddMembers(newMembers []string,memberRole string, organizationName string) error

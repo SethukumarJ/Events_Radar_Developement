@@ -23,18 +23,30 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// ListJoinRequests implements interfaces.UserUseCase
+func (c *userUseCase) ListJoinRequests(username string, organizationName string) (*[]domain.Join_StatusResponse, error) {
+	fmt.Println("get requests  from usecase called")
+	requests, err := c.userRepo.ListJoinRequests(username,organizationName)
+	fmt.Println("requests:", requests)
+	if err != nil {
+		fmt.Println("error from listjoinRequests usecase:", err)
+		return nil, err
+	}
+
+	return &requests, nil
+}
+
 // AcceptJoinInvitation implements interfaces.UserUseCase
 func (c *userUseCase) AcceptJoinInvitation(username string, organizationName string, role string) error {
 
-
-	_,err := c.userRepo.FindRelation(username,organizationName)
+	_, err := c.userRepo.FindRelation(username, organizationName)
 
 	if err == nil {
 		return errors.New("relation allready exist with this credentials")
-		
+
 	}
 
-	_,err = c.userRepo.AcceptJoinInvitation(username,organizationName,role)
+	_, err = c.userRepo.AcceptJoinInvitation(username, organizationName, role)
 	if err != nil {
 		return err
 	}

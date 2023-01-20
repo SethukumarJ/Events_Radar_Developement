@@ -31,7 +31,16 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 
 
 
-
+// @Summary List Join Requests
+// @ID Join requests to organization
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  organizationName   query  string  true  "OrganizationName: "
+// @Param pathRole query string true "Your role:"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organizaton/join/requests [get]
 func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 
 	username := c.Writer.Header().Get("userName")
@@ -130,7 +139,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 // @Param role query string true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organization/add-members [Post]
+// @Router /organization/add-members [post]
 func (cr *UserHandler) AddMembers(c *gin.Context) {
 
 	var newMembers []string

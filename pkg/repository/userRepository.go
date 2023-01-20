@@ -15,8 +15,52 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// ListJoinRequests implements interfaces.UserRepository
+func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
+	var Requests []domain.Join_StatusResponse
+
+	query := `SELECT COUNT(*) OVER(), pending, organization_name FROM join_statuses WHERE organization_name = $1;`
+
+	rows, err := c.db.Query(query, organizationName)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("join statuses called from repo")
+
+	var totalRecords int
+
+	defer rows.Close() 
+	fmt.Println("joinstatuses called from repo")
+
+	for rows.Next() {
+		var joinStatuses domain.Join_StatusResponse
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+		err = rows.Scan(
+			&totalRecords,
+			&joinStatuses.Pending,
+			&joinStatuses.OrganizationName,
+		)
+
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		Requests = append(Requests, joinStatuses)
+	}
+	fmt.Println("Requests", Requests)
+	if err := rows.Err(); err != nil {
+		return Requests, err
+	}
+	log.Println(Requests)
+
+	return Requests, nil
+}
+
 // FindRelation implements interfaces.UserRepository
-func (c*userRepository) FindRelation(username string, organizationName string) (string, error) {
+func (c *userRepository) FindRelation(username string, organizationName string) (string, error) {
 	var role string
 	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
 

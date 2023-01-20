@@ -28,7 +28,46 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 }
 
 
+// @Summary Admit member
+// @ID Admit member
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  joinstatusid   query  int  true  "JoinStatusId: "
+// @Param pathRole query string true "Your role:"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organizaton/join/requests [get]
+func (cr *UserHandler) AdmitMember(c *gin.Context) {
 
+	JoinStatusId,_ := strconv.Atoi(c.Query("joinstatusid"))
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+	organizationName := c.Query("organizationName")
+	fmt.Println("organizationName ", organizationName)
+	role := c.Writer.Header().Get("role")
+	fmt.Println("role ", role)
+
+	if role > "1" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	err := cr.userUseCase.AdmitMember(JoinStatusId)
+
+	if err != nil {
+		response := response.ErrorResponse("admit member failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Member admitted", JoinStatusId)
+	utils.ResponseJSON(*c, response)
+
+}
 
 
 // @Summary List Join Requests

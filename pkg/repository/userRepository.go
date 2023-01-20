@@ -19,7 +19,7 @@ type userRepository struct {
 func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
 	var Requests []domain.Join_StatusResponse
 
-	query := `SELECT COUNT(*) OVER(), pending, organization_name FROM join_statuses WHERE organization_name = $1;`
+	query := `SELECT COUNT(*) OVER(),join_status_id pending, organization_name FROM join_statuses WHERE organization_name = $1;`
 
 	rows, err := c.db.Query(query, organizationName)
 	fmt.Println("rows", rows)
@@ -38,6 +38,7 @@ func (c *userRepository) ListJoinRequests(username string, organizationName stri
 		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
 		err = rows.Scan(
 			&totalRecords,
+			&joinStatuses.JoinStatusId,
 			&joinStatuses.Pending,
 			&joinStatuses.OrganizationName,
 		)

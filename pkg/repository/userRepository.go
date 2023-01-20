@@ -16,16 +16,13 @@ type userRepository struct {
 }
 
 // AddMembers implements interfaces.UserRepository
-func (c *userRepository) AddMembers(newMembers []string, memberRole string, organizationName string) (int, error) {
+func (c *userRepository) AcceptJoinInvitation(newMember string,organizationName  string, memberRole string) (int, error) {
 	var id int
 	var err error
 	query := `INSERT INTO user_organization_connections(user_name,organization_name,role)VALUES($1,$2,$3);`
 
-	for _, v := range newMembers {
-		fmt.Println("Value:", v)
-		err = c.db.QueryRow(query, v, organizationName, memberRole).Err()
+		err = c.db.QueryRow(query, newMember, organizationName, memberRole).Err()
 		fmt.Println("err",err)
-	}
 	
 
 	fmt.Println("id", id)

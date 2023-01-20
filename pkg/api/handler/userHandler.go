@@ -27,6 +27,16 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+
+// @Summary Accept invitation to join an organization
+// @ID Accept invitation to join organization
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  token   query  string  true  "token: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /accept-invitation [get]
 func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 	tokenString := c.Query("token")
@@ -69,7 +79,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Account verified successfully", email)
+	response := response.SuccessResponse(true, "Joined organization successfully", email)
 	utils.ResponseJSON(*c, response)
 
 }

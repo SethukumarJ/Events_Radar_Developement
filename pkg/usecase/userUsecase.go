@@ -23,38 +23,47 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// AcceptJoinInvitation implements interfaces.UserUseCase
+func (c *userUseCase) AcceptJoinInvitation(username string, organizationName string, role string) error {
+	
+	_,err := c.userRepo.AcceptJoinInvitation(username,organizationName,role)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // AddMembers implements interfaces.UserUseCase
-func (c *userUseCase) AddMembers(newMembers []string,memberRole string, organizationName string) error {
+func (c *userUseCase) AddMembers(newMembers []string, memberRole string, organizationName string) error {
 	_, err := c.userRepo.FindOrganization(organizationName)
 	fmt.Println("found organization", err)
 
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
-	for _,v := range newMembers {
-		user , err := c.userRepo.FindUser(v)
+	for _, v := range newMembers {
+		user, err := c.userRepo.FindUser(v)
 
 		if err == nil {
 			c.SendInvitationMail(user.Email, organizationName, memberRole)
 		} else if err == sql.ErrNoRows {
 			c.SendInvitationMail(v, organizationName, memberRole)
 		} else {
-			fmt.Println("coud'nt invite :" ,v)
+			fmt.Println("coud'nt invite :", v)
 		}
 	}
 
 	return nil
 }
 
-
 func (c *userUseCase) SendInvitationMail(email string, organizationName string, memberRole string) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": email,
-		"organizationName":organizationName,
-		"memberRole":memberRole,
-		"exp":      time.Now().Add(time.Hour * 24*30).Unix(),
+		"username":         email,
+		"organizationName": organizationName,
+		"memberRole":       memberRole,
+		"exp":              time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte("secret"))
 	fmt.Println("TokenString", tokenString)
@@ -63,7 +72,7 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 		return err
 	}
 	var role string
-	if memberRole == "1"{
+	if memberRole == "1" {
 		role = "admin"
 	} else if memberRole == "2" {
 		role = "volunteer"
@@ -71,8 +80,8 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 		role = "sponser"
 	}
 
-	subject := "Join invitation to organization " + organizationName + " for the role "+ role 
-	body := "Please click on the link to join organization: http://localhost:3000/user/verify/account?token=" + tokenString
+	subject := "Join invitation to organization " + organizationName + " for the role " + role
+	body := "Please click on the link to join organization: http://localhost:3000/accept-invitation?token=" + tokenString
 	message := "To: " + email + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" + body
@@ -91,7 +100,6 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 
 	return nil
 }
-
 
 func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
 

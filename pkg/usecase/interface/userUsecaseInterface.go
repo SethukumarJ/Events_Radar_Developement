@@ -21,4 +21,5 @@ type UserUseCase interface {
 	GetQuestions(title string) (*[]domain.FaqaResponse, error)
 	UpdateProfile(user domain.Bios, username string) error
 	AddMembers(newMembers []string,memberRole string, organizationName string) error
+	AcceptJoinInvitation(username string, organizationName string,role string) error
 }

@@ -52,7 +52,9 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": email,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+		"organizationName":organizationName,
+		"memberRole":memberRole,
+		"exp":      time.Now().Add(time.Hour * 24*30).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte("secret"))
 	fmt.Println("TokenString", tokenString)
@@ -69,8 +71,8 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 		role = "sponser"
 	}
 
-	subject := "Join invitation to organization :" + organizationName + " for the role "+ role 
-	body := "Please click on the link to verify your account: http://localhost:3000/user/verify/account?token=" + tokenString
+	subject := "Join invitation to organization " + organizationName + " for the role "+ role 
+	body := "Please click on the link to join organization: http://localhost:3000/user/verify/account?token=" + tokenString
 	message := "To: " + email + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" + body

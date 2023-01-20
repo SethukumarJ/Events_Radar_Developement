@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
@@ -26,6 +27,53 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
+
+	tokenString := c.Query("token")
+	fmt.Println("varify account from authhandler called , ", tokenString)
+	var email,organizationName,role string
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid invitation token")
+		return
+	}
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// get the username from the claims
+		email = claims["username"].(string)
+		organizationName = claims["organizationName"].(string)
+		role  = claims["memberRole"].(string)
+
+	} else {
+		c.String(http.StatusBadRequest, "Invalid verification token")
+		return
+	}
+
+	user,err := cr.userUseCase.FindUser(email)
+	if err != nil {
+		response := response.ErrorResponse("Joining failed, something wrong!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	err = cr.userUseCase.AcceptJoinInvitation(user.UserName, organizationName,role)
+
+	if err != nil {
+		response := response.ErrorResponse("Verification failed, Jwt is not valid", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Account verified successfully", email)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary Add Admins
 // @ID Add admins for the organizaition
 // @Tags Organization
@@ -39,7 +87,7 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Failure 422 {object} response.Response{}
 // @Router /organization/add-members [Post]
 func (cr *UserHandler) AddMembers(c *gin.Context) {
-	
+
 	var newMembers []string
 	username := c.Writer.Header().Get("userName")
 	fmt.Println("username ", username)
@@ -50,16 +98,16 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 	fmt.Println("role ", role)
 
 	c.Bind(&newMembers)
-	fmt.Println("newMembers",newMembers)
+	fmt.Println("newMembers", newMembers)
 	if role > "1" {
-		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		utils.ResponseJSON(*c, response)
 		return
 	}
 
-	err := cr.userUseCase.AddMembers(newMembers, memberRole,organizationName)
+	err := cr.userUseCase.AddMembers(newMembers, memberRole, organizationName)
 	if err != nil {
 		response := response.ErrorResponse("error while adding memebers to the database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -91,7 +139,7 @@ func (cr *UserHandler) GetOrganization(c *gin.Context) {
 	fmt.Println("role ", role)
 
 	if role > "4" {
-		response := response.ErrorResponse("Your role is not eligible for this action","no value", nil)
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		utils.ResponseJSON(*c, response)

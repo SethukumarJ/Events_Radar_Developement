@@ -25,8 +25,16 @@ type userUseCase struct {
 
 // AcceptJoinInvitation implements interfaces.UserUseCase
 func (c *userUseCase) AcceptJoinInvitation(username string, organizationName string, role string) error {
-	
-	_,err := c.userRepo.AcceptJoinInvitation(username,organizationName,role)
+
+
+	_,err := c.userRepo.FindRelation(username,organizationName)
+
+	if err == nil {
+		return errors.New("relation allready exist with this credentials")
+		
+	}
+
+	_,err = c.userRepo.AcceptJoinInvitation(username,organizationName,role)
 	if err != nil {
 		return err
 	}

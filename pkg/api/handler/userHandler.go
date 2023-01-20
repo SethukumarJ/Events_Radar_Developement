@@ -136,7 +136,6 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param  organizationName   query  string  true  "OrganizationName: "
-// @Param  pathRole query string true "role:"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /get-organization [get]
@@ -145,17 +144,7 @@ func (cr *UserHandler) GetOrganization(c *gin.Context) {
 	fmt.Println("username ", username)
 	organizationName := c.Writer.Header().Get("organizationName")
 	fmt.Println("organizationName ", organizationName)
-	role := c.Writer.Header().Get("role")
-	fmt.Println("role ", role)
-
-	if role > "4" {
-		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Writer.WriteHeader(http.StatusBadRequest)
-		utils.ResponseJSON(*c, response)
-		return
-	}
-
+	
 	organization, err := cr.userUseCase.FindOrganization(organizationName)
 
 	fmt.Println("organization:", organization)

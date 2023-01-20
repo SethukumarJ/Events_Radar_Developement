@@ -32,13 +32,64 @@ func (c *userUseCase) AddMembers(newMembers []string,memberRole string, organiza
 		return err
 	}
 
-	_ ,err = c.userRepo.AddMembers(newMembers, memberRole,organizationName)
+	for _,v := range newMembers {
+		user , err := c.userRepo.FindUser(v)
+
+		if err == nil {
+			c.SendInvitationMail(user.Email, organizationName, memberRole)
+		} else if err == sql.ErrNoRows {
+			c.SendInvitationMail(v, organizationName, memberRole)
+		} else {
+			fmt.Println("coud'nt invite :" ,v)
+		}
+	}
+
+	return nil
+}
+
+
+func (c *userUseCase) SendInvitationMail(email string, organizationName string, memberRole string) error {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": email,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte("secret"))
+	fmt.Println("TokenString", tokenString)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	var role string
+	if memberRole == "1"{
+		role = "admin"
+	} else if memberRole == "2" {
+		role = "volunteer"
+	} else if memberRole == "3" {
+		role = "sponser"
+	}
+
+	subject := "Join invitation to organization :" + organizationName + " for the role "+ role 
+	body := "Please click on the link to verify your account: http://localhost:3000/user/verify/account?token=" + tokenString
+	message := "To: " + email + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + body
+
+	// send random code to user's email
+	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+		return err
+	}
+	fmt.Println("email sent: ", email)
+
+	err = c.userRepo.StoreVerificationDetails(email, tokenString)
 
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
+
 
 func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
 

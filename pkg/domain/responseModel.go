@@ -90,3 +90,12 @@ type UserOrganizationConnectionResponse struct {
 	UserName         string `json:"username"`
 	Role             string `json:"role" gorm:"not null"`
 }
+
+
+type Join_StatusResponse struct {
+	JoinStatusId     uint   `json:"orgstatusid"`
+	OrganizationName string `json:"organizationname"`
+	Joined           string `json:"joined"`
+	Pending          string `json:"pending"`
+	Rejected         string `json:"rejected"`
+}

@@ -10,16 +10,20 @@ type UserRepository interface {
 	FindUser(email string) (domain.UserResponse, error)
 	FindOrganization(organizationName string) (domain.OrganizationsResponse, error)
 	FindRole(username string, organizationName string) (string, error)
+	FindRelation(username string, organizationName string) (string, error)
 	UpdateProfile(user domain.Bios, username string) (int, error)
 	UpdatePassword(user domain.Users, username string) (int, error)
 	GetPublicFaqas(approved string) ([]domain.QAResponse, error)
+	ListJoinRequests(username string,organizationName string) ([]domain.Join_StatusResponse, error)
 	GetQuestions(title string) ([]domain.FaqaResponse, error)
 	InsertUser(user domain.Users) (int, error)
 	PostQuestion(question domain.Faqas) (int, error)
 	PostAnswer(answer domain.Answers, question int) (int, error)
-	StoreVerificationDetails(email string, code int) error
+	StoreVerificationDetails(email string, code string) error
 	VerifyAccount(email string, code string) error
 	CreateOrganization(organization domain.Organizations) (int, error)
 	ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error)
 	JoinOrganization(organizatinName string , username string) (int, error)
+	AcceptJoinInvitation(newMember string, memberRole string, organizationName string) (int, error)
+	AdmitMember(JoinStatusId int,memberRole string) error
 }

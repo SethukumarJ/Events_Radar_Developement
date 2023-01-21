@@ -15,14 +15,116 @@ type userRepository struct {
 	db *sql.DB
 }
 
+
+
+
+// AdmitMember implements interfaces.UserRepository
+func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error {
+	var organizationName string
+	var userName string
+
+	query := `SELECT pending, orgnaization_name FROM join_statuses WHERE join_status_id = $1;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	query2 := `UPDATE join_statuses SET pending = null, joined = $1 WHERE join_status_id = $2;`
+	err = c.db.QueryRow(query2, organizationName,JoinStatusId).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
+	VALUES($1,$2,$3);`
+	err = c.db.QueryRow(query3, organizationName,userName,memberRole).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+
+	return nil
+}
+
+// ListJoinRequests implements interfaces.UserRepository
+func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
+	var Requests []domain.Join_StatusResponse
+
+	query := `SELECT COUNT(*) OVER(),join_status_id pending, organization_name FROM join_statuses WHERE organization_name = $1;`
+
+	rows, err := c.db.Query(query, organizationName)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("join statuses called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("joinstatuses called from repo")
+
+	for rows.Next() {
+		var joinStatuses domain.Join_StatusResponse
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+		err = rows.Scan(
+			&totalRecords,
+			&joinStatuses.JoinStatusId,
+			&joinStatuses.Pending,
+			&joinStatuses.OrganizationName,
+		)
+
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		Requests = append(Requests, joinStatuses)
+	}
+	fmt.Println("Requests", Requests)
+	if err := rows.Err(); err != nil {
+		return Requests, err
+	}
+	log.Println(Requests)
+
+	return Requests, nil
+}
+
+// FindRelation implements interfaces.UserRepository
+func (c *userRepository) FindRelation(username string, organizationName string) (string, error) {
+	var role string
+	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
+
+	err := c.db.QueryRow(findRole, organizationName, username).Scan(&role)
+	fmt.Println("role,", role)
+
+	return role, err
+}
+
+// AddMembers implements interfaces.UserRepository
+func (c *userRepository) AcceptJoinInvitation(newMember string, organizationName string, memberRole string) (int, error) {
+	var id int
+	var err error
+	query := `INSERT INTO user_organization_connections(user_name,organization_name,role)VALUES($1,$2,$3);`
+
+	err = c.db.QueryRow(query, newMember, organizationName, memberRole).Err()
+	fmt.Println("err", err)
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // FindRole implements interfaces.UserRepository
 func (c *userRepository) FindRole(username string, organizationName string) (string, error) {
 
 	var role string
 	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
 
-	err := c.db.QueryRow(findRole,organizationName,username).Scan(&role)
-	fmt.Println("role,",role)
+	err := c.db.QueryRow(findRole, organizationName, username).Scan(&role)
+	fmt.Println("role,", role)
 
 	return role, err
 }
@@ -60,7 +162,7 @@ func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.Or
 	var totalRecords int
 
 	defer rows.Close()
-	fmt.Println("allevents called from repo")
+	fmt.Println("all organization called from repo")
 
 	for rows.Next() {
 		var organization domain.OrganizationsResponse
@@ -122,7 +224,7 @@ func (c *userRepository) FindOrganization(organizationName string) (domain.Organ
 		&organization.Verified,
 	)
 
-	fmt.Println("user from find user :", organization)
+	fmt.Println("organization from find orgnanization :", organization)
 	return organization, err
 }
 
@@ -348,9 +450,9 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 	query := `SELECT user_id,user_name,first_name,
 			  		last_name,email,password,
 					phone_number,profile,verification FROM users 
-					WHERE email = $1;`
+					WHERE email = $1 OR user_name = $2;`
 
-	err := c.db.QueryRow(query, email).Scan(&user.UserId,
+	err := c.db.QueryRow(query, email, email).Scan(&user.UserId,
 		&user.UserName,
 		&user.FirstName,
 		&user.LastName,
@@ -390,7 +492,7 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 }
 
 // StoreVerificationDetails implements interfaces.UserRepository
-func (u *userRepository) StoreVerificationDetails(email string, code int) error {
+func (u *userRepository) StoreVerificationDetails(email string, code string) error {
 	var err error
 	query := `INSERT INTO verifications (email, code) 
 										VALUES ($1, $2);`

@@ -15,6 +15,7 @@ import (
 type adminRepository struct {
 	db *sql.DB
 }
+
 const (
 	listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
@@ -177,6 +178,10 @@ func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationSt
 		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 }
 
+
+
+
+
 // RegisterOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 	var organizationName string
@@ -186,12 +191,12 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 				FROM organizations AS org INNER JOIN org_statuses AS status 
 				ON org.organization_name = status.pending WHERE status.org_status_id = $1;`
 	err := c.db.QueryRow(query, orgStatudId).Scan(&userName,&organizationName)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil {
 		return err
 	}
 
-	query2 := `UPDATE org_statuses SET pending = null, registered = $1;`
-	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	query2 := `UPDATE org_statuses SET pending = null, registered = $1 WHERE org_status_id = $2;`
+	err = c.db.QueryRow(query2, organizationName,orgStatudId).Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err

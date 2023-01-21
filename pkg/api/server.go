@@ -34,7 +34,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.POST("/signup", authHandler.UserSignup)
 		user.POST("/login", authHandler.UserLogin)
 		user.POST("/send/verification", userHandler.SendVerificationMail)
-		user.PATCH("/verify/account",authHandler.VerifyAccount)
+		user.GET("/verify/account",authHandler.VerifyAccount)
 		user.PATCH("/password/update",userHandler.UpdatePassword)
 		user.GET("/list/faqas",userHandler.GetPublicFaqas)
 		user.GET("/list-organizations",userHandler.ListOrganizations)
@@ -87,10 +87,14 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		}
 
 		
-
+		engine.GET("/get-organization/",userHandler.GetOrganization)
 		engine.Use(middleware.AuthorizeOrg()) 
 	{
-		engine.GET("/get-organization/",userHandler.GetOrganization)
+		
+		engine.POST("/organization/add-members",userHandler.AddMembers)
+		engine.GET("/accept-invitation",userHandler.AcceptJoinInvitation)
+		engine.PATCH("/organizaton/admin/admit-member",userHandler.AdmitMember)
+		engine.GET("/organizaton/join/requests",userHandler.ListJoinRequests)
 
 	}
 	

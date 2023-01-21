@@ -213,6 +213,31 @@ info:
   title: Go + Gin Radar API
   version: "1.0"
 paths:
+  /accept-invitation:
+    get:
+      operationId: Accept invitation to join organization
+      parameters:
+      - description: 'token: '
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Accept invitation to join an organization
+      tags:
+      - Organization
   /admin/approveevent:
     patch:
       operationId: approves event
@@ -629,7 +654,110 @@ paths:
         name: organizationName
         required: true
         type: string
-      - description: 'role:'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Get Organization
+      tags:
+      - Organization
+  /organization/add-members:
+    post:
+      operationId: Add admins for the organizaition
+      parameters:
+      - description: 'addMembers:'
+        in: body
+        name: addMembers
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - description: 'OrganizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Your role:'
+        in: query
+        name: pathRole
+        required: true
+        type: string
+      - description: member role
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Add Admins
+      tags:
+      - Organization
+  /organizaton/admin/admit-member:
+    patch:
+      operationId: Admit member
+      parameters:
+      - description: 'JoinStatusId: '
+        in: query
+        name: joinstatusid
+        required: true
+        type: integer
+      - description: 'Your role:'
+        in: query
+        name: pathRole
+        required: true
+        type: string
+      - description: member role
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Admit member
+      tags:
+      - Organization
+  /organizaton/join/requests:
+    get:
+      operationId: Join requests to organization
+      parameters:
+      - description: 'OrganizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Your role:'
         in: query
         name: pathRole
         required: true
@@ -647,7 +775,7 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - BearerAuth: []
-      summary: Get Organization
+      summary: List Join Requests
       tags:
       - Organization
   /user/event/create:
@@ -1015,34 +1143,6 @@ paths:
       security:
       - BearerAuth: []
       summary: update Profileabout
-      tags:
-      - User
-  /user/verify/account:
-    patch:
-      operationId: Verify account
-      parameters:
-      - description: 'Email: '
-        in: query
-        name: Email
-        required: true
-        type: string
-      - description: 'code: '
-        in: query
-        name: code
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: Verify account
       tags:
       - User
 securityDefinitions:

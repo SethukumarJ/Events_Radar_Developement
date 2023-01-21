@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math/rand"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -23,10 +23,117 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// AdmitMember implements interfaces.UserUseCase
+func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
 
 
+	err := c.userRepo.AdmitMember(JoinStatusId,memberRole)
 
-func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error){
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ListJoinRequests implements interfaces.UserUseCase
+func (c *userUseCase) ListJoinRequests(username string, organizationName string) (*[]domain.Join_StatusResponse, error) {
+	fmt.Println("get requests  from usecase called")
+	requests, err := c.userRepo.ListJoinRequests(username, organizationName)
+	fmt.Println("requests:", requests)
+	if err != nil {
+		fmt.Println("error from listjoinRequests usecase:", err)
+		return nil, err
+	}
+
+	return &requests, nil
+}
+
+// AcceptJoinInvitation implements interfaces.UserUseCase
+func (c *userUseCase) AcceptJoinInvitation(username string, organizationName string, role string) error {
+
+	_, err := c.userRepo.FindRelation(username, organizationName)
+
+	if err == nil {
+		return errors.New("relation allready exist with this credentials")
+
+	}
+
+	_, err = c.userRepo.AcceptJoinInvitation(username, organizationName, role)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// AddMembers implements interfaces.UserUseCase
+func (c *userUseCase) AddMembers(newMembers []string, memberRole string, organizationName string) error {
+	_, err := c.userRepo.FindOrganization(organizationName)
+	fmt.Println("found organization", err)
+
+	if err != nil {
+		return err
+	}
+
+	for _, v := range newMembers {
+		user, err := c.userRepo.FindUser(v)
+
+		if err == nil {
+			c.SendInvitationMail(user.Email, organizationName, memberRole)
+		} else if err == sql.ErrNoRows {
+			c.SendInvitationMail(v, organizationName, memberRole)
+		} else {
+			fmt.Println("coud'nt invite :", v)
+		}
+	}
+
+	return nil
+}
+
+func (c *userUseCase) SendInvitationMail(email string, organizationName string, memberRole string) error {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username":         email,
+		"organizationName": organizationName,
+		"memberRole":       memberRole,
+		"exp":              time.Now().Add(time.Hour * 24 * 30).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte("secret"))
+	fmt.Println("TokenString", tokenString)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	var role string
+	if memberRole == "1" {
+		role = "admin"
+	} else if memberRole == "2" {
+		role = "volunteer"
+	} else if memberRole == "3" {
+		role = "sponser"
+	}
+
+	subject := "Join invitation to organization " + organizationName + " for the role " + role
+	body := "Please click on the link to join organization: http://localhost:3000/accept-invitation?token=" + tokenString
+	message := "To: " + email + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + body
+
+	// send random code to user's email
+	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+		return err
+	}
+	fmt.Println("email sent: ", email)
+
+	err = c.userRepo.StoreVerificationDetails(email, tokenString)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
 
 	role, err := c.userRepo.FindRole(username, organizationName)
 
@@ -34,12 +141,12 @@ func (c *userUseCase) VerifyRole(username string, organizationName string) (stri
 		return "", err
 	}
 
-	return role , nil
+	return role, nil
 }
 
 // JoinOrganization implements interfaces.UserUseCase
 func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
-	_,err := c.userRepo.JoinOrganization(organizationName,userName)
+	_, err := c.userRepo.JoinOrganization(organizationName, userName)
 
 	if err != nil {
 		return err
@@ -192,18 +299,24 @@ func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
 	return &user, nil
 }
 
-// SendVerificationEmail implements interfaces.UserUseCase
 func (c *userUseCase) SendVerificationEmail(email string) error {
-	//to generate random code
-	rand.Seed(time.Now().UnixNano())
-	code := rand.Intn(100000)
 
-	fmt.Println("code: ", code)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": email,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
+	})
+	tokenString, err := token.SignedString([]byte("secret"))
+	fmt.Println("TokenString", tokenString)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
 
-	message := fmt.Sprintf(
-		"\nThe verification code is:\n\n%d.\nUse to verify your account.\n Thank you for usingEvents.\n with regards Team Events radar.",
-		code,
-	)
+	subject := "Account Verification"
+	body := "Please click on the link to verify your account: http://localhost:3000/user/verify/account?token=" + tokenString
+	message := "To: " + email + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"\r\n" + body
 
 	// send random code to user's email
 	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
@@ -211,7 +324,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 	}
 	fmt.Println("email sent: ", email)
 
-	err := c.userRepo.StoreVerificationDetails(email, code)
+	err = c.userRepo.StoreVerificationDetails(email, tokenString)
 
 	if err != nil {
 		return err

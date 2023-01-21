@@ -23,4 +23,5 @@ type UserUseCase interface {
 	UpdateProfile(user domain.Bios, username string) error
 	AddMembers(newMembers []string,memberRole string, organizationName string) error
 	AcceptJoinInvitation(username string, organizationName string,role string) error
+	AdmitMember(JoinStatusId int) error
 }

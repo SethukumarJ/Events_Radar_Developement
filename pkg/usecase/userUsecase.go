@@ -23,10 +23,20 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// AdmitMember implements interfaces.UserUseCase
+func (c *userUseCase) AdmitMember(JoinStatusId int) error {
+	err := c.adminRepo.AdmitMember(JoinStatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ListJoinRequests implements interfaces.UserUseCase
 func (c *userUseCase) ListJoinRequests(username string, organizationName string) (*[]domain.Join_StatusResponse, error) {
 	fmt.Println("get requests  from usecase called")
-	requests, err := c.userRepo.ListJoinRequests(username,organizationName)
+	requests, err := c.userRepo.ListJoinRequests(username, organizationName)
 	fmt.Println("requests:", requests)
 	if err != nil {
 		fmt.Println("error from listjoinRequests usecase:", err)

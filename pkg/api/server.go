@@ -87,12 +87,14 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		}
 
 		
-
+		engine.GET("/get-organization/",userHandler.GetOrganization)
 		engine.Use(middleware.AuthorizeOrg()) 
 	{
-		engine.GET("/get-organization/",userHandler.GetOrganization)
+		
 		engine.POST("/organization/add-members",userHandler.AddMembers)
 		engine.GET("/accept-invitation",userHandler.AcceptJoinInvitation)
+		engine.PATCH("/organizaton/admin/admit-member",userHandler.AdmitMember)
+		engine.GET("/organizaton/join/requests",userHandler.ListJoinRequests)
 
 	}
 	

@@ -25,4 +25,5 @@ type UserRepository interface {
 	ListOrganizations(pagenation utils.Filter) ([]domain.OrganizationsResponse, utils.Metadata, error)
 	JoinOrganization(organizatinName string , username string) (int, error)
 	AcceptJoinInvitation(newMember string, memberRole string, organizationName string) (int, error)
+	AdmitMember(JoinStatusId int,memberRole string) error
 }

@@ -24,8 +24,8 @@ type userUseCase struct {
 }
 
 // AdmitMember implements interfaces.UserUseCase
-func (c *userUseCase) AdmitMember(JoinStatusId int) error {
-	err := c.adminRepo.AdmitMember(JoinStatusId)
+func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
+	err := c.userRepo.AdmitMember(JoinStatusId,memberRole)
 
 	if err != nil {
 		return err

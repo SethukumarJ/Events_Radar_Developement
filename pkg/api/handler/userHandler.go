@@ -35,9 +35,10 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Security BearerAuth
 // @Param  joinstatusid   query  int  true  "JoinStatusId: "
 // @Param pathRole query string true "Your role:"
+// @Param role query string true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organizaton/join/requests [get]
+// @Router /organizaton/admin/admit-member [put]
 func (cr *UserHandler) AdmitMember(c *gin.Context) {
 
 	JoinStatusId,_ := strconv.Atoi(c.Query("joinstatusid"))
@@ -47,6 +48,7 @@ func (cr *UserHandler) AdmitMember(c *gin.Context) {
 	fmt.Println("organizationName ", organizationName)
 	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
+	memberRole := c.Query("role")
 
 	if role > "1" {
 		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
@@ -55,7 +57,7 @@ func (cr *UserHandler) AdmitMember(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	err := cr.userUseCase.AdmitMember(JoinStatusId)
+	err := cr.userUseCase.AdmitMember(JoinStatusId,memberRole)
 
 	if err != nil {
 		response := response.ErrorResponse("admit member failed!", err.Error(), nil)

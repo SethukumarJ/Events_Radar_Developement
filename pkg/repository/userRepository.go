@@ -15,6 +15,36 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// AdmitMember implements interfaces.UserRepository
+func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error {
+	var organizationName string
+	var userName string
+
+	query := `SELECT pending, orgnaization_name FROM join_statuses WHERE join_status_id = $1;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	query2 := `UPDATE join_statuses SET pending = null, registered = $1;`
+	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
+	VALUES($1,$2,$3);`
+	err = c.db.QueryRow(query3, organizationName,userName,memberRole).Scan(&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+
+	return nil
+}
+
 // ListJoinRequests implements interfaces.UserRepository
 func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
 	var Requests []domain.Join_StatusResponse
@@ -30,7 +60,7 @@ func (c *userRepository) ListJoinRequests(username string, organizationName stri
 
 	var totalRecords int
 
-	defer rows.Close() 
+	defer rows.Close()
 	fmt.Println("joinstatuses called from repo")
 
 	for rows.Next() {

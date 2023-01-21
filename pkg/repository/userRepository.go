@@ -15,6 +15,9 @@ type userRepository struct {
 	db *sql.DB
 }
 
+
+
+
 // AdmitMember implements interfaces.UserRepository
 func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error {
 	var organizationName string
@@ -26,8 +29,8 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 		return err
 	}
 
-	query2 := `UPDATE join_statuses SET pending = null, registered = $1;`
-	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	query2 := `UPDATE join_statuses SET pending = null, joined = $1 WHERE join_status_id = $2;`
+	err = c.db.QueryRow(query2, organizationName,JoinStatusId).Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
@@ -159,7 +162,7 @@ func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.Or
 	var totalRecords int
 
 	defer rows.Close()
-	fmt.Println("allevents called from repo")
+	fmt.Println("all organization called from repo")
 
 	for rows.Next() {
 		var organization domain.OrganizationsResponse

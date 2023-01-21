@@ -714,13 +714,6 @@
                         "name": "organizationName",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "role:",
-                        "name": "pathRole",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -785,6 +778,107 @@
                         "type": "string",
                         "description": "member role",
                         "name": "role",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizaton/admin/admit-member": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Admit member",
+                "operationId": "Admit member",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "JoinStatusId: ",
+                        "name": "joinstatusid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Your role:",
+                        "name": "pathRole",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "member role",
+                        "name": "role",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organizaton/join/requests": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "List Join Requests",
+                "operationId": "Join requests to organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Your role:",
+                        "name": "pathRole",
                         "in": "query",
                         "required": true
                     }

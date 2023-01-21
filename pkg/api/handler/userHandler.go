@@ -38,7 +38,7 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Param role query string true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organizaton/admin/admit-member [put]
+// @Router /organizaton/admin/admit-member [patch]
 func (cr *UserHandler) AdmitMember(c *gin.Context) {
 
 	JoinStatusId,_ := strconv.Atoi(c.Query("joinstatusid"))
@@ -227,7 +227,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 func (cr *UserHandler) GetOrganization(c *gin.Context) {
 	username := c.Writer.Header().Get("userName")
 	fmt.Println("username ", username)
-	organizationName := c.Writer.Header().Get("organizationName")
+	organizationName := c.Query("organizationName")
 	fmt.Println("organizationName ", organizationName)
 	
 	organization, err := cr.userUseCase.FindOrganization(organizationName)
@@ -324,7 +324,7 @@ func (cr *UserHandler) ListOrganizations(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Listed All Organization applications", result)
+	response := response.SuccessResponse(true, "Listed All Organization in applications", result)
 	utils.ResponseJSON(*c, response)
 
 }

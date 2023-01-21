@@ -654,11 +654,6 @@ paths:
         name: organizationName
         required: true
         type: string
-      - description: 'role:'
-        in: query
-        name: pathRole
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -716,6 +711,71 @@ paths:
       security:
       - BearerAuth: []
       summary: Add Admins
+      tags:
+      - Organization
+  /organizaton/admin/admit-member:
+    patch:
+      operationId: Admit member
+      parameters:
+      - description: 'JoinStatusId: '
+        in: query
+        name: joinstatusid
+        required: true
+        type: integer
+      - description: 'Your role:'
+        in: query
+        name: pathRole
+        required: true
+        type: string
+      - description: member role
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Admit member
+      tags:
+      - Organization
+  /organizaton/join/requests:
+    get:
+      operationId: Join requests to organization
+      parameters:
+      - description: 'OrganizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Your role:'
+        in: query
+        name: pathRole
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: List Join Requests
       tags:
       - Organization
   /user/event/create:

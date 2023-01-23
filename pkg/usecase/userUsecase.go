@@ -26,7 +26,7 @@ type userUseCase struct {
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.ApplyEvent(applicationForm.userName)
+	_, err := c.userRepo.FindEvent(applicationForm.userName)
 	fmt.Println("found applicationForm", err)
 
 	if err == nil {
@@ -36,7 +36,7 @@ func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
-	_, err = c.userRepo.CreateOrganization(applicationForm)
+	_, err = c.userRepo.ApplyEvent(applicationForm)
 	if err != nil {
 		return err
 
@@ -45,8 +45,14 @@ func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 }
 
 // FindApplication implements interfaces.UserUseCase
-func (*userUseCase) FindApplication(userName string) (*domain.ApplicationFormResponse, error) {
-	panic("unimplemented")
+func (c *userUseCase) FindApplication(userName string) (*domain.ApplicationFormResponse, error) {
+	Application, err := c.userRepo.FindApplication(userName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &Application, nil
 }
 
 // AdmitMember implements interfaces.UserUseCase

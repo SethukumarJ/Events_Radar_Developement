@@ -19,6 +19,7 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 		SkipDefaultTransaction: true,
 	})
 
+	// Migrating models
 	db.AutoMigrate(&domain.Users{})
 	db.AutoMigrate(&domain.Verification{})
 	db.AutoMigrate(&domain.Admins{})
@@ -30,6 +31,11 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Org_Status{})
 	db.AutoMigrate(&domain.User_Organization_Connections{})
 	db.AutoMigrate(&domain.Join_Status{})
+	db.AutoMigrate(&domain.Notificaiton{})
+
+	
+   
+    
 
 	return db, dbErr
 }

@@ -27,6 +27,46 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// @Summary ApplyEvent
+// @ID Apply event
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @param ApplyEvent body domain.ApplicationForm{} true "Apply event"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/apply-event [post]
+// apply event
+func (cr *UserHandler) ApplyEvent(c *gin.Context) {
+
+	var newApplication domain.ApplicationForm
+
+	fmt.Println("Applying event")
+	//fetching data
+	c.Bind(&newApplication)
+
+	fmt.Println("organization", newApplication)
+	newApplication.UserName = c.Writer.Header().Get("userName")
+	newApplication.AppliedAt = time.Now()
+
+	err := cr.userUseCase.ApplyEvent(newApplication)
+	fmt.Println(err)
+	log.Println(newApplication)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to apply event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	application, _ := cr.userUseCase.FindApplication(newOrganization.OrganizationName)
+	response := response.SuccessResponse(true, "SUCCESS", application)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+}
 
 // @Summary Admit member
 // @ID Admit member

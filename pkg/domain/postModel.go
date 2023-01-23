@@ -68,14 +68,12 @@ type Events struct {
 	ApplicationLeft        int       `json:"applicationleft"`
 }
 
-
 type Posters struct {
-
-	Name string `json:"name"`
-	Image string `json:"image"`
+	Name        string `json:"name"`
+	Image       string `json:"image"`
 	Discription string `json:"discription"`
-	Date string `json:"date"`
-	Colour  string `json:"colour"`
+	Date        string `json:"date"`
+	Colour      string `json:"colour"`
 }
 
 type Faqas struct {
@@ -121,6 +119,14 @@ type Join_Status struct {
 	Rejected         string `json:"rejected"`
 }
 
+type Appllication_Satatuses struct {
+	ApplicationStatusId uint   `json:"applicationstatusid" gorm:"autoIncrement:true;unique"`
+	EventName           string `json:"eventname"`
+	Accepted            string `json:"joined"`
+	Pending             string `json:"pending"`
+	Rejected            string `json:"rejected"`
+}
+
 type User_Organization_Connections struct {
 	UserOrganizationConnectionsId uint          `json:"organizationid" gorm:"autoIncrement:true;unique"`
 	OrganizationName              string        `json:"organizationname"`
@@ -138,4 +144,20 @@ type Notificaiton struct {
 	Event_Title      string    `json:"eventtitle"`
 	Message          string    `json:"message"`
 	Time             time.Time `json:"time"`
+}
+
+type ApplicationForm struct {
+	ApplicationId uint      `json:"applicationid" gorm:"autoIncrement:true;unique"`
+	UserName      string    `json:"username"`
+	AppliedAt     time.Time `json:"appliedat"`
+	FirstName     string    `json:"firstname"`
+	LastName      string    `json:"lastname"`
+	Event_name    string    `json:"event_name"`
+	Proffession   string    `json:"proffession"`
+	College       string    `json:"college"`
+	Company       string    `json:"company"`
+	About         string    `json:"about"`
+	Email         string    `json:"email"`
+	Github        string    `json:"github"`
+	Linkedin      string    `json:"linkedin"`
 }

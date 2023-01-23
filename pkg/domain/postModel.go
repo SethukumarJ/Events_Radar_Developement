@@ -64,6 +64,18 @@ type Events struct {
 	ApplicationClosingDate string    `json:"applicationclosingdate"`
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
+	Posters                []Posters `json:"posters"`
+	ApplicationLeft        int       `json:"applicationleft"`
+}
+
+
+type Posters struct {
+
+	Name string `json:"name"`
+	Image string `json:"image"`
+	Discription string `json:"discription"`
+	Date string `json:"date"`
+	Colour  string `json:"colour"`
 }
 
 type Faqas struct {

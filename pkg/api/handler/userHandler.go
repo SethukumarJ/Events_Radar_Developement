@@ -61,7 +61,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 		return
 	}
 
-	application, _ := cr.userUseCase.FindApplication(newOrganization.OrganizationName)
+	application, _ := cr.userUseCase.FindApplication(newApplication.UserName)
 	response := response.SuccessResponse(true, "SUCCESS", application)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)

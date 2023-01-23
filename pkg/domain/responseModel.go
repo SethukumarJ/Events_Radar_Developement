@@ -99,3 +99,20 @@ type Join_StatusResponse struct {
 	Pending          string `json:"pending"`
 	Rejected         string `json:"rejected"`
 }
+
+
+type ApplicationFormResponse struct {
+	ApplicationId uint      `json:"applicationid" gorm:"autoIncrement:true;unique"`
+	UserName      string    `json:"username"`
+	AppliedAt     time.Time `json:"appliedat"`
+	FirstName     string    `json:"firstname"`
+	LastName      string    `json:"lastname"`
+	Event_name    string    `json:"event_name"`
+	Proffession   string    `json:"proffession"`
+	College       string    `json:"college"`
+	Company       string    `json:"company"`
+	About         string    `json:"about"`
+	Email         string    `json:"email"`
+	Github        string    `json:"github"`
+	Linkedin      string    `json:"linkedin"`
+}

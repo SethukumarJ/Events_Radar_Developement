@@ -23,11 +23,36 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// ApplyEvent implements interfaces.UserUseCase
+func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
+	fmt.Println("create organization from service")
+	_, err := c.userRepo.ApplyEvent(applicationForm.userName)
+	fmt.Println("found applicationForm", err)
+
+	if err == nil {
+		return errors.New("applicationForm already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	_, err = c.userRepo.CreateOrganization(applicationForm)
+	if err != nil {
+		return err
+
+	}
+	return nil
+}
+
+// FindApplication implements interfaces.UserUseCase
+func (*userUseCase) FindApplication(userName string) (*domain.ApplicationFormResponse, error) {
+	panic("unimplemented")
+}
+
 // AdmitMember implements interfaces.UserUseCase
 func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
-	
 
-	userName, organizationName,err := c.userRepo.FindJoinStatus(JoinStatusId)
+	userName, organizationName, err := c.userRepo.FindJoinStatus(JoinStatusId)
 	if err != nil {
 		return errors.New("no join statuses found")
 	}
@@ -39,7 +64,7 @@ func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
 
 	}
 
-	err = c.userRepo.AdmitMember(JoinStatusId,memberRole)
+	err = c.userRepo.AdmitMember(JoinStatusId, memberRole)
 
 	if err != nil {
 		return err

@@ -32,6 +32,18 @@ func Triggers(cfg config.Config) (*gorm.DB, error) {
 		fmt.Println("admit_member_notification_trigger", err)
 		}
 
+
+	err = db.Exec(organization_created_notification)
+	if err != nil {
+	fmt.Println("organization_created_notification_trigger", err)
+	}
+
+
+err = db.Exec(organization_created_notification_trigger)
+	if err != nil {
+	fmt.Println("organization_created_notification_trigger", err)
+	}
+
 	return db, dbErr
 }
 
@@ -49,4 +61,20 @@ const (
 	AFTER INSERT ON user_organization_connections
 	FOR EACH ROW
 	EXECUTE FUNCTION joined_notification();`
+
+	// For giving notification on joined status  to the user
+	organization_created_notification = `CREATE OR REPLACE FUNCTION org_created_notification() RETURNS TRIGGER AS $$
+	BEGIN
+	INSERT INTO notificaitons (user_name, organization_name, time, message)
+	VALUES ((SELECT created_by from organizations where organization_name = NEW.registered), NEW.registered, 
+	(SELECT created_at from organizations where organization_name = NEW.registered), 'Organization have been successfully registered');
+	RETURN NEW;
+	END; $$ LANGUAGE plpgsql;`
+	organization_created_notification_trigger = `CREATE OR REPLACE TRIGGER organization_created_notification
+	AFTER UPDATE ON org_statuses
+	FOR EACH ROW
+	EXECUTE FUNCTION org_created_notification();`
+
+
+
 )

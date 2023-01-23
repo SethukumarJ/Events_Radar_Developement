@@ -116,4 +116,14 @@ type User_Organization_Connections struct {
 	UserName                      string        `json:"username"`
 	Users                         Users         `gorm:"foreignKey:UserName;references:UserName"`
 	Role                          string        `json:"role" gorm:"not null"`
+	JoinedAt                      time.Time     `json:"joinedat"`
+}
+
+type Notificaiton struct {
+	NotificaitonId   uint      `json:"notification_id" gorm:"autoIncrement:true;unique"`
+	UserName         string    `json:"username"`
+	OrganizationName string    `json:"organizationname"`
+	Event_Title      string    `json:"eventtitle"`
+	Message          string    `json:"message"`
+	Time             time.Time `json:"time"`
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
 	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
@@ -15,8 +16,19 @@ type userRepository struct {
 	db *sql.DB
 }
 
-
-
+func (c *userRepository) init() {
+	query := `CREATE TRIGGER admit_member_notification
+                AFTER INSERT ON user_organization_connections
+                FOR EACH ROW
+                BEGIN
+                    INSERT INTO notifications (user_name, organization_name, event_title, message)
+                    VALUES ('sethu', 'organization_name', 'Admission', 'You are admitted to the organization');
+                END;`
+	_, err := c.db.Exec(query)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+}
 
 // AdmitMember implements interfaces.UserRepository
 func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error {
@@ -24,21 +36,23 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	var userName string
 
 	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1;`
-	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName, &organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
-	query2 := `UPDATE join_statuses SET pending = null, joined = $1 WHERE join_status_id = $2;`
-	err = c.db.QueryRow(query2, organizationName,JoinStatusId).Scan(&organizationName)
+
+	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role, joined_at)
+	VALUES($1,$2,$3,$4);`
+	joined_at := time.Now()
+	err = c.db.QueryRow(query3, organizationName, userName, memberRole, joined_at).Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
 
 	}
-	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
-	VALUES($1,$2,$3);`
-	err = c.db.QueryRow(query3, organizationName,userName,memberRole).Scan(&organizationName)
+	query2 := `UPDATE join_statuses SET pending = null, joined = $1 WHERE join_status_id = $2;`
+	err = c.db.QueryRow(query2, userName, JoinStatusId).Scan(&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
@@ -48,23 +62,23 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	return nil
 }
 
-func (c *userRepository) FindJoinStatus(JoinStatusId int) (string ,string,error) {
+func (c *userRepository) FindJoinStatus(JoinStatusId int) (string, string, error) {
 	var organizationName string
 	var userName string
 
-	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1;`
-	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
+	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1 AND pending IS NOT NULL;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName, &organizationName)
 	if err != nil && err != sql.ErrNoRows {
-		return "","",err
+		return "", "", err
 	}
-	return userName,organizationName,nil
+	return userName, organizationName, nil
 }
 
 // ListJoinRequests implements interfaces.UserRepository
 func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
 	var Requests []domain.Join_StatusResponse
 
-	query := `SELECT COUNT(*) OVER(),join_status_id, pending, organization_name FROM join_statuses WHERE organization_name = $1;`
+	query := `SELECT COUNT(*) OVER(),join_status_id, pending, organization_name FROM join_statuses WHERE organization_name = $1 AND pending IS NOT NULL;`
 
 	rows, err := c.db.Query(query, organizationName)
 	fmt.Println("rows", rows)

@@ -40,6 +40,8 @@ func main() {
 	// db.ConnectDB(config)
 	gorm, _ := db.ConnectGormDB(config)
 	fmt.Printf("\ngorm : %v\n\n", gorm)
+	trigger,_ := db.Triggers(config)
+	fmt.Printf("\tTrigger : %v\n\n", trigger)
 
 	server, diErr := di.InitializeAPI(config)
 	if diErr != nil {

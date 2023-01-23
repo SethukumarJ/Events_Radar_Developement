@@ -23,7 +23,7 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	var organizationName string
 	var userName string
 
-	query := `SELECT pending, orgnaization_name FROM join_statuses WHERE join_status_id = $1;`
+	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1;`
 	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
 	if err != nil && err != sql.ErrNoRows {
 		return err
@@ -48,11 +48,23 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	return nil
 }
 
+func (c *userRepository) FindJoinStatus(JoinStatusId int) (string ,string,error) {
+	var organizationName string
+	var userName string
+
+	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName,&organizationName)
+	if err != nil && err != sql.ErrNoRows {
+		return "","",err
+	}
+	return userName,organizationName,nil
+}
+
 // ListJoinRequests implements interfaces.UserRepository
 func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
 	var Requests []domain.Join_StatusResponse
 
-	query := `SELECT COUNT(*) OVER(),join_status_id pending, organization_name FROM join_statuses WHERE organization_name = $1;`
+	query := `SELECT COUNT(*) OVER(),join_status_id, pending, organization_name FROM join_statuses WHERE organization_name = $1;`
 
 	rows, err := c.db.Query(query, organizationName)
 	fmt.Println("rows", rows)

@@ -179,7 +179,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 // @Security BearerAuth
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/token/refresh [post]
+// @Router /user/token-refresh [post]
 // UserLogin handles the user login
 func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
@@ -319,7 +319,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 // @Param  Authorization   header  string  true  "token string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/token/refresh [post]
+// @Router /admin/token-refresh [post]
 func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 
 	autheader := c.Request.Header["Authorization"]

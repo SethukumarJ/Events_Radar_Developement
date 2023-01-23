@@ -26,13 +26,26 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 
 // @Summary delete event
 // @ID Delete event
-// @Tags Event
+// @Tags Organization
 // @Produce json
+// @Security BearerAuth
 // @Param  title   query  string  true  "Title: "
+// @Param organizationName query string true "organizationName: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/delete [delete]
+// @Router /organization/delete-event [delete]
 func (cr *EventHandler) DeleteEvent(c *gin.Context) {
+
+
+	role := c.Writer.Header().Get("role")
+
+	if role > "2" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
 	title := c.Query("title")
 
@@ -52,15 +65,28 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 
 // @Summary update event
 // @ID Update event
-// @Tags User
+// @Tags Organization
 // @Produce json
 // @Security BearerAuth
 // @param title query string true "event title"
+// @Param organizationName query string true "organizationName: "
 // @param UpdateEvent body domain.Events{} true "update Event with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/update [patch]
+// @Router /organization/update-event [patch]
 func (cr *EventHandler) UpdateEvent(c *gin.Context) {
+
+
+
+	role := c.Writer.Header().Get("role")
+
+	if role > "2" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
 	var updatedEvent domain.Events
 	fmt.Println("Updating event")
@@ -100,7 +126,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @param CreateEvent body domain.Events{} true "Create event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/event/create [post]
+// @Router /user/create-event [post]
 // Create events
 func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
@@ -154,7 +180,7 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 // @param CreateEvent body domain.Events{} true "Create event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/event/create [post]
+// @Router /admin/create-event [post]
 // Create events
 func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 
@@ -192,14 +218,73 @@ func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 
 }
 
+ 
+// @Summary Create event by organization
+// @ID Create event from organization
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param organizationName query string true "organizationName"
+// @param CreateEvent body domain.Events{} true "Create event"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/create-event [post]
+// Create events
+func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
+
+	role := c.Writer.Header().Get("role")
+
+	if role > "2" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+
+	var newEvent domain.Events
+	fmt.Println("event", newEvent)
+	fmt.Println("Creating event")
+	//fetching data
+	c.Bind(&newEvent)
+	newEvent.OrganizerName = c.Writer.Header().Get("organizationName")
+	newEvent.CreatedAt = time.Now()
+	newEvent.Approved = true
+	
+
+	fmt.Println(newEvent.OrganizerName,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
+
+	//check event exit or not
+
+	err := cr.eventUsecase.CreateEvent(newEvent)
+
+	log.Println(newEvent)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary delete event
 // @ID Get event by id
-// @Tags Event
+// @Tags User
 // @Produce json
 // @Param  title   query  string  true  "Title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/geteventbytitle [get]
+// @Router /user/geteventbytitle [get]
 func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 	title := c.Query("title")
@@ -223,13 +308,13 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 // @Summary list all approved upcoming events
 // @ID list all approved events
-// @Tags Event
+// @Tags User
 // @Produce json
 // @Param  page   query  string  true  "Page number: "
 // @Param  pagesize   query  string  true  "Page capacity : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /event/approved [get]
+// @Router /user/list/approved-events [get]
 func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

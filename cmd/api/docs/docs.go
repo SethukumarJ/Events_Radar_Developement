@@ -64,7 +64,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/approveevent": {
+        "/admin/approve-event": {
             "patch": {
                 "security": [
                     {
@@ -104,7 +104,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/event/create": {
+        "/admin/create-event": {
             "post": {
                 "security": [
                     {
@@ -128,6 +128,60 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.Events"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/list-events": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "list all upcoming events for admin",
+                "operationId": "list all upcoming events",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "List event by approved non approved : ",
+                        "name": "approved",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -200,61 +254,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/listEvents": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "list all upcoming events for admin",
-                "operationId": "list all upcoming events",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number: ",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page capacity : ",
-                        "name": "pagesize",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "List event by approved non approved : ",
-                        "name": "approved",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/listUsers": {
+        "/admin/list-users": {
             "get": {
                 "security": [
                     {
@@ -339,7 +339,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/organization/register": {
+        "/admin/make/vip-user": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "makes the user vip",
+                "operationId": "make vip user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Name : ",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/register-organization": {
             "patch": {
                 "security": [
                     {
@@ -379,7 +419,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/organization/reject": {
+        "/admin/reject-organization": {
             "patch": {
                 "security": [
                     {
@@ -457,7 +497,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/token/refresh": {
+        "/admin/token-refresh": {
             "post": {
                 "security": [
                     {
@@ -498,7 +538,66 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/vipuser": {
+        "/organization/admin/add-members": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Add Admins",
+                "operationId": "Add admins for the organizaition",
+                "parameters": [
+                    {
+                        "description": "addMembers:",
+                        "name": "addMembers",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "member role",
+                        "name": "role",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/admin/admit-member": {
             "patch": {
                 "security": [
                     {
@@ -509,15 +608,29 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Organization"
                 ],
-                "summary": "makes the user vip",
-                "operationId": "make vip user",
+                "summary": "Admit member",
+                "operationId": "Admit member",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "JoinStatusId: ",
+                        "name": "joinstatusid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "string",
-                        "description": "User Name : ",
-                        "name": "username",
+                        "description": "Organization Name :",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "member role",
+                        "name": "role",
                         "in": "query",
                         "required": true
                     }
@@ -538,120 +651,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/event/approved": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "list all approved upcoming events",
-                "operationId": "list all approved events",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Page number: ",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Page capacity : ",
-                        "name": "pagesize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/delete": {
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "delete event",
-                "operationId": "Delete event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/geteventbytitle": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "delete event",
-                "operationId": "Get event by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/update": {
-            "patch": {
+        "/organization/create-event": {
+            "post": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -661,21 +662,21 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Organization"
                 ],
-                "summary": "update event",
-                "operationId": "Update event",
+                "summary": "Create event by organization",
+                "operationId": "Create event from organization",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "event title",
-                        "name": "title",
+                        "description": "organizationName",
+                        "name": "organizationName",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "update Event with new body",
-                        "name": "UpdateEvent",
+                        "description": "Create event",
+                        "name": "CreateEvent",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -699,7 +700,54 @@ const docTemplate = `{
                 }
             }
         },
-        "/get-organization": {
+        "/organization/delete-event": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "delete event",
+                "operationId": "Delete event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/get-organization": {
             "get": {
                 "security": [
                     {
@@ -739,127 +787,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/add-members": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "Add Admins",
-                "operationId": "Add admins for the organizaition",
-                "parameters": [
-                    {
-                        "description": "addMembers:",
-                        "name": "addMembers",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Your role:",
-                        "name": "pathRole",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "member role",
-                        "name": "role",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizaton/admin/admit-member": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "Admit member",
-                "operationId": "Admit member",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "JoinStatusId: ",
-                        "name": "joinstatusid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Your role:",
-                        "name": "pathRole",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "member role",
-                        "name": "role",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/organizaton/join/requests": {
+        "/organization/join-requests": {
             "get": {
                 "security": [
                     {
@@ -881,11 +809,95 @@ const docTemplate = `{
                         "name": "organizationName",
                         "in": "query",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/update-event": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "update event",
+                "operationId": "Update event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "event title",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Your role:",
-                        "name": "pathRole",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update Event with new body",
+                        "name": "UpdateEvent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Events"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user//list-faqas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "list all Public faqas",
+                "operationId": "list all public faqas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event title: ",
+                        "name": "title",
                         "in": "query",
                         "required": true
                     }
@@ -906,7 +918,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/event/create": {
+        "/user/create-event": {
             "post": {
                 "security": [
                     {
@@ -948,7 +960,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/event/post/answer": {
+        "/user/create-organization": {
             "post": {
                 "security": [
                     {
@@ -961,23 +973,16 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Post Answer function",
-                "operationId": "User Post Answer",
+                "summary": "Create Organization",
+                "operationId": "Create Organizatioin from user",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Getting the id of the question",
-                        "name": "faqaid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Post Answer",
-                        "name": "PostAnswer",
+                        "description": "Create organization",
+                        "name": "CreateOrganization",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Answers"
+                            "$ref": "#/definitions/domain.Organizations"
                         }
                     }
                 ],
@@ -997,7 +1002,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/event/post/question": {
+        "/user/event/post-question": {
             "post": {
                 "security": [
                     {
@@ -1035,6 +1040,137 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.Faqas"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/event/post/answer": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Post Answer function",
+                "operationId": "User Post Answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organizationName",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Getting the id of the question",
+                        "name": "faqaid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Post Answer",
+                        "name": "PostAnswer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Answers"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/geteventbytitle": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "delete event",
+                "operationId": "Get event by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/join-organization": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Joining organization",
+                "operationId": "Join organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organization name: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1095,7 +1231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/list/faqas": {
+        "/user/list/approved-events": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1103,13 +1239,20 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "list all Public faqas",
-                "operationId": "list all public faqas",
+                "summary": "list all approved upcoming events",
+                "operationId": "list all approved events",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Event title: ",
-                        "name": "title",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
                         "in": "query",
                         "required": true
                     }
@@ -1141,7 +1284,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Organization"
                 ],
                 "summary": "list all Asked questions",
                 "operationId": "list all asked questions",
@@ -1208,133 +1351,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/organization/create": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Create Organization",
-                "operationId": "Create Organizatioin from user",
-                "parameters": [
-                    {
-                        "description": "Create organization",
-                        "name": "CreateOrganization",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Organizations"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/organization/join": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Joining organization",
-                "operationId": "Join organization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "organization name: ",
-                        "name": "organizationName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/password/update": {
-            "patch": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "update password",
-                "operationId": "Update password",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Email: ",
-                        "name": "email",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "update password with new body",
-                        "name": "Updateevent",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Users"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/send/verification": {
+        "/user/send-verification": {
             "post": {
                 "produces": [
                     "application/json"
@@ -1406,7 +1423,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/token/refresh": {
+        "/user/token-refresh": {
             "post": {
                 "security": [
                     {
@@ -1438,7 +1455,51 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/update/profile": {
+        "/user/update-password": {
+            "patch": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "update password",
+                "operationId": "Update password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Email: ",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update password with new body",
+                        "name": "Updateevent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Users"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/update-profile": {
             "patch": {
                 "security": [
                     {

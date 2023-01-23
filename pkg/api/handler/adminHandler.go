@@ -98,7 +98,7 @@ func (cr *AdminHandler) ListOrgRequests(c *gin.Context) {
 // @Param  orgstatusid   query  int  true  "orgStatus id : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/organization/register [patch]
+// @Router /admin/register-organization [patch]
 func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 	
 	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
@@ -124,7 +124,7 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 // @Param  orgstatusid   query  int  true  "orgStatus id : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/organization/reject [patch]
+// @Router /admin/reject-organization [patch]
 func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 	
 	orgStatusId,_ := strconv.Atoi(c.Query("orgstatusid"))
@@ -152,7 +152,7 @@ func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 // @Param  username   query  string  true  "User Name : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/vipuser [patch]
+// @Router /admin/make/vip-user [patch]
 func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
 	username := c.Query("username")
@@ -179,7 +179,7 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 // @Param  title   query  string  true  "Event Name : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/approveevent [patch]
+// @Router /admin/approve-event [patch]
 func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 	
 	title := c.Query("title")
@@ -209,7 +209,7 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 // @Param  approved   query  bool  true  "List event by approved non approved : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/listEvents [get]
+// @Router /admin/list-events [get]
 func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))
@@ -266,7 +266,7 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 // @Param  pagesize   query  string  true  "Page capacity : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/listUsers [get]
+// @Router /admin/list-users [get]
 func (cr *AdminHandler) ViewAllUsers(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))

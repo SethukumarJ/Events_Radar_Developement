@@ -39,9 +39,7 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		autheader := c.Request.Header["Authorization"]
 		organizationName := c.Query("organizationName")
 		fmt.Println("organization Name from middleware",organizationName)
-		pathRole := c.Query("pathRole")
 
-		fmt.Println("role from middleware", pathRole)
 		auth := strings.Join(autheader, " ")
 		bearerToken := strings.Split(auth, " ")
 		fmt.Printf("\n\ntoken : %v\n\n", autheader)
@@ -82,8 +80,8 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		userName := fmt.Sprint(claims.UserName)
 		fmt.Println("username",userName)
 		role, err := cr.userUsecase.VerifyRole(userName, organizationName)
-		fmt.Println(role,"///////////", pathRole,err,"role and pathrole")
-		if role != pathRole {
+		fmt.Println(role,"///////////",err,"role and pathrole")
+		if err != nil {
 			err = errors.New("your role input is invalid")
 			response := response.ErrorResponse("Error", err.Error(), role)
 			c.Writer.Header().Add("Content-Type", "application/json")

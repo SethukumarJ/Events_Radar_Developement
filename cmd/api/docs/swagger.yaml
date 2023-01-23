@@ -238,7 +238,7 @@ paths:
       summary: Accept invitation to join an organization
       tags:
       - Organization
-  /admin/approveevent:
+  /admin/approve-event:
     patch:
       operationId: approves event
       parameters:
@@ -263,7 +263,7 @@ paths:
       summary: approves the event for admin
       tags:
       - Admin
-  /admin/event/create:
+  /admin/create-event:
     post:
       operationId: Create event from admin
       parameters:
@@ -287,6 +287,41 @@ paths:
       security:
       - BearerAuth: []
       summary: Create event
+      tags:
+      - Admin
+  /admin/list-events:
+    get:
+      operationId: list all upcoming events
+      parameters:
+      - description: 'Page number: '
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
+        required: true
+        type: integer
+      - description: 'List event by approved non approved : '
+        in: query
+        name: approved
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: list all upcoming events for admin
       tags:
       - Admin
   /admin/list-organizations:
@@ -324,42 +359,7 @@ paths:
       summary: list all pending organizations for admin
       tags:
       - Admin
-  /admin/listEvents:
-    get:
-      operationId: list all upcoming events
-      parameters:
-      - description: 'Page number: '
-        in: query
-        name: page
-        required: true
-        type: integer
-      - description: 'Page capacity : '
-        in: query
-        name: pagesize
-        required: true
-        type: integer
-      - description: 'List event by approved non approved : '
-        in: query
-        name: approved
-        required: true
-        type: boolean
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: list all upcoming events for admin
-      tags:
-      - Admin
-  /admin/listUsers:
+  /admin/list-users:
     get:
       operationId: list all active users
       parameters:
@@ -414,7 +414,32 @@ paths:
       tags:
       - Admin
       - Admin
-  /admin/organization/register:
+  /admin/make/vip-user:
+    patch:
+      operationId: make vip user
+      parameters:
+      - description: 'User Name : '
+        in: query
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: makes the user vip
+      tags:
+      - Admin
+  /admin/register-organization:
     patch:
       operationId: Register organization
       parameters:
@@ -439,7 +464,7 @@ paths:
       summary: Resginter the organization
       tags:
       - Admin
-  /admin/organization/reject:
+  /admin/reject-organization:
     patch:
       operationId: Reject organization
       parameters:
@@ -489,7 +514,7 @@ paths:
       tags:
       - Admin
       - Admin
-  /admin/token/refresh:
+  /admin/token-refresh:
     post:
       operationId: Admin RefreshToken
       parameters:
@@ -515,13 +540,26 @@ paths:
       tags:
       - Admin
       - Admin
-  /admin/vipuser:
-    patch:
-      operationId: make vip user
+  /organization/admin/add-members:
+    post:
+      operationId: Add admins for the organizaition
       parameters:
-      - description: 'User Name : '
+      - description: 'addMembers:'
+        in: body
+        name: addMembers
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - description: 'OrganizationName: '
         in: query
-        name: username
+        name: organizationName
+        required: true
+        type: string
+      - description: member role
+        in: query
+        name: role
         required: true
         type: string
       produces:
@@ -537,95 +575,56 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - BearerAuth: []
-      summary: makes the user vip
+      summary: Add Admins
       tags:
-      - Admin
-  /event/approved:
-    get:
-      operationId: list all approved events
-      parameters:
-      - description: 'Page number: '
-        in: query
-        name: page
-        required: true
-        type: string
-      - description: 'Page capacity : '
-        in: query
-        name: pagesize
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: list all approved upcoming events
-      tags:
-      - Event
-  /event/delete:
-    delete:
-      operationId: Delete event
-      parameters:
-      - description: 'Title: '
-        in: query
-        name: title
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: delete event
-      tags:
-      - Event
-  /event/geteventbytitle:
-    get:
-      operationId: Get event by id
-      parameters:
-      - description: 'Title: '
-        in: query
-        name: title
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: delete event
-      tags:
-      - Event
-  /event/update:
+      - Organization
+  /organization/admin/admit-member:
     patch:
-      operationId: Update event
+      operationId: Admit member
       parameters:
-      - description: event title
+      - description: 'JoinStatusId: '
         in: query
-        name: title
+        name: joinstatusid
+        required: true
+        type: integer
+      - description: 'Organization Name :'
+        in: query
+        name: organizationName
         required: true
         type: string
-      - description: update Event with new body
+      - description: member role
+        in: query
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Admit member
+      tags:
+      - Organization
+  /organization/create-event:
+    post:
+      operationId: Create event from organization
+      parameters:
+      - description: organizationName
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: Create event
         in: body
-        name: UpdateEvent
+        name: CreateEvent
         required: true
         schema:
           $ref: '#/definitions/domain.Events'
@@ -642,10 +641,40 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - BearerAuth: []
-      summary: update event
+      summary: Create event by organization
       tags:
-      - User
-  /get-organization:
+      - Organization
+  /organization/delete-event:
+    delete:
+      operationId: Delete event
+      parameters:
+      - description: 'Title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: 'organizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: delete event
+      tags:
+      - Organization
+  /organization/get-organization:
     get:
       operationId: Get Organizaition by name
       parameters:
@@ -670,96 +699,13 @@ paths:
       summary: Get Organization
       tags:
       - Organization
-  /organization/add-members:
-    post:
-      operationId: Add admins for the organizaition
-      parameters:
-      - description: 'addMembers:'
-        in: body
-        name: addMembers
-        required: true
-        schema:
-          items:
-            type: string
-          type: array
-      - description: 'OrganizationName: '
-        in: query
-        name: organizationName
-        required: true
-        type: string
-      - description: 'Your role:'
-        in: query
-        name: pathRole
-        required: true
-        type: string
-      - description: member role
-        in: query
-        name: role
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: Add Admins
-      tags:
-      - Organization
-  /organizaton/admin/admit-member:
-    patch:
-      operationId: Admit member
-      parameters:
-      - description: 'JoinStatusId: '
-        in: query
-        name: joinstatusid
-        required: true
-        type: integer
-      - description: 'Your role:'
-        in: query
-        name: pathRole
-        required: true
-        type: string
-      - description: member role
-        in: query
-        name: role
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: Admit member
-      tags:
-      - Organization
-  /organizaton/join/requests:
+  /organization/join-requests:
     get:
       operationId: Join requests to organization
       parameters:
       - description: 'OrganizationName: '
         in: query
         name: organizationName
-        required: true
-        type: string
-      - description: 'Your role:'
-        in: query
-        name: pathRole
         required: true
         type: string
       produces:
@@ -778,7 +724,66 @@ paths:
       summary: List Join Requests
       tags:
       - Organization
-  /user/event/create:
+  /organization/update-event:
+    patch:
+      operationId: Update event
+      parameters:
+      - description: event title
+        in: query
+        name: title
+        required: true
+        type: string
+      - description: 'organizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: update Event with new body
+        in: body
+        name: UpdateEvent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Events'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: update event
+      tags:
+      - Organization
+  /user//list-faqas:
+    get:
+      operationId: list all public faqas
+      parameters:
+      - description: 'Event title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: list all Public faqas
+      tags:
+      - User
+  /user/create-event:
     post:
       operationId: Create event from user
       parameters:
@@ -804,21 +809,16 @@ paths:
       summary: Create event
       tags:
       - User
-  /user/event/post/answer:
+  /user/create-organization:
     post:
-      operationId: User Post Answer
+      operationId: Create Organizatioin from user
       parameters:
-      - description: Getting the id of the question
-        in: query
-        name: faqaid
-        required: true
-        type: string
-      - description: Post Answer
+      - description: Create organization
         in: body
-        name: PostAnswer
+        name: CreateOrganization
         required: true
         schema:
-          $ref: '#/definitions/domain.Answers'
+          $ref: '#/definitions/domain.Organizations'
       produces:
       - application/json
       responses:
@@ -832,10 +832,10 @@ paths:
             $ref: '#/definitions/response.Response'
       security:
       - BearerAuth: []
-      summary: Post Answer function
+      summary: Create Organization
       tags:
       - User
-  /user/event/post/question:
+  /user/event/post-question:
     post:
       operationId: User Post Question
       parameters:
@@ -871,6 +871,90 @@ paths:
       summary: Post Question function
       tags:
       - User
+  /user/event/post/answer:
+    post:
+      operationId: User Post Answer
+      parameters:
+      - description: organizationName
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: Getting the id of the question
+        in: query
+        name: faqaid
+        required: true
+        type: string
+      - description: Post Answer
+        in: body
+        name: PostAnswer
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Answers'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Post Answer function
+      tags:
+      - User
+  /user/geteventbytitle:
+    get:
+      operationId: Get event by id
+      parameters:
+      - description: 'Title: '
+        in: query
+        name: title
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: delete event
+      tags:
+      - User
+  /user/join-organization:
+    patch:
+      operationId: Join organization
+      parameters:
+      - description: 'organization name: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Joining organization
+      tags:
+      - User
   /user/list-organizations:
     get:
       operationId: list all registered organizations
@@ -899,13 +983,18 @@ paths:
       summary: list all registered organizations for user
       tags:
       - User
-  /user/list/faqas:
+  /user/list/approved-events:
     get:
-      operationId: list all public faqas
+      operationId: list all approved events
       parameters:
-      - description: 'Event title: '
+      - description: 'Page number: '
         in: query
-        name: title
+        name: page
+        required: true
+        type: string
+      - description: 'Page capacity : '
+        in: query
+        name: pagesize
         required: true
         type: string
       produces:
@@ -919,7 +1008,7 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
-      summary: list all Public faqas
+      summary: list all approved upcoming events
       tags:
       - User
   /user/list/questions:
@@ -946,7 +1035,7 @@ paths:
       - BearerAuth: []
       summary: list all Asked questions
       tags:
-      - User
+      - Organization
   /user/login:
     post:
       operationId: User Login
@@ -972,87 +1061,7 @@ paths:
       tags:
       - User
       - User
-  /user/organization/create:
-    post:
-      operationId: Create Organizatioin from user
-      parameters:
-      - description: Create organization
-        in: body
-        name: CreateOrganization
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Organizations'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: Create Organization
-      tags:
-      - User
-  /user/organization/join:
-    patch:
-      operationId: Join organization
-      parameters:
-      - description: 'organization name: '
-        in: query
-        name: organizationName
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
-      summary: Joining organization
-      tags:
-      - User
-  /user/password/update:
-    patch:
-      operationId: Update password
-      parameters:
-      - description: 'Email: '
-        in: query
-        name: email
-        required: true
-        type: string
-      - description: update password with new body
-        in: body
-        name: Updateevent
-        required: true
-        schema:
-          $ref: '#/definitions/domain.Users'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: update password
-      tags:
-      - User
-  /user/send/verification:
+  /user/send-verification:
     post:
       operationId: Send verifiation code via email
       parameters:
@@ -1099,7 +1108,7 @@ paths:
       summary: SignUp for users
       tags:
       - User
-  /user/token/refresh:
+  /user/token-refresh:
     post:
       operationId: User RefreshToken
       produces:
@@ -1119,7 +1128,36 @@ paths:
       tags:
       - User
       - User
-  /user/update/profile:
+  /user/update-password:
+    patch:
+      operationId: Update password
+      parameters:
+      - description: 'Email: '
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: update password with new body
+        in: body
+        name: Updateevent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Users'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: update password
+      tags:
+      - User
+  /user/update-profile:
     patch:
       operationId: Update userprofile
       parameters:

@@ -26,4 +26,5 @@ type UserRepository interface {
 	JoinOrganization(organizatinName string , username string) (int, error)
 	AcceptJoinInvitation(newMember string, memberRole string, organizationName string) (int, error)
 	AdmitMember(JoinStatusId int,memberRole string) error
+	FindJoinStatus(JoinStatusId int) (string ,string,error)
 }

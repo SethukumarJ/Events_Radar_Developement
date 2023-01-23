@@ -25,9 +25,21 @@ type userUseCase struct {
 
 // AdmitMember implements interfaces.UserUseCase
 func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
+	
 
+	userName, organizationName,err := c.userRepo.FindJoinStatus(JoinStatusId)
+	if err != nil {
+		return errors.New("no join statuses found")
+	}
 
-	err := c.userRepo.AdmitMember(JoinStatusId,memberRole)
+	_, err = c.userRepo.FindRelation(userName, organizationName)
+
+	if err == nil {
+		return errors.New("relation allready exist with this credentials")
+
+	}
+
+	err = c.userRepo.AdmitMember(JoinStatusId,memberRole)
 
 	if err != nil {
 		return err
@@ -313,7 +325,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 	}
 
 	subject := "Account Verification"
-	body := "Please click on the link to verify your account: http://localhost:3000/user/verify/account?token=" + tokenString
+	body := "Please click on the link to verify your account: http://localhost:3000/user/verify-account?token=" + tokenString
 	message := "To: " + email + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" + body

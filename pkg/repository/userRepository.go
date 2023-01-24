@@ -56,8 +56,40 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 }
 
 // FindApplication implements interfaces.UserRepository
-func (*userRepository) FindApplication(username string) (domain.ApplicationFormResponse, error) {
-	panic("unimplemented")
+func (c *userRepository) FindApplication(username string) (domain.ApplicationFormResponse, error) {
+	var application domain.ApplicationFormResponse
+
+	query := `SELECT user_name,
+	applied_at,
+	first_name,
+	last_name,
+	event_name,
+	proffession,
+	college,
+	company,
+	about,
+	email,
+	github,
+	linked_in FROM applications 
+					WHERE user_name = $1;`
+
+	err := c.db.QueryRow(query, username).Scan(
+		&application.UserName,
+		&application.AppliedAt,
+		&application.FirstName,
+		&application.LastName,
+		&application.Event_name,
+		&application.Proffession,
+		&application.College,
+		&application.Company,
+		&application.About,
+		&application.Email,
+		&application.Github,
+		&application.Linkedin,
+	)
+
+	fmt.Println("application from find application :", application)
+	return application, err
 }
 
 // AdmitMember implements interfaces.UserRepository

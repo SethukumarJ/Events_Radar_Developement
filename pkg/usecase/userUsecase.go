@@ -26,7 +26,7 @@ type userUseCase struct {
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.FindEvent(applicationForm.userName)
+	_, err := c.userRepo.FindApplication(applicationForm.UserName)
 	fmt.Println("found applicationForm", err)
 
 	if err == nil {

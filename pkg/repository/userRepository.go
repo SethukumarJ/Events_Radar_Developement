@@ -16,18 +16,48 @@ type userRepository struct {
 	db *sql.DB
 }
 
-func (c *userRepository) init() {
-	query := `CREATE TRIGGER admit_member_notification
-                AFTER INSERT ON user_organization_connections
-                FOR EACH ROW
-                BEGIN
-                    INSERT INTO notifications (user_name, organization_name, event_title, message)
-                    VALUES ('sethu', 'organization_name', 'Admission', 'You are admitted to the organization');
-                END;`
-	_, err := c.db.Exec(query)
-	if err != nil {
-		fmt.Println("err", err)
-	}
+// ApplyEvent implements interfaces.UserRepository
+func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int, error) {
+	var id int
+
+	query := `INSERT INTO applications(user_name,
+		applied_at,
+		first_name,
+		last_name,
+		event_name,
+		proffession,
+		college,
+		company,
+		about,
+		email,
+		github,
+		linked_in)VALUES($1, $2, $3, $4, $5, $6,$7,$8,$9,$10,$11,$12)
+										RETURNING application_id;`
+
+	err := c.db.QueryRow(query,
+		applicationForm.UserName,
+		applicationForm.AppliedAt,
+		applicationForm.FirstName,
+		applicationForm.LastName,
+		applicationForm.Event_name,
+		applicationForm.Proffession,
+		applicationForm.College,
+		applicationForm.Company,
+		applicationForm.About,
+		applicationForm.Email,
+		applicationForm.Github,
+		applicationForm.Linkedin).Scan(&id)
+
+	query2 := `INSERT INTO application_status(pending,event_name)VALUES($1,$2);`
+	c.db.QueryRow(query2, applicationForm.UserName,applicationForm.Event_name)
+
+	fmt.Println("id", id)
+	return id, err
+}
+
+// FindApplication implements interfaces.UserRepository
+func (*userRepository) FindApplication(username string) (domain.ApplicationFormResponse, error) {
+	panic("unimplemented")
 }
 
 // AdmitMember implements interfaces.UserRepository
@@ -40,7 +70,6 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
-
 
 	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role, joined_at)
 	VALUES($1,$2,$3,$4);`

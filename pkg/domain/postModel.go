@@ -16,6 +16,12 @@ type Users struct {
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
 	Profile      string `json:"profile"`
 	EventId      uint   `json:"eventid"`
+} 
+
+type Login struct {
+	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
+	Password     string `json:"password" validate:"required"`
+
 }
 
 type Bios struct {

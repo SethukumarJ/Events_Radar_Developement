@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Users struct {
 	UserId       uint   `json:"userid" gorm:"autoIncrement:true;unique"`
@@ -64,12 +66,14 @@ type Events struct {
 	ApplicationClosingDate string    `json:"applicationclosingdate"`
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
-	Posters                []Posters `json:"posters"`
 	ApplicationLeft        int       `json:"applicationleft"`
 }
 
 type Posters struct {
+	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
 	Name        string `json:"name"`
+	Events      Events `gorm:"foreignKey:EventId;references:EventId"`
+	EventId     uint   `json:"event_id"`
 	Image       string `json:"image"`
 	Discription string `json:"discription"`
 	Date        string `json:"date"`

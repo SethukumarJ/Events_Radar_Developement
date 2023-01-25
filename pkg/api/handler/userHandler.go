@@ -32,6 +32,7 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 // @Tags User
 // @Produce json
 // @Security BearerAuth
+// @Param eventName query string true "event name"
 // @param ApplyEvent body domain.ApplicationForm{} true "Apply event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -47,6 +48,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 
 	fmt.Println("organization", newApplication)
 	newApplication.UserName = c.Writer.Header().Get("userName")
+	newApplication.Event_name = c.Query("eventName")
 	newApplication.AppliedAt = time.Now()
 
 	err := cr.userUseCase.ApplyEvent(newApplication)

@@ -159,6 +159,16 @@ definitions:
     required:
     - question
     type: object
+  domain.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
   domain.Organizations:
     properties:
       about:
@@ -1107,7 +1117,7 @@ paths:
         name: UserLogin
         required: true
         schema:
-          $ref: '#/definitions/domain.Users'
+          $ref: '#/definitions/domain.Login'
       produces:
       - application/json
       responses:

@@ -918,6 +918,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/apply-event": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "ApplyEvent",
+                "operationId": "Apply event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "event name",
+                        "name": "eventName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Apply event",
+                        "name": "ApplyEvent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.ApplicationForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/create-event": {
             "post": {
                 "security": [
@@ -1331,7 +1380,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Users"
+                            "$ref": "#/definitions/domain.Login"
                         }
                     }
                 ],
@@ -1584,6 +1633,50 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ApplicationForm": {
+            "type": "object",
+            "properties": {
+                "about": {
+                    "type": "string"
+                },
+                "applicationid": {
+                    "type": "integer"
+                },
+                "appliedat": {
+                    "type": "string"
+                },
+                "college": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "event_name": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "linkedin": {
+                    "type": "string"
+                },
+                "proffession": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Bios": {
             "type": "object",
             "required": [
@@ -1635,6 +1728,9 @@ const docTemplate = `{
             "properties": {
                 "applicationclosingdate": {
                     "type": "string"
+                },
+                "applicationleft": {
+                    "type": "integer"
                 },
                 "applicationlink": {
                     "type": "string"
@@ -1727,6 +1823,21 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Login": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 }
             }

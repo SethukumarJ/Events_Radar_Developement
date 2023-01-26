@@ -28,6 +28,35 @@ definitions:
       answerid:
         type: integer
     type: object
+  domain.ApplicationForm:
+    properties:
+      about:
+        type: string
+      applicationid:
+        type: integer
+      appliedat:
+        type: string
+      college:
+        type: string
+      company:
+        type: string
+      email:
+        type: string
+      event_name:
+        type: string
+      firstname:
+        type: string
+      github:
+        type: string
+      lastname:
+        type: string
+      linkedin:
+        type: string
+      proffession:
+        type: string
+      username:
+        type: string
+    type: object
   domain.Bios:
     properties:
       about:
@@ -59,6 +88,8 @@ definitions:
     properties:
       applicationclosingdate:
         type: string
+      applicationleft:
+        type: integer
       applicationlink:
         type: string
       approved:
@@ -127,6 +158,16 @@ definitions:
         type: string
     required:
     - question
+    type: object
+  domain.Login:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
     type: object
   domain.Organizations:
     properties:
@@ -783,6 +824,37 @@ paths:
       summary: list all Public faqas
       tags:
       - User
+  /user/apply-event:
+    post:
+      operationId: Apply event
+      parameters:
+      - description: event name
+        in: query
+        name: eventName
+        required: true
+        type: string
+      - description: Apply event
+        in: body
+        name: ApplyEvent
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ApplicationForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: ApplyEvent
+      tags:
+      - User
   /user/create-event:
     post:
       operationId: Create event from user
@@ -1045,7 +1117,7 @@ paths:
         name: UserLogin
         required: true
         schema:
-          $ref: '#/definitions/domain.Users'
+          $ref: '#/definitions/domain.Login'
       produces:
       - application/json
       responses:

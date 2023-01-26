@@ -40,10 +40,10 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.GET("/list-organizations",userHandler.ListOrganizations)
 		user.GET("/list/approved-events", eventHandler.ViewAllApprovedEvents)
 		user.GET("/geteventbytitle", eventHandler.GetEventByTitle)
-
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.POST("/token-refresh", authHandler.UserRefreshToken)
+			user.POST("/apply-event",userHandler.ApplyEvent)
 			user.POST("/event/post-question", userHandler.PostQuestion)
 			user.PATCH("/update-profile",userHandler.UpdateProfile)
 			user.POST("/create-organization", userHandler.CreateOrganization)
@@ -51,7 +51,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.PATCH("/join-organization",userHandler.JoinOrganization)
 		}
 
-}
+	}
 
 
 	//Admin routes

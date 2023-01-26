@@ -16,10 +16,10 @@ type eventRepository struct {
 }
 
 // FindUser implements interfaces.EventRepository
-func (c *eventRepository) FindUser(username string) (string ,error){
+func (c *eventRepository) FindUser(username string) (string, error) {
 	query := `SELECT vip FROM users WHERE user_name = $1;`
 	var vip string
-	err := c.db.QueryRow(query,username).Scan(&vip)
+	err := c.db.QueryRow(query, username).Scan(&vip)
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +64,7 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 								website_link = $15 WHERE title = $16;`
 
 	err := c.db.QueryRow(query,
-		
+
 		event.EventPic,
 		event.ShortDiscription,
 		event.LongDiscription,
@@ -248,7 +248,7 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 								max_applications,
 								application_closing_date,
 								application_link,
-								website_link)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19)
+								website_link,application_left)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19,$20)
 								RETURNING event_id;`
 
 	err := c.db.QueryRow(query, event.Title,
@@ -269,7 +269,7 @@ func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 		event.MaxApplications,
 		event.ApplicationClosingDate,
 		event.ApplicationLink,
-		event.WebsiteLink).Scan(&id)
+		event.WebsiteLink, event.ApplicationLeft).Scan(&id)
 
 	fmt.Println(event.Title, "from repository event title")
 	if err != nil {

@@ -118,14 +118,14 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Tags User
-// @Param  UserLogin   body  domain.Users{}  true  "userlogin: "
+// @Param  UserLogin   body  domain.Login{}  true  "userlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/login [post]
 // UserLogin handles the user login
 func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
-	var userLogin domain.Users
+	var userLogin domain.Login
 
 	c.Bind(&userLogin)
 	fmt.Println("userLOgin", userLogin.Password)
@@ -258,7 +258,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 // @Tags Admin
 // @Produce json
 // @Tags Admin
-// @Param  AdminLogin   body  domain.Admins{}  true  "adminlogin: "
+// @Param  AdminLogin   body  domain.Login{}  true  "adminlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/login [post]

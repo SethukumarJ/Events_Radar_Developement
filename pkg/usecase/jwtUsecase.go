@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 )
 
 type jwtUsecase struct {

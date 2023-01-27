@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
 
-	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 )
 
 type Middleware interface {
@@ -38,7 +38,7 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		//getting from header
 		autheader := c.Request.Header["Authorization"]
 		organizationName := c.Query("organizationName")
-		fmt.Println("organization Name from middleware",organizationName)
+		fmt.Println("organization Name from middleware", organizationName)
 
 		auth := strings.Join(autheader, " ")
 		bearerToken := strings.Split(auth, " ")
@@ -78,9 +78,9 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		userName := fmt.Sprint(claims.UserName)
-		fmt.Println("username",userName)
+		fmt.Println("username", userName)
 		role, err := cr.userUsecase.VerifyRole(userName, organizationName)
-		fmt.Println(role,"///////////",err,"role and pathrole")
+		fmt.Println(role, "///////////", err, "role and pathrole")
 		if err != nil {
 			err = errors.New("your role input is invalid")
 			response := response.ErrorResponse("Error", err.Error(), role)

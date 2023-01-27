@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 )
 
 // UserRepository represent the users's repository contract

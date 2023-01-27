@@ -5,13 +5,13 @@ package di
 
 import (
 	"github.com/google/wire"
-	http "github.com/thnkrn/go-gin-clean-arch/pkg/api"
-	handler "github.com/thnkrn/go-gin-clean-arch/pkg/api/handler"
-	middleware "github.com/thnkrn/go-gin-clean-arch/pkg/api/middleware"
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	db "github.com/thnkrn/go-gin-clean-arch/pkg/db"
-	repository "github.com/thnkrn/go-gin-clean-arch/pkg/repository"
-	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase"
+	http "github.com/SethukumarJ/Events_Radar_Developement/pkg/api"
+	handler "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
+	middleware "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	db "github.com/SethukumarJ/Events_Radar_Developement/pkg/db"
+	repository "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository"
+	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {

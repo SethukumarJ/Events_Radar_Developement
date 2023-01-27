@@ -2,7 +2,7 @@ package interfaces
 
 import (
 	"github.com/golang-jwt/jwt"
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 )
 
 type JWTUsecase interface {

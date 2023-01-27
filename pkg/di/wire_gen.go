@@ -7,13 +7,13 @@
 package di
 
 import (
-	"github.com/thnkrn/go-gin-clean-arch/pkg/api"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/api/handler"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/api/middleware"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/db"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/repository"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/usecase"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/api"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/db"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/repository"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase"
 )
 
 // Injectors from wire.go:

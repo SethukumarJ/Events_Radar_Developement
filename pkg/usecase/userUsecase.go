@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
-	services "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	interfaces "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
+	services "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 

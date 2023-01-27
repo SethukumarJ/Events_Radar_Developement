@@ -7,9 +7,9 @@ import (
 	"log"
 	"time"
 
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	interfaces "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 )
 
 type userRepository struct {

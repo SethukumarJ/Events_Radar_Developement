@@ -1,4 +1,4 @@
-module github.com/thnkrn/go-gin-clean-arch
+module github.com/SethukumarJ/Events_Radar_Developement
 
 go 1.17
 

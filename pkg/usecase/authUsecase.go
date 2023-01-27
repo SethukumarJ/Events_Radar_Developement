@@ -4,8 +4,8 @@ import (
 	"errors"
 	"log"
 
-	repository "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
-	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
+	repository "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
+	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"golang.org/x/crypto/bcrypt"
 )
 

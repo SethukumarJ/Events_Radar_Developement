@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/response"
-	usecase "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
+	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 )
 
 type AdminHandler struct {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	_ "github.com/lib/pq"
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 )
 
 func ConnectDatabase(cfg config.Config) *sql.DB {

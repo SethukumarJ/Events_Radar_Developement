@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	_"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/db"
-	di "github.com/thnkrn/go-gin-clean-arch/pkg/di"
+	_"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/db"
+	di "github.com/SethukumarJ/Events_Radar_Developement/pkg/di"
 )
 
 // @title Go + Gin Radar API

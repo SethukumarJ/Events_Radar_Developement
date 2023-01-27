@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"log"
 
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
-	usecases "github.com/thnkrn/go-gin-clean-arch/pkg/usecase/interface"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	interfaces "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
+	usecases "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 )
 
 type eventUsecase struct {

@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 
 
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
-	domain "github.com/thnkrn/go-gin-clean-arch/pkg/domain"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 )
 
 func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {

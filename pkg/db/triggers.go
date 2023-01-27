@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	config "github.com/thnkrn/go-gin-clean-arch/pkg/config"
+	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 )
 
 func Triggers(cfg config.Config) (*gorm.DB, error) {

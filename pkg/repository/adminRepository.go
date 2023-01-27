@@ -7,9 +7,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/thnkrn/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/thnkrn/go-gin-clean-arch/pkg/repository/interface"
-	"github.com/thnkrn/go-gin-clean-arch/pkg/utils"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	interfaces "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
 )
 
 type adminRepository struct {

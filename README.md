@@ -1,3 +1,11 @@
+# EVENTS RADAR PROJECT
+[Screencast from 31-01-23 08:40:18 PM IST.webm](https://user-images.githubusercontent.com/114211073/215799110-dcb8082a-3dba-4935-a5af-f547c8a4271e.webm)
+
+
+
+
+
+
 # Clean Architecture using Golang with Gin framework
 
 ## Template Structure
@@ -43,29 +51,6 @@ swag                           Generate swagger docs
 help                           Display this help screen
 ```
 
-## Available Endpoint
-
-In the project directory, you can call:
-
-### `GET /`
-
-For getting status page
-
-### `POST /login`
-
-For generating a JWT
-
-### `GET /api/users`
-
-For getting all of users
-
-### `GET /api/users/:id`
-
-For getting user by ID
-
-### `POST /api/users`
-
-For creating new user
 
 ### `DELETE /api/users/:id`
 

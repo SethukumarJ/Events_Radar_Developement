@@ -110,6 +110,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+func (cr *AuthHandler) UserGoogleSignup(c *gin.Context) {}
 
 // UserLogin handles the user login
 

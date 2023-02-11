@@ -90,6 +90,8 @@ func (cr *AdminHandler) ListOrgRequests(c *gin.Context) {
 }
 
 
+
+
 // @Summary Resginter the organization
 // @ID Register organization
 // @Tags Admin

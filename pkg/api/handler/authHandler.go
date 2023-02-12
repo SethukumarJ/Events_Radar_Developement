@@ -1,17 +1,23 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
 	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type AuthHandler struct {
@@ -19,6 +25,7 @@ type AuthHandler struct {
 	authUsecase  usecase.AuthUsecase
 	adminUsecase usecase.AdminUsecase
 	userUsecase  usecase.UserUseCase
+	cfg          config.Config
 }
 
 func NewAuthHandler(
@@ -26,6 +33,7 @@ func NewAuthHandler(
 	userUsecase usecase.UserUseCase,
 	adminUsecase usecase.AdminUsecase,
 	authUsecase usecase.AuthUsecase,
+	cfg config.Config,
 
 ) AuthHandler {
 	return AuthHandler{
@@ -33,10 +41,9 @@ func NewAuthHandler(
 		authUsecase:  authUsecase,
 		userUsecase:  userUsecase,
 		adminUsecase: adminUsecase,
+		cfg:          cfg,
 	}
 }
-
-
 
 func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	tokenString := c.Query("token")
@@ -52,7 +59,7 @@ func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// get the username from the claims
 		email = claims["username"].(string)
-		
+
 	} else {
 		c.String(http.StatusBadRequest, "Invalid verification token")
 		return
@@ -110,7 +117,115 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-func (cr *AuthHandler) UserGoogleSignup(c *gin.Context) {}
+
+var (
+	oauthConfGl = &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		RedirectURL:  "http://localhost:3000/user/callback-gl",
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+		Endpoint:     google.Endpoint,
+	}
+	oauthStateStringGl = ""
+)
+
+func (cr *AuthHandler) InitializeOAuthGoogle() {
+	oauthConfGl.ClientID = cr.cfg.CLIENT_ID
+	oauthConfGl.ClientSecret = cr.cfg.CLIENT_SECRET
+	oauthStateStringGl = cr.cfg.OauthStateString
+	fmt.Printf("\n\n%v\n\n", oauthConfGl)
+}
+
+// @Summary Authenticate With Google
+// @ID Authenticate With Google
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/refresh-tocken [get]
+func (cr *AuthHandler) GoogleAuth(c *gin.Context) {
+	HandileLogin(c, oauthConfGl, oauthStateStringGl)
+}
+
+func HandileLogin(c *gin.Context, oauthConf *oauth2.Config, oauthStateString string) error {
+	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
+	if err != nil {
+		fmt.Printf("\n\n\nerror in handile login :%v\n\n", err)
+		return err
+	}
+	parameters := url.Values{}
+	parameters.Add("client_id", oauthConf.ClientID)
+	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
+	parameters.Add("redirect_uri", oauthConf.RedirectURL)
+	parameters.Add("response_type", "code")
+	parameters.Add("state", oauthStateString)
+	URL.RawQuery = parameters.Encode()
+	url := URL.String()
+	fmt.Printf("\n\nurl : %v\n\n", oauthConf.RedirectURL)
+	c.Redirect(http.StatusTemporaryRedirect, url)
+	return nil
+
+}
+func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
+	fmt.Print("\n\nfuck\n\n")
+	c.Request.ParseForm()
+	state := c.Request.FormValue("state")
+
+	if state != oauthStateStringGl {
+		fmt.Println("//////////////////////hellooooo1////////////////////////////////////")
+		c.Redirect(http.StatusTemporaryRedirect, "/")
+		return
+	}
+	fmt.Println("//////////////////////hellooooo2////////////////////////////////////")
+	code := c.Request.FormValue("code")
+
+	if code == "" {
+		c.JSON(http.StatusBadRequest, "Code Not Found to provide AccessToken..\n")
+
+		reason := c.Request.FormValue("error_reason")
+		if reason == "user_denied" {
+			fmt.Println("//////////////////////hai////////////////////////////////////")
+			c.JSON(http.StatusBadRequest, "User has denied Permission..")
+		}
+	} else {
+		token, err := oauthConfGl.Exchange(oauth2.NoContext, code)
+		if err != nil {
+			return
+		}
+		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
+		fmt.Println("//////////////////////hai2No err////////////////////////////////////")
+		if err != nil {
+			fmt.Println("//////////////////////hai2////////////////////////////////////")
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+			return
+		}
+		defer resp.Body.Close()
+
+		response, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			fmt.Println("//////////////////////hai3////////////////////////////////////")
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+			return
+		}
+		fmt.Println("//////////////////////hai4////////////////////////////////////")
+		type date struct {
+			id             string
+			email          string
+			verified_email bool
+			picture        string
+			// data           string
+		}
+		var any date
+		json.Unmarshal(response, &any)
+		fmt.Printf("\n\ndata :%v\n\n", string(response))
+		fmt.Printf("\n\ndata :%v\n\n", any)
+
+		c.JSON(http.StatusOK, "Hello, I'm protected\n")
+		c.JSON(http.StatusOK, string(response))
+		return
+	}
+}
+
 
 // UserLogin handles the user login
 

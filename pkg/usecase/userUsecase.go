@@ -7,12 +7,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/golang-jwt/jwt"
 	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	interfaces "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
 	services "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -162,7 +162,7 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 		"\r\n" + body
 
 	// send random code to user's email
-	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+	if err := c.mailConfig.SendMail(c.config, email, []byte(message)); err != nil {
 		return err
 	}
 	fmt.Println("email sent: ", email)
@@ -349,32 +349,49 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	})
 	tokenString, err := token.SignedString([]byte("secret"))
-	fmt.Println("TokenString", tokenString)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
 	subject := "Account Verification"
-	body := "Please click on the link to verify your account: http://localhost:3000/user/verify-account?token=" + tokenString
-	message := "To: " + email + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" + body
+	msg := []byte(
+		"From: Events Radar <eventsRadarversion1@gmail.com>\r\n" +
+			"To: " + email + "\r\n" +
+			"Subject: " + subject + "\r\n" +
+			"MIME-Version: 1.0\r\n" +
+			"Content-Type: text/html; charset=UTF-8\r\n\r\n" +
+			"<html>" +
+			"  <head>" +
+			"    <style>" +
+			"      .blue-button {" +
+			"        background-color: blue;" +
+			"        color: white;" +
+			"        padding: 10px 20px;" +
+			"        border-radius: 5px;" +
+			"        text-decoration: none;" +
+			"        font-size: 16px;" +
+			"      }" +
+			"    </style>" +
+			"  </head>" +
+			"  <body>" +
+			"    <p>Click the button on verify your accout:</p>" +
+			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"  </body>" +
+			"</html>")
 
-	// send random code to user's email
-	if err := c.mailConfig.SendMail(c.config, email, message); err != nil {
+	// send email with HTML message
+	if err := c.mailConfig.SendMail(c.config, email, msg); err != nil {
 		return err
 	}
-	fmt.Println("email sent: ", email)
 
 	err = c.userRepo.StoreVerificationDetails(email, tokenString)
-
 	if err != nil {
 		return err
 	}
 
 	return nil
 }
+
 
 // HashPassword hashes the password
 func HashPassword(password string) string {

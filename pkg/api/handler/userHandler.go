@@ -506,13 +506,13 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 	email := c.Query("email")
 	var code int
 	fmt.Println(code)
-	_, err := cr.userUseCase.FindUser(email)
-	fmt.Println("email: ", email)
-	fmt.Println("err: ", err)
+	// _, err := cr.userUseCase.FindUser(email)
+	// fmt.Println("email: ", email)
+	// fmt.Println("err: ", err)
 
-	if err == nil {
-		err = cr.userUseCase.SendVerificationEmail(email)
-	}
+	// if err == nil {
+		err := cr.userUseCase.SendVerificationEmail(email)
+	// }
 
 	fmt.Println(err)
 

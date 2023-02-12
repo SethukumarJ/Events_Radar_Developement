@@ -18,6 +18,7 @@ type Config struct {
 	SMTPHOST      string `mapstructure:"SMTP_HOST"`
 	SMTPPASSWORD  string `mapstructure:"SMTP_PASSWORD"`
 	SMTPUSERNAME  string `mapstructure:"SMTP_USERNAME"`
+	OauthStateString string `mapstructure:"OauthStateString"`
 	CLIENT_ID     string `mapstructure:"CLIENT_ID"`
 	CLIENT_SECRET string `mapstructure:"CLIENT_SECRET"`
 }
@@ -33,6 +34,7 @@ var envs = []string{
 	"SMTP_HOST", 
 	"SMTP_PASSWORD", 
 	"SMTP_USERNAME",
+	"OauthStateString",
 	"CLIENT_ID",
 	"CLIENT_SECRET",
 }

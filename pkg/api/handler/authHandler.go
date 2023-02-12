@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
 	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 type AuthHandler struct {
@@ -36,8 +38,6 @@ func NewAuthHandler(
 	}
 }
 
-
-
 func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	tokenString := c.Query("token")
 	fmt.Println("varify account from authhandler called , ", tokenString)
@@ -52,7 +52,7 @@ func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		// get the username from the claims
 		email = claims["username"].(string)
-		
+
 	} else {
 		c.String(http.StatusBadRequest, "Invalid verification token")
 		return
@@ -110,6 +110,18 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+
+var (
+	oauthConfGl = &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "",
+		RedirectURL:  "http://localhost:3000/user/callback-gl",
+		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
+		Endpoint:     google.Endpoint,
+	}
+	oauthStateStringGl = ""
+)
+
 func (cr *AuthHandler) UserGoogleSignup(c *gin.Context) {}
 
 // UserLogin handles the user login

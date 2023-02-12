@@ -156,10 +156,30 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 	}
 
 	subject := "Join invitation to organization " + organizationName + " for the role " + role
-	body := "Please click on the link to join organization: http://localhost:3000/accept-invitation?token=" + tokenString
-	message := "To: " + email + "\r\n" +
-		"Subject: " + subject + "\r\n" +
-		"\r\n" + body
+	message  := []byte(
+			"From: Events Radar <eventsRadarversion1@gmail.com>\r\n" +
+				"To: " + email + "\r\n" +
+				"Subject: " + subject + "\r\n" +
+				"MIME-Version: 1.0\r\n" +
+				"Content-Type: text/html; charset=UTF-8\r\n\r\n" +
+				"<html>" +
+				"  <head>" +
+				"    <style>" +
+				"      .blue-button {" +
+				"        background-color: blue;" +
+				"        color: white;" +
+				"        padding: 10px 20px;" +
+				"        border-radius: 5px;" +
+				"        text-decoration: none;" +
+				"        font-size: 16px;" +
+				"      }" +
+				"    </style>" +
+				"  </head>" +
+				"  <body>" +
+				"    <p>Click the button on verify your accout:</p>" +
+				"    <a class=\"blue-button\" href=\"http://localhost:3000/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+				"  </body>" +
+				"</html>")
 
 	// send random code to user's email
 	if err := c.mailConfig.SendMail(c.config, email, []byte(message)); err != nil {

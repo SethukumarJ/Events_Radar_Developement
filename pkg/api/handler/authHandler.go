@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
@@ -122,7 +123,43 @@ var (
 	oauthStateStringGl = ""
 )
 
-func (cr *AuthHandler) UserGoogleSignup(c *gin.Context) {}
+func (cr *AuthHandler) InitializeOAuthGoogle() {
+	oauthConfGl.ClientID = cr.cfg.ClientID
+	oauthConfGl.ClientSecret = cr.cfg.ClientSecret
+	oauthStateStringGl = cr.cfg.OauthStateString
+	fmt.Printf("\n\n%v\n\n", oauthConfGl)
+}
+
+// @Summary Authenticate With Google
+// @ID Authenticate With Google
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/refresh-tocken [get]
+func (cr *AuthHandler) GoogleAuth(c *gin.Context) {
+	HandileLogin(c, oauthConfGl, oauthStateStringGl)
+}
+
+func HandileLogin(c *gin.Context, oauthConf *oauth2.Config, oauthStateString string) error {
+	URL, err := url.Parse(oauthConf.Endpoint.AuthURL)
+	if err != nil {
+		fmt.Printf("\n\n\nerror in handile login :%v\n\n", err)
+		return err
+	}
+	parameters := url.Values{}
+	parameters.Add("client_id", oauthConf.ClientID)
+	parameters.Add("scope", strings.Join(oauthConf.Scopes, " "))
+	parameters.Add("redirect_uri", oauthConf.RedirectURL)
+	parameters.Add("response_type", "code")
+	parameters.Add("state", oauthStateString)
+	URL.RawQuery = parameters.Encode()
+	url := URL.String()
+	fmt.Printf("\n\nurl : %v\n\n", oauthConf.RedirectURL)
+	c.Redirect(http.StatusTemporaryRedirect, url)
+	return nil
+
+}
 
 // UserLogin handles the user login
 

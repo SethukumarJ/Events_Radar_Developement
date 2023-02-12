@@ -172,10 +172,11 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 	state := c.Request.FormValue("state")
 
 	if state != oauthStateStringGl {
+		fmt.Println("//////////////////////hellooooo1////////////////////////////////////")
 		c.Redirect(http.StatusTemporaryRedirect, "/")
 		return
 	}
-
+	fmt.Println("//////////////////////hellooooo2////////////////////////////////////")
 	code := c.Request.FormValue("code")
 
 	if code == "" {
@@ -183,6 +184,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 
 		reason := c.Request.FormValue("error_reason")
 		if reason == "user_denied" {
+			fmt.Println("//////////////////////hai////////////////////////////////////")
 			c.JSON(http.StatusBadRequest, "User has denied Permission..")
 		}
 	} else {
@@ -191,7 +193,9 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 			return
 		}
 		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
+		fmt.Println("//////////////////////hai2No err////////////////////////////////////")
 		if err != nil {
+			fmt.Println("//////////////////////hai2////////////////////////////////////")
 			c.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
@@ -199,9 +203,11 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 
 		response, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
+			fmt.Println("//////////////////////hai3////////////////////////////////////")
 			c.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
+		fmt.Println("//////////////////////hai4////////////////////////////////////")
 		type date struct {
 			id             string
 			email          string
@@ -219,6 +225,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		return
 	}
 }
+
 
 // UserLogin handles the user login
 

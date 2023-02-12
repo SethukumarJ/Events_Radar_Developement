@@ -8,31 +8,31 @@ import (
 )
 
 type Config struct {
-	DBHost        string `mapstructure:"DB_HOST"`
-	DBName        string `mapstructure:"DB_NAME"`
-	DBUser        string `mapstructure:"DB_USER"`
-	DBPort        string `mapstructure:"DB_PORT"`
-	DBPassword    string `mapstructure:"DB_PASSWORD"`
-	DBSOURCE      string `mapstructure:"DB_SOURCE"`
-	SMTPPORT      string `mapstructure:"SMTP_PORT"`
-	SMTPHOST      string `mapstructure:"SMTP_HOST"`
-	SMTPPASSWORD  string `mapstructure:"SMTP_PASSWORD"`
-	SMTPUSERNAME  string `mapstructure:"SMTP_USERNAME"`
+	DBHost           string `mapstructure:"DB_HOST"`
+	DBName           string `mapstructure:"DB_NAME"`
+	DBUser           string `mapstructure:"DB_USER"`
+	DBPort           string `mapstructure:"DB_PORT"`
+	DBPassword       string `mapstructure:"DB_PASSWORD"`
+	DBSOURCE         string `mapstructure:"DB_SOURCE"`
+	SMTPPORT         string `mapstructure:"SMTP_PORT"`
+	SMTPHOST         string `mapstructure:"SMTP_HOST"`
+	SMTPPASSWORD     string `mapstructure:"SMTP_PASSWORD"`
+	SMTPUSERNAME     string `mapstructure:"SMTP_USERNAME"`
 	OauthStateString string `mapstructure:"OauthStateString"`
-	CLIENT_ID     string `mapstructure:"CLIENT_ID"`
-	CLIENT_SECRET string `mapstructure:"CLIENT_SECRET"`
+	CLIENT_ID        string `mapstructure:"CLIENT_ID"`
+	CLIENT_SECRET    string `mapstructure:"CLIENT_SECRET"`
 }
 
 var envs = []string{
-	"DB_HOST", 
-	"DB_NAME", 
-	"DB_USER", 
-	"DB_PORT", 
-	"DB_PASSWORD", 
-	"DB_SOURCE", 
-	"SMTP_PORT", 
-	"SMTP_HOST", 
-	"SMTP_PASSWORD", 
+	"DB_HOST",
+	"DB_NAME",
+	"DB_USER",
+	"DB_PORT",
+	"DB_PASSWORD",
+	"DB_SOURCE",
+	"SMTP_PORT",
+	"SMTP_HOST",
+	"SMTP_PASSWORD",
 	"SMTP_USERNAME",
 	"OauthStateString",
 	"CLIENT_ID",

@@ -19,6 +19,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	adminHandler handler.AdminHandler,
 	eventHandler handler.EventHandler,
 	middleware middleware.Middleware) *ServerHTTP {
+	authHandler.InitializeOAuthGoogle()
 	engine := gin.New()
 
 	// Use logger from Gin

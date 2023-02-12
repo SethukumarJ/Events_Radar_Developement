@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -159,6 +161,59 @@ func HandileLogin(c *gin.Context, oauthConf *oauth2.Config, oauthStateString str
 	c.Redirect(http.StatusTemporaryRedirect, url)
 	return nil
 
+}
+func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
+	fmt.Print("\n\nfuck\n\n")
+	c.Request.ParseForm()
+	state := c.Request.FormValue("state")
+
+	if state != oauthStateStringGl {
+		c.Redirect(http.StatusTemporaryRedirect, "/")
+		return
+	}
+
+	code := c.Request.FormValue("code")
+
+	if code == "" {
+		c.JSON(http.StatusBadRequest, "Code Not Found to provide AccessToken..\n")
+
+		reason := c.Request.FormValue("error_reason")
+		if reason == "user_denied" {
+			c.JSON(http.StatusBadRequest, "User has denied Permission..")
+		}
+	} else {
+		token, err := oauthConfGl.Exchange(oauth2.NoContext, code)
+		if err != nil {
+			return
+		}
+		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
+		if err != nil {
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+			return
+		}
+		defer resp.Body.Close()
+
+		response, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			c.Redirect(http.StatusTemporaryRedirect, "/")
+			return
+		}
+		type date struct {
+			id             string
+			email          string
+			verified_email bool
+			picture        string
+			// data           string
+		}
+		var any date
+		json.Unmarshal(response, &any)
+		fmt.Printf("\n\ndata :%v\n\n", string(response))
+		fmt.Printf("\n\ndata :%v\n\n", any)
+
+		c.JSON(http.StatusOK, "Hello, I'm protected\n")
+		c.JSON(http.StatusOK, string(response))
+		return
+	}
 }
 
 // UserLogin handles the user login

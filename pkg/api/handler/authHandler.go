@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
 	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
@@ -24,6 +25,7 @@ type AuthHandler struct {
 	authUsecase  usecase.AuthUsecase
 	adminUsecase usecase.AdminUsecase
 	userUsecase  usecase.UserUseCase
+	cfg          config.Config
 }
 
 func NewAuthHandler(
@@ -31,6 +33,7 @@ func NewAuthHandler(
 	userUsecase usecase.UserUseCase,
 	adminUsecase usecase.AdminUsecase,
 	authUsecase usecase.AuthUsecase,
+	cfg config.Config,
 
 ) AuthHandler {
 	return AuthHandler{
@@ -38,6 +41,7 @@ func NewAuthHandler(
 		authUsecase:  authUsecase,
 		userUsecase:  userUsecase,
 		adminUsecase: adminUsecase,
+		cfg:          cfg,
 	}
 }
 
@@ -126,8 +130,8 @@ var (
 )
 
 func (cr *AuthHandler) InitializeOAuthGoogle() {
-	oauthConfGl.ClientID = cr.cfg.ClientID
-	oauthConfGl.ClientSecret = cr.cfg.ClientSecret
+	oauthConfGl.ClientID = cr.cfg.CLIENT_ID
+	oauthConfGl.ClientSecret = cr.cfg.CLIENT_SECRET
 	oauthStateStringGl = cr.cfg.OauthStateString
 	fmt.Printf("\n\n%v\n\n", oauthConfGl)
 }

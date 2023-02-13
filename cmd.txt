@@ -2,3 +2,39 @@ For swag not found
     PATH="$GOPATH/bin:$PATH"
     export GOPATH="$HOME/go"
     PATH="$GOPATH/bin:$PATH"
+
+
+
+    #database connection details
+DB_HOST=localhost
+DB_DRIVER=postgres
+
+# API_SECRET=98hbun98h  
+DB_USER=postgres
+DB_PASSWORD=1111
+DB_NAME=eventsradar
+DB_PORT=5432
+
+DB_SOURCE=postgresql://postgres:1111@localhost:5432/eventsradar?sslmode=disable   
+DB_URL = "host=localhost port=5432 user=postgres dbname=eventsradar password=1111"
+
+#jwt keys
+USER_KEY = userprivatekey
+ADMIN_KEY = adminprivatekey
+
+#port to run
+PORT = 3000
+
+#to send varification mail
+SMTP_PORT = 587
+SMTP_HOST = smtp.gmail.com
+SMTP_PASSWORD = tqlccpotwocbukba
+SMTP_USERNAME = sethukumarj.76@gmail.com
+
+
+
+#Google authentication
+
+OauthStateString= "kjfgkldfjglkjakljgkldajlkdfankjjakldgjkaldjgalkjglkadjglkadjk"
+CLIENT_ID = 551080506138-0mvj7g8ka9d3hmue1omholqo8nbdiqp4.apps.googleusercontent.com
+CLIENT_SECRET=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

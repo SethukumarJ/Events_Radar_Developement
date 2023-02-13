@@ -21,7 +21,6 @@ type Users struct {
 type Login struct {
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
 	Password     string `json:"password" validate:"required"`
-
 }
 
 type Bios struct {

@@ -16,6 +16,30 @@ type userRepository struct {
 	db *sql.DB
 }
 
+func (c *userRepository) InsertUser(user domain.Users) (int, error) {
+	var id int
+
+	query := `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
+
+	err := c.db.QueryRow(query, user.UserName,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.PhoneNumber,
+		user.Password,
+		user.Profile).Scan(&id)
+
+	if err != nil {
+		return id, err
+	}
+
+	query2 := `INSERT INTO bios(user_name)VALUES($1);`
+	err = c.db.QueryRow(query2, user.UserName).Err()
+
+	fmt.Println("id", id)
+	return id, err
+}
+
 // ApplyEvent implements interfaces.UserRepository
 func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int, error) {
 	var id int
@@ -49,7 +73,7 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 		applicationForm.Linkedin).Scan(&id)
 
 	query2 := `INSERT INTO application_status(pending,event_name)VALUES($1,$2);`
-	c.db.QueryRow(query2, applicationForm.UserName,applicationForm.Event_name)
+	c.db.QueryRow(query2, applicationForm.UserName, applicationForm.Event_name)
 
 	fmt.Println("id", id)
 	return id, err
@@ -552,30 +576,6 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 
 	fmt.Println("user from find user :", user)
 	return user, err
-}
-
-// InsertUser implements interfaces.UserRepository
-func (c *userRepository) InsertUser(user domain.Users) (int, error) {
-	var id int
-
-	query := `INSERT INTO users(user_name,first_name,last_name,
-								email,phone_number,password,
-								profile)VALUES($1, $2, $3, $4, $5, $6,$7)
-								RETURNING user_id;`
-
-	err := c.db.QueryRow(query, user.UserName,
-		user.FirstName,
-		user.LastName,
-		user.Email,
-		user.PhoneNumber,
-		user.Password,
-		user.Profile).Scan(&id)
-
-	query2 := `INSERT INTO bios(user_name)VALUES($1);`
-	c.db.QueryRow(query2, user.UserName)
-
-	fmt.Println("id", id)
-	return id, err
 }
 
 // StoreVerificationDetails implements interfaces.UserRepository

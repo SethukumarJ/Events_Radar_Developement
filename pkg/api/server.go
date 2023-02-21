@@ -1,6 +1,8 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -8,6 +10,7 @@ import (
 	_ "github.com/SethukumarJ/Events_Radar_Developement/cmd/api/docs"
 	handler "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
 	middleware "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
+	gintemplate "github.com/foolin/gin-template"
 )
 
 type ServerHTTP struct {
@@ -20,14 +23,24 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	eventHandler handler.EventHandler,
 	middleware middleware.Middleware) *ServerHTTP {
 	authHandler.InitializeOAuthGoogle()
-	engine := gin.New()
+
+	engine := gin.Default()
+	engine.HTMLRender = gintemplate.Default()
+	engine.GET("/r", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "My Webpage",
+		})
+	})
 
 	// Use logger from Gin
 	engine.Use(gin.Logger())
+	// engine.Static("/templates", "./api/templates")
 
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	engine.GET("/pay",userHandler.Pay)
+	engine.GET("payment-success",handler.PaymentSuccess)
 	//User routes
 	user := engine.Group("user")
 	{

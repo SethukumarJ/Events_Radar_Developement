@@ -27,6 +27,15 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+// func(cr *UserHandler) Render(c *gin.Context) {
+
+// 	parseTemplate, _ := template.ParseFiles("./templates/index.html")
+// 	err := parseTemplate.Execute(c.Writer, nil )
+// 	if err != nil {
+// 		fmt.Println("Error parsing template")
+// 	}
+// }
+
 // @Summary ApplyEvent
 // @ID Apply event
 // @Tags User
@@ -83,7 +92,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 // @Router /organization/admin/admit-member [patch]
 func (cr *UserHandler) AdmitMember(c *gin.Context) {
 
-	JoinStatusId,_ := strconv.Atoi(c.Query("joinstatusid"))
+	JoinStatusId, _ := strconv.Atoi(c.Query("joinstatusid"))
 	username := c.Writer.Header().Get("userName")
 	fmt.Println("username ", username)
 	organizationName := c.Writer.Header().Get("organizationName")
@@ -99,7 +108,7 @@ func (cr *UserHandler) AdmitMember(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	err := cr.userUseCase.AdmitMember(JoinStatusId,memberRole)
+	err := cr.userUseCase.AdmitMember(JoinStatusId, memberRole)
 
 	if err != nil {
 		response := response.ErrorResponse("admit member failed!", err.Error(), nil)
@@ -112,7 +121,6 @@ func (cr *UserHandler) AdmitMember(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
-
 
 // @Summary List Join Requests
 // @ID Join requests to organization
@@ -140,7 +148,7 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 		return
 	}
 
-	requests, err := cr.userUseCase.ListJoinRequests(username,organizationName)
+	requests, err := cr.userUseCase.ListJoinRequests(username, organizationName)
 	if err != nil {
 		response := response.ErrorResponse("error while getting requests applications from database", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -152,7 +160,6 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 	response := response.SuccessResponse(true, "Listed Join requests", requests)
 	utils.ResponseJSON(*c, response)
 }
-
 
 // @Summary Accept invitation to join an organization
 // @ID Accept invitation to join organization
@@ -167,7 +174,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 	tokenString := c.Query("token")
 	fmt.Println("varify account from authhandler called , ", tokenString)
-	var email,organizationName,role string
+	var email, organizationName, role string
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("secret"), nil
 	})
@@ -179,14 +186,14 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 		// get the username from the claims
 		email = claims["username"].(string)
 		organizationName = claims["organizationName"].(string)
-		role  = claims["memberRole"].(string)
+		role = claims["memberRole"].(string)
 
 	} else {
 		c.String(http.StatusBadRequest, "Invalid verification token")
 		return
 	}
 
-	user,err := cr.userUseCase.FindUser(email)
+	user, err := cr.userUseCase.FindUser(email)
 	if err != nil {
 		response := response.ErrorResponse("Joining failed, something wrong!", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -195,7 +202,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 		return
 	}
 
-	err = cr.userUseCase.AcceptJoinInvitation(user.UserName, organizationName,role)
+	err = cr.userUseCase.AcceptJoinInvitation(user.UserName, organizationName, role)
 
 	if err != nil {
 		response := response.ErrorResponse("Verification failed, Jwt is not valid", err.Error(), nil)
@@ -269,7 +276,7 @@ func (cr *UserHandler) GetOrganization(c *gin.Context) {
 	fmt.Println("username ", username)
 	organizationName := c.Query("organizationName")
 	fmt.Println("organizationName ", organizationName)
-	
+
 	organization, err := cr.userUseCase.FindOrganization(organizationName)
 
 	fmt.Println("organization:", organization)
@@ -511,7 +518,7 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 	// fmt.Println("err: ", err)
 
 	// if err == nil {
-		err := cr.userUseCase.SendVerificationEmail(email)
+	err := cr.userUseCase.SendVerificationEmail(email)
 	// }
 
 	fmt.Println(err)
@@ -658,7 +665,6 @@ func (cr *UserHandler) PostAnswer(c *gin.Context) {
 	fmt.Println("organizationName ", organizationName)
 	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
-
 
 	if role > "2" {
 		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)

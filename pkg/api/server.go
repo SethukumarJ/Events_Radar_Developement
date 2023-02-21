@@ -10,6 +10,7 @@ import (
 	_ "github.com/SethukumarJ/Events_Radar_Developement/cmd/api/docs"
 	handler "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
 	middleware "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
+	gintemplate "github.com/foolin/gin-template"
 )
 
 type ServerHTTP struct {
@@ -22,7 +23,14 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	eventHandler handler.EventHandler,
 	middleware middleware.Middleware) *ServerHTTP {
 	authHandler.InitializeOAuthGoogle()
+
 	engine := gin.Default()
+	engine.HTMLRender = gintemplate.Default()
+	engine.GET("/r", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "My Webpage",
+		})
+	})
 
 	// Use logger from Gin
 	engine.Use(gin.Logger())
@@ -30,64 +38,61 @@ func NewServerHTTP(userHandler handler.UserHandler,
 
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	// engine.LoadHTMLFiles("templates/razorpay.html")
-	
 
-	engine.GET("/", func(c *gin.Context) {
-		html := `
-			<html>
-				<img src="https://images.all-free-download.com/images/graphiclarge/delicious_fruie_03_hd_pictures_166657.jpg" alt="alternatetext">
-				<h4>Pay 12</h4>
-	
-				<button id="rzp-button1">Pay</button>
-				<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-				<script>
-				var options = {
-					"key": "rzp_test_kEtg65WKqGTpKd", // Enter the Key ID generated from the Dashboard
-					"amount": "{{.Amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-					"currency": "INR",
-					"name": "Events-Radar",
-					"description": "Promote post",
-					"image": "https://example.com/your_logo",
-					"order_id": "{{.OrderId}}", //This is a sample Order ID. Pass the id obtained in the response of Step 1
-					"handler": function (response){
-						a = (response.razorpay_payment_id);
-						b =(response.razorpay_order_id);
-						c = (response.razorpay_signature)
-						window.location.replace("http:/payment-success?paymentid="+a+"&orderid=+"+b+"&signature="+c);
-					},
-					"prefill": {
-						"name": "{{.Name}}",
-						"email": "{{.Email}}",
-						"contact": "{{.Contact}}"
-					},
-					"notes": {
-						"address": "Razorpay Corporate Office"
-					},
-					"theme": {
-						"color": "#3399cc"
-					}
-				};
-				var rzp1 = new Razorpay(options);
-				rzp1.on('payment.failed', function (response){
-						(response.error.code);
-						(response.error.description);
-						(response.error.source);
-						(response.error.step);
-						(response.error.reason);
-						(response.error.metadata.order_id);
-						(response.error.metadata.payment_id);
-				});
-				document.getElementById('rzp-button1').onclick = function(e){
-					rzp1.open();
-					e.preventDefault();
-				}
-				</script>
-			</html>
-		`
-		c.Data(http.StatusOK, "text/html", []byte(html))
-	})
-	
+	// engine.GET("/", func(c *gin.Context) {
+	// 	html := `
+	// 		<html>
+	// 			<img src="https://images.all-free-download.com/images/graphiclarge/delicious_fruie_03_hd_pictures_166657.jpg" alt="alternatetext">
+	// 			<h4>Pay 12</h4>
+
+	// 			<button id="rzp-button1">Pay</button>
+	// 			<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	// 			<script>
+	// 			var options = {
+	// 				"key": "rzp_test_kEtg65WKqGTpKd", // Enter the Key ID generated from the Dashboard
+	// 				"amount": "{{.Amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+	// 				"currency": "INR",
+	// 				"name": "Events-Radar",
+	// 				"description": "Promote post",
+	// 				"image": "https://example.com/your_logo",
+	// 				"order_id": "{{.OrderId}}", //This is a sample Order ID. Pass the id obtained in the response of Step 1
+	// 				"handler": function (response){
+	// 					a = (response.razorpay_payment_id);
+	// 					b =(response.razorpay_order_id);
+	// 					c = (response.razorpay_signature)
+	// 					window.location.replace("http:/payment-success?paymentid="+a+"&orderid=+"+b+"&signature="+c);
+	// 				},
+	// 				"prefill": {
+	// 					"name": "{{.Name}}",
+	// 					"email": "{{.Email}}",
+	// 					"contact": "{{.Contact}}"
+	// 				},
+	// 				"notes": {
+	// 					"address": "Razorpay Corporate Office"
+	// 				},
+	// 				"theme": {
+	// 					"color": "#3399cc"
+	// 				}
+	// 			};
+	// 			var rzp1 = new Razorpay(options);
+	// 			rzp1.on('payment.failed', function (response){
+	// 					(response.error.code);
+	// 					(response.error.description);
+	// 					(response.error.source);
+	// 					(response.error.step);
+	// 					(response.error.reason);
+	// 					(response.error.metadata.order_id);
+	// 					(response.error.metadata.payment_id);
+	// 			});
+	// 			document.getElementById('rzp-button1').onclick = function(e){
+	// 				rzp1.open();
+	// 				e.preventDefault();
+	// 			}
+	// 			</script>
+	// 		</html>
+	// 	`
+	// 	c.Data(http.StatusOK, "text/html", []byte(html))
+	// })
 
 	//User routes
 	user := engine.Group("user")

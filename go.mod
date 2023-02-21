@@ -19,6 +19,7 @@ require (
 require (
 	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b
 	github.com/google/wire v0.5.0
+	github.com/razorpay/razorpay-go v0.0.0-20230215135222-7e85dffcb7f0
 	golang.org/x/oauth2 v0.5.0
 )
 

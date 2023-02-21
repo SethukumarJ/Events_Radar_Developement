@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -15,11 +16,13 @@ import (
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
 	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
+	razorpay "github.com/razorpay/razorpay-go"
 )
 
 type UserHandler struct {
 	userUseCase usecase.UserUseCase
 }
+
 
 func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	return UserHandler{
@@ -27,14 +30,55 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
-// func(cr *UserHandler) Render(c *gin.Context) {
+func (cr *UserHandler) Pay(c *gin.Context) {
 
-// 	parseTemplate, _ := template.ParseFiles("./templates/index.html")
-// 	err := parseTemplate.Execute(c.Writer, nil )
-// 	if err != nil {
-// 		fmt.Println("Error parsing template")
-// 	}
-// }
+	page := &domain.PageVariables{}
+	page.Amount = "9000"
+	page.Email = "sethukumarj.76@gmail.com"
+	page.Name = "Sethukumar"
+	page.Contact = "7025493834"
+	//Create order_id from the server
+	client := razorpay.NewClient("rzp_test_kEtg65WKqGTpKd", "gPURxG4gzTmeNJKqqz61YCHV")
+
+	data := map[string]interface{}{
+		"amount":   page.Amount,
+		"currency": "INR",
+		"receipt":  "some_receipt_id",
+	}
+	body, err := client.Order.Create(data, nil)
+	fmt.Println("////////////////reciept", body)
+	if err != nil {
+		fmt.Println("Problem getting the repository information", err)
+		os.Exit(1)
+	}
+
+	value := body["id"]
+
+	str := value.(string)
+	fmt.Println("str////////////////", str)
+	HomePageVars := domain.PageVariables{ //store the order_id in a struct
+		OrderId: str,
+		Amount:  page.Amount,
+		Email:   page.Email,
+		Name:    page.Name,
+		Contact: page.Contact,
+	}
+
+	c.HTML(http.StatusOK, "index.html", HomePageVars)
+
+}
+
+func PaymentSuccess(c *gin.Context) {
+
+	paymentid := c.Query("paymentid")
+	orderid := c.Query("orderid")
+	signature := c.Query("signature")
+
+	fmt.Println(paymentid,"paymentid")
+	fmt.Println(orderid,"orderid")
+	fmt.Println(signature,"signature")
+}
+
 
 // @Summary ApplyEvent
 // @ID Apply event

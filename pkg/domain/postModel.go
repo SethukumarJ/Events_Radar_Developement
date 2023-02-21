@@ -170,3 +170,12 @@ type ApplicationForm struct {
 	Github        string    `json:"github"`
 	Linkedin      string    `json:"linkedin"`
 }
+
+
+type PageVariables struct {
+	OrderId string
+	Email   string
+	Name    string
+	Amount  string
+	Contact string
+}

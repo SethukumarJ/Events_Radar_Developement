@@ -213,17 +213,9 @@ func (cr *AdminHandler) SearchEvent(c *gin.Context) {
 	var search string
 	c.Bind(&search)
 	
-	events, metadata, err := cr.adminUsecase.AllEvents(search)
+	events, err := cr.adminUsecase.SearchEvent(search)
 
 	fmt.Println("events:", events)
-
-	result := struct {
-		Events *[]domain.EventResponse
-		Meta  *utils.Metadata
-	}{
-		Events: events,
-		Meta:  metadata,
-	}
 
 	if err != nil {
 		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
@@ -233,7 +225,7 @@ func (cr *AdminHandler) SearchEvent(c *gin.Context) {
 		return
 	}
 
-	response := response.SuccessResponse(true, "Listed All Users", result)
+	response := response.SuccessResponse(true, "Search result", events)
 	utils.ResponseJSON(*c, response)
 
 }

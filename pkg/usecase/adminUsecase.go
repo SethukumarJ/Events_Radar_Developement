@@ -18,6 +18,19 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+// SearchEvent implements interfaces.AdminUsecase
+func (c *adminUsecase) SearchEvent(search string) (*[]domain.EventResponse, error) {
+	fmt.Println("Search event from usecase called")
+	SearchList, err := c.adminRepo.SearchEvent(search)
+	fmt.Println("searchList:", SearchList)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, err
+	}
+
+	return &SearchList, nil
+}
+
 // ListOrgRequests implements interfaces.AdminUsecase
 func (c *adminUsecase) ListOrgRequests(pagenation utils.Filter, applicationStatus string) (*[]domain.OrganizationsResponse, *utils.Metadata, error) {
 	fmt.Println("List requests from usecase called")

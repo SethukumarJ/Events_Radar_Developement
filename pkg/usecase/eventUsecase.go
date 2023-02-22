@@ -64,9 +64,9 @@ func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 }
 
 // AllEvents implements interfaces.EventUsecase
-func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error) {
+func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter, filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error) {
 	fmt.Println("allevents from usecase called")
-	events, metadata, err := c.eventRepo.AllApprovedEvents(pagenation)
+	events, metadata, err := c.eventRepo.AllApprovedEvents(pagenation,filter)
 	fmt.Println("events:", events)
 	if err != nil {
 		fmt.Println("error from allevents usecase:", err)

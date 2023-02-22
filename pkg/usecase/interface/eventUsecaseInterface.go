@@ -11,5 +11,5 @@ type EventUsecase interface {
 	DeleteEvent(title string) error
 	FindEvent(title string) (*domain.EventResponse, error)
 	FindUser(username string) (bool,error)
-	AllApprovedEvents(pagenation utils.Filter) (*[]domain.EventResponse, *utils.Metadata, error)
+	AllApprovedEvents(pagenation utils.Filter , filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error)
 }

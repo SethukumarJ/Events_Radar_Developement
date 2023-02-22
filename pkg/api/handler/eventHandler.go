@@ -315,7 +315,7 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/search-event [get]
-func (cr *AdminHandler) SearchEventUser(c *gin.Context) {
+func (cr *EventHandler) SearchEventUser(c *gin.Context) {
 	var search string
 	c.Bind(&search)
 	

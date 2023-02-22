@@ -55,6 +55,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.GET("/list-organizations", userHandler.ListOrganizations)
 		user.GET("/list/approved-events", eventHandler.ViewAllApprovedEvents)
 		user.GET("/geteventbytitle", eventHandler.GetEventByTitle)
+		user.GET("/search-event",eventHandler.SearchEventUser)
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.POST("/token-refresh", authHandler.UserRefreshToken)

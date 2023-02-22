@@ -200,6 +200,45 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 
 }
 
+// @Summary Search Event
+// @ID search event with string
+// @Tags Admin
+// @Produce json
+// @Security BearerAuth
+// @Param  search   body  string  true  "List event by approved non approved : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /admin/search-event [get]
+func (cr *AdminHandler) SearchEvent(c *gin.Context) {
+	var search string
+	c.Bind(&search)
+	
+	events, metadata, err := cr.adminUsecase.AllEvents(search)
+
+	fmt.Println("events:", events)
+
+	result := struct {
+		Events *[]domain.EventResponse
+		Meta  *utils.Metadata
+	}{
+		Events: events,
+		Meta:  metadata,
+	}
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All Users", result)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
 
 // @Summary list all upcoming events for admin
 // @ID list all upcoming events

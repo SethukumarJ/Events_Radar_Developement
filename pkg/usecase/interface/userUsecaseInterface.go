@@ -15,7 +15,7 @@ type UserUseCase interface {
 	VerifyRole(username string, organizationName string) (string, error)
 	FindOrganization(organizationName string) (*domain.OrganizationsResponse, error)
 	ListOrganizations(pagenation utils.Filter) (*[]domain.OrganizationsResponse, *utils.Metadata, error)
-	UpdatePassword(user domain.Users, email string) error
+	UpdatePassword(user string, email string) error
 	FindUser(email string) (*domain.UserResponse, error)
 	SendVerificationEmail(email string) error
 	PostQuestion(question domain.Faqas) error

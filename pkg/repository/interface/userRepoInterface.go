@@ -13,7 +13,7 @@ type UserRepository interface {
 	FindRole(username string, organizationName string) (string, error)
 	FindRelation(username string, organizationName string) (string, error)
 	UpdateProfile(user domain.Bios, username string) (int, error)
-	UpdatePassword(user domain.Users, username string) (int, error)
+	UpdatePassword(user string, username string) (int, error)
 	GetPublicFaqas(approved string) ([]domain.QAResponse, error)
 	ListJoinRequests(username string,organizationName string) ([]domain.Join_StatusResponse, error)
 	GetQuestions(title string) ([]domain.FaqaResponse, error)

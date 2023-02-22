@@ -507,24 +507,24 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Param  email   query  string  true  "Email: "
-// @param Updateevent body domain.Users{} true "update password with new body"
+// @param Updatepassword body string true "update password with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/update-password [patch]
 func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 
-	var updatedPassword domain.Users
+	var updatedPassword string
 	fmt.Println("Updating event")
 	//fetching data
 	c.Bind(&updatedPassword)
-	fmt.Println("userPassword", updatedPassword.UserName)
+	fmt.Println("userPassword", updatedPassword)
 	email := c.Query("email")
 
 	//check event exit or not
 
 	err := cr.userUseCase.UpdatePassword(updatedPassword, email)
 
-	fmt.Println(updatedPassword.Password)
+	fmt.Println(updatedPassword)
 
 	if err != nil {
 		response := response.ErrorResponse("Failed to Update Event", err.Error(), nil)
@@ -548,22 +548,26 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 // @ID Send verifiation code via email
 // @Tags User
 // @Produce json
-// @Param  email   query  string  true  "Email: "
+// @Param  email   body  string  true  "Email: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/send-verification [post]
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
-	email := c.Query("email")
+	var email string
+	err := c.Bind(&email)
+	if err != nil {
+		fmt.Println("error on binding the email")
+	}
 	var code int
 	fmt.Println(code)
-	// _, err := cr.userUseCase.FindUser(email)
-	// fmt.Println("email: ", email)
-	// fmt.Println("err: ", err)
+	_, err = cr.userUseCase.FindUser(email)
+	fmt.Println("email: ", email)
+	fmt.Println("err: ", err)
 
-	// if err == nil {
-	err := cr.userUseCase.SendVerificationEmail(email)
-	// }
+	if err == nil {
+	err = cr.userUseCase.SendVerificationEmail(email)
+	}
 
 	fmt.Println(err)
 

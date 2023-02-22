@@ -514,11 +514,11 @@ func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
 }
 
 // UpdatePassword implements interfaces.UserRepository
-func (c *userRepository) UpdatePassword(user domain.Users, email string) (int, error) {
+func (c *userRepository) UpdatePassword(password string, email string) (int, error) {
 
 	query := `UPDATE users SET password =$1 WHERE email = $2`
 
-	err := c.db.QueryRow(query, user.Password, email).Err()
+	err := c.db.QueryRow(query, password, email).Err()
 
 	if err != nil {
 		return 0, err

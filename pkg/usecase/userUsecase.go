@@ -308,7 +308,7 @@ func (c *userUseCase) PostQuestion(question domain.Faqas) error {
 }
 
 // UpdatePassword implements interfaces.UserUseCase
-func (c *userUseCase) UpdatePassword(user domain.Users, email string) error {
+func (c *userUseCase) UpdatePassword(user string, email string) error {
 	_, err := c.userRepo.UpdatePassword(user, email)
 	if err != nil {
 		return err

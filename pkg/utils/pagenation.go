@@ -8,9 +8,9 @@ type Filter struct {
 }
 
 type FilterEvent struct {
-	CusatOnly string
-	Sex        string
-	Online     string
+	CusatOnly bool
+	Sex       string
+	Online    bool
 }
 
 type Metadata struct {

@@ -85,7 +85,7 @@ func (c *eventRepository) UpdateEvent(event domain.Events, title string) (int, e
 }
 
 // AllApprovedEvents implements interfaces.EventRepository
-func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.EventResponse, utils.Metadata, error) {
+func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter, filter utils.FilterEvent) ([]domain.EventResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
 	var events []domain.EventResponse
 
@@ -113,10 +113,13 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.E
 					max_applications,
 					application_closing_date,
 					application_link,
-					website_link FROM events WHERE event_date > $1 AND approved = true ORDER BY event_date DESC 
-					LIMIT $2 OFFSET $3;`
+					website_link FROM events 
+					WHERE event_date > $1 AND approved = true 
+					AND cusat_only = $2 AND sex = $3 AND online = $4 ORDER BY event_date DESC 
+					LIMIT $5 OFFSET $6;`
 
-	rows, err := c.db.Query(query, dateString, pagenation.Limit(), pagenation.Offset())
+	
+	rows, err := c.db.Query(query, dateString,filter.CusatOnly,filter.Sex,filter.Online, pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, utils.Metadata{}, err

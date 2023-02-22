@@ -311,6 +311,9 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Param  page   query  string  true  "Page number: "
+// @Param  cusatonly   query  bool  true  "Cusat only: "
+// @Param  online   query  bool  true  "Online: "
+// @Param  sex   query  string  true  "sex: "
 // @Param  pagesize   query  string  true  "Page capacity : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -318,6 +321,11 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 
 	page, _ := strconv.Atoi(c.Query("page"))
+	cusatonly := c.Query("cusatonly")
+	cusatOnly, _ := strconv.ParseBool(cusatonly)
+	online := c.Query("online")
+	onLine, _ := strconv.ParseBool(online)
+	sex := c.Query("sex")
 
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
 
@@ -331,9 +339,16 @@ func (cr *EventHandler) ViewAllApprovedEvents(c *gin.Context) {
 		PageSize: pageSize,
 	}
 
+	filter := utils.FilterEvent{
+		CusatOnly: cusatOnly,
+		Online: onLine,
+		Sex: sex,
+	}
+
+
 	fmt.Println("pagenation", pagenation)
 
-	events, metadata, err := cr.eventUsecase.AllApprovedEvents(pagenation)
+	events, metadata, err := cr.eventUsecase.AllApprovedEvents(pagenation,filter)
 
 	fmt.Println("events:", events)
 

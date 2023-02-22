@@ -7,6 +7,12 @@ type Filter struct {
 	PageSize int
 }
 
+type FilterEvent struct {
+	CusatOnly string
+	Sex        string
+	Online     string
+}
+
 type Metadata struct {
 	CurrentPage  int
 	PageSize     int

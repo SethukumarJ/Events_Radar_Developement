@@ -75,11 +75,7 @@ type Events struct {
 }
 
 
-type EventType struct {
 
-	EventTypeId uint  `json:"eventtypeid" gorm:"autoIncrement:true;unique"`
-
-}
 
 type Posters struct {
 	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`

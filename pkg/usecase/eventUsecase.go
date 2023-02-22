@@ -76,6 +76,19 @@ func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter, filter utils.F
 	return &events, &metadata, nil
 }
 
+// SearchEventUser implements interfaces.EventUsecase
+func (c *eventUsecase) SearchEventUser(search string) (*[]domain.EventResponse, error) {
+	fmt.Println("Search event from usecase called")
+	SearchList, err := c.eventRepo.SearchEventUser(search)
+	fmt.Println("searchList:", SearchList)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, err
+	}
+
+	return &SearchList, nil
+}
+
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
 	fmt.Println("create user from service")

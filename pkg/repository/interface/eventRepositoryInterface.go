@@ -14,4 +14,5 @@ type EventRepository interface {
 	UpdateEvent(event domain.Events,title string) (int, error)
 	DeleteEvent(title string) error
 	AllApprovedEvents(pagenation utils.Filter, filter  utils.FilterEvent) ([]domain.EventResponse, utils.Metadata, error)
+	SearchEventUser(search string) ([]domain.EventResponse,error)
 }

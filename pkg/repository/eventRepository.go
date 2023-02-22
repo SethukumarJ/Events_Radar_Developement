@@ -15,6 +15,98 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+// SearchEventUser implements interfaces.EventRepository
+func (c *eventRepository) SearchEventUser(search string) ([]domain.EventResponse, error) {
+	fmt.Println("allevents called from repo")
+	var events []domain.EventResponse
+
+	now := time.Now()
+	dateString := now.Format("2006-01-02")
+	fmt.Println("currentdate:", dateString)
+
+	query := `SELECT 
+			COUNT(*) OVER(),
+			event_id,
+			title,
+			organizer_name,
+			event_pic,
+			short_discription,
+			long_discription,
+			event_date,
+			location,
+			approved,
+			paid,
+			sex,
+			cusat_only,
+			archived,
+			sub_events,
+			online,
+			max_applications,
+			application_closing_date,
+			application_link,
+			website_link 
+			FROM events WHERE event_date > $1 AND approved = true
+			AND concat(event_id::text, title, organizer_name, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
+			ORDER BY event_date DESC;`
+			
+
+	rows, err := c.db.Query(query, dateString,search)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("allevents called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("allevents called from repo")
+
+	for rows.Next() {
+		var event domain.EventResponse
+		fmt.Println("username :", event.Title)
+		err = rows.Scan(
+			&totalRecords,
+			&event.EventId,
+			&event.Title,
+			&event.OrganizerName,
+			&event.EventPic,
+			&event.ShortDiscription,
+			&event.LongDiscription,
+			&event.EventDate,
+			&event.Location,
+			&event.CreatedAt,
+			&event.Approved,
+			&event.Paid,
+			&event.Sex,
+			&event.CusatOnly,
+			&event.Archived,
+			&event.SubEvents,
+			&event.Online,
+			&event.MaxApplications,
+			&event.ApplicationClosingDate,
+			&event.ApplicationLink,
+			&event.WebsiteLink,
+		)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("title", event.Title)
+
+		events = append(events, event)
+	}
+
+	if err = rows.Err(); err != nil {
+		return events, err
+	}
+	log.Println(events)
+
+	return events, nil
+}
+
 // FindUser implements interfaces.EventRepository
 func (c *eventRepository) FindUser(username string) (string, error) {
 	query := `SELECT vip FROM users WHERE user_name = $1;`
@@ -118,8 +210,7 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter, filter util
 					AND cusat_only = $2 AND sex = $3 AND online = $4 ORDER BY event_date DESC 
 					LIMIT $5 OFFSET $6;`
 
-	
-	rows, err := c.db.Query(query, dateString,filter.CusatOnly,filter.Sex,filter.Online, pagenation.Limit(), pagenation.Offset())
+	rows, err := c.db.Query(query, dateString, filter.CusatOnly, filter.Sex, filter.Online, pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, utils.Metadata{}, err

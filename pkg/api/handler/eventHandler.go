@@ -305,6 +305,36 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+ 
+// @Summary Search Event from user side
+// @ID search event with string by user
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param  search   body  string  true  "List event by approved non approved : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/search-event [get]
+func (cr *AdminHandler) SearchEventUser(c *gin.Context) {
+	var search string
+	c.Bind(&search)
+	
+	events, err := cr.eventUsecase.SearchEventUser(search)
+
+	fmt.Println("events:", events)
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting users from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Search result", events)
+	utils.ResponseJSON(*c, response)
+
+}
 
 // @Summary list all approved upcoming events
 // @ID list all approved events

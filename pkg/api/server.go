@@ -73,13 +73,14 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	{
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
-
+		
 		admin.Use(middleware.AuthorizeJwt())
 		{
 			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)
 			admin.POST("/create-event", eventHandler.CreateEventAdmin)
 			admin.GET("/list-users", adminHandler.ViewAllUsers)
+			admin.GET("/search-event",adminHandler.SearchEvent)
 			admin.PATCH("/make/vip-user", adminHandler.VipUser)
 			admin.GET("/list-events", adminHandler.ViewAllEvents)
 			admin.PATCH("/register-organization", adminHandler.RegisterOrganization)

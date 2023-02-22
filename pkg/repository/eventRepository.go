@@ -113,7 +113,7 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter) ([]domain.E
 					max_applications,
 					application_closing_date,
 					application_link,
-					website_link FROM events WHERE event_date > $1 AND approved = true
+					website_link FROM events WHERE event_date > $1 AND approved = true ORDER BY event_date DESC 
 					LIMIT $2 OFFSET $3;`
 
 	rows, err := c.db.Query(query, dateString, pagenation.Limit(), pagenation.Offset())

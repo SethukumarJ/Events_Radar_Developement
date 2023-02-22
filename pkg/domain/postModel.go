@@ -74,6 +74,13 @@ type Events struct {
 	ApplicationLeft        int       `json:"applicationleft"`
 }
 
+
+type EventType struct {
+
+	EventTypeId uint  `json:"eventtypeid" gorm:"autoIncrement:true;unique"`
+
+}
+
 type Posters struct {
 	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
 	Name        string `json:"name"`

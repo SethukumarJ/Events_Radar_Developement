@@ -355,7 +355,7 @@ func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
 		return
 	}
 
-	poster, _ := cr.eventUsecase.FindPoster(newPoster.Name)
+	poster, _ := cr.eventUsecase.FindPoster(newPoster.Name,int(newPoster.EventId))
 	response := response.SuccessResponse(true, "SUCCESS", poster)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -431,6 +431,7 @@ func (cr *EventHandler) PostersByEvent(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param  title   query  string  true  "Title: "
+// @Param  eventid   query  int  true  "Title: "
 // @Param organizationName query string true "organizationName: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -449,8 +450,8 @@ func (cr *EventHandler) DeletePoster(c *gin.Context) {
 	}
 
 	title := c.Query("title")
-
-	err := cr.eventUsecase.DeletePoster(title)
+	eventId,_ := strconv.Atoi(c.Query("Eventid"))
+	err := cr.eventUsecase.DeletePoster(title,eventId)
 
 	if err != nil {
 		response := response.ErrorResponse("Could not delete event", err.Error(), nil)
@@ -469,14 +470,15 @@ func (cr *EventHandler) DeletePoster(c *gin.Context) {
 // @Tags User
 // @Produce json
 // @Param  title   query  string  true  "Title: "
+// @Param  eventid   query  int  true  "Title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /event/getposterbytitle [get]
 func (cr *EventHandler) GetPosterByTitle(c *gin.Context) {
 
 	title := c.Query("title")
-
-	poster, err := cr.eventUsecase.FindPoster(title)
+	eventId,_ := strconv.Atoi(c.Query("Eventid"))
+	poster, err := cr.eventUsecase.FindPoster(title,eventId)
 
 	fmt.Println("event:", poster)
 

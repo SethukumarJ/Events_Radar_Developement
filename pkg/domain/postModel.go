@@ -75,14 +75,14 @@ type Events struct {
 }
 
 type Posters struct {
-	PosterId    uint      `json:"posterid" gorm:"autoIncrement:true;unique"`
-	Name        string    `json:"name"`
-	Events      Events    `gorm:"foreignKey:EventId;references:EventId"`
-	EventId     uint      `json:"event_id"`
-	Image       string    `json:"image"`
-	Discription string    `json:"discription"`
+	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
+	Name        string `json:"name"`
+	Events      Events `gorm:"foreignKey:EventId;references:EventId"`
+	EventId     uint   `json:"event_id"`
+	Image       string `json:"image"`
+	Discription string `json:"discription"`
 	Date        string `json:"date"`
-	Colour      string    `json:"colour"`
+	Colour      string `json:"colour"`
 }
 
 type Faqas struct {

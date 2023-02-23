@@ -11,8 +11,8 @@ type EventUsecase interface {
 	FindEvent(title string) (*domain.EventResponse, error)
 	AllApprovedEvents(pagenation utils.Filter , filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error)
 	CreatePoster(event domain.Posters) error
-	DeletePoster(name string) error
-	FindPoster(title string) (*domain.PosterResponse, error)
+	DeletePoster(name string,eventid int) error
+	FindPoster(title string, eventid int) (*domain.PosterResponse, error)
 	PostersByEvent(eventid int) (*[]domain.PosterResponse, error)
 	FindUser(username string) (bool,error)
 	UpdateEvent(event domain.Events, title string) error

@@ -19,7 +19,7 @@ type eventUsecase struct {
 // CreatePoster implements interfaces.EventUsecase
 func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 	fmt.Println("create poster from service")
-	_, err := c.eventRepo.FindPoster(poster.Name)
+	_, err := c.eventRepo.FindPoster(poster.Name,int(poster.EventId))
 	fmt.Println("found poster", err)
 
 	if err == nil {
@@ -38,8 +38,8 @@ func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 }
 
 // DeletePoster implements interfaces.EventUsecase
-func (c *eventUsecase) DeletePoster(name string) error {
-	err := c.eventRepo.DeletePoster(title)
+func (c *eventUsecase) DeletePoster(name string,eventid int) error {
+	err := c.eventRepo.DeletePoster(name,eventid)
 
 	if err != nil {
 		return nil
@@ -49,8 +49,8 @@ func (c *eventUsecase) DeletePoster(name string) error {
 }
 
 // FindPoster implements interfaces.EventUsecase
-func (c *eventUsecase) FindPoster(title string) (*domain.PosterResponse, error) {
-	poster, err := c.eventRepo.FindPoster(title)
+func (c *eventUsecase) FindPoster(title string ,eventid int) (*domain.PosterResponse, error) {
+	poster, err := c.eventRepo.FindPoster(title,eventid)
 
 	if err != nil {
 		return nil, err

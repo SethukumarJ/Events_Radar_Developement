@@ -16,18 +16,37 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// CreatePoster implements interfaces.EventUsecase
+func (*eventUsecase) CreatePoster(event domain.Posters) error {
+	panic("unimplemented")
+}
+
+// DeletePoster implements interfaces.EventUsecase
+func (*eventUsecase) DeletePoster(name string) error {
+	panic("unimplemented")
+}
+
+// FindPoster implements interfaces.EventUsecase
+func (*eventUsecase) FindPoster(title string) (*domain.PosterResponse, error) {
+	panic("unimplemented")
+}
+
+// PostersByEvent implements interfaces.EventUsecase
+func (*eventUsecase) PostersByEvent(eventid int) (*[]domain.PosterResponse, error) {
+	panic("unimplemented")
+}
+
 // FindUser implements interfaces.EventUsecase
 func (c *eventUsecase) FindUser(username string) (bool, error) {
-	vip,err := c.eventRepo.FindUser(username) 
+	vip, err := c.eventRepo.FindUser(username)
 	if err != nil {
-		return false ,err
+		return false, err
 	}
 
-	if vip == "false"{
-		return false,nil
-	} 
+	if vip == "false" {
+		return false, nil
+	}
 	return true, nil
-
 
 }
 
@@ -46,7 +65,7 @@ func (c *eventUsecase) DeleteEvent(title string) error {
 func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 	fmt.Println("update event from service")
 	_, err := c.eventRepo.FindEvent(title)
-	fmt.Println("found event", err,)
+	fmt.Println("found event", err)
 
 	if err == nil {
 		log.Printf("found event")
@@ -66,7 +85,7 @@ func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 // AllEvents implements interfaces.EventUsecase
 func (c *eventUsecase) AllApprovedEvents(pagenation utils.Filter, filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error) {
 	fmt.Println("allevents from usecase called")
-	events, metadata, err := c.eventRepo.AllApprovedEvents(pagenation,filter)
+	events, metadata, err := c.eventRepo.AllApprovedEvents(pagenation, filter)
 	fmt.Println("events:", events)
 	if err != nil {
 		fmt.Println("error from allevents usecase:", err)

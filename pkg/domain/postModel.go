@@ -16,11 +16,11 @@ type Users struct {
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
 	Profile      string `json:"profile"`
 	EventId      uint   `json:"eventid"`
-} 
+}
 
 type Login struct {
-	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
-	Password     string `json:"password" validate:"required"`
+	Email    string `json:"email" gorm:"notnull;unique" validate:"email,required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type Bios struct {
@@ -74,18 +74,15 @@ type Events struct {
 	ApplicationLeft        int       `json:"applicationleft"`
 }
 
-
-
-
 type Posters struct {
-	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
-	Name        string `json:"name"`
-	Events      Events `gorm:"foreignKey:EventId;references:EventId"`
-	EventId     uint   `json:"event_id"`
-	Image       string `json:"image"`
-	Discription string `json:"discription"`
+	PosterId    uint      `json:"posterid" gorm:"autoIncrement:true;unique"`
+	Name        string    `json:"name"`
+	Events      Events    `gorm:"foreignKey:EventId;references:EventId"`
+	EventId     uint      `json:"event_id"`
+	Image       string    `json:"image"`
+	Discription string    `json:"discription"`
 	Date        string `json:"date"`
-	Colour      string `json:"colour"`
+	Colour      string    `json:"colour"`
 }
 
 type Faqas struct {
@@ -173,7 +170,6 @@ type ApplicationForm struct {
 	Github        string    `json:"github"`
 	Linkedin      string    `json:"linkedin"`
 }
-
 
 type PageVariables struct {
 	OrderId string

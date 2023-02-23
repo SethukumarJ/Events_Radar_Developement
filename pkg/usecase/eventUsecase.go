@@ -17,23 +17,59 @@ type eventUsecase struct {
 }
 
 // CreatePoster implements interfaces.EventUsecase
-func (*eventUsecase) CreatePoster(event domain.Posters) error {
-	panic("unimplemented")
+func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
+	fmt.Println("create poster from service")
+	_, err := c.eventRepo.FindPoster(poster.Name)
+	fmt.Println("found poster", err)
+
+	if err == nil {
+		return errors.New("poster name already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+	_, err = c.eventRepo.CreatePoster(poster)
+	if err != nil {
+		return err
+
+	}
+	return nil
 }
 
 // DeletePoster implements interfaces.EventUsecase
-func (*eventUsecase) DeletePoster(name string) error {
-	panic("unimplemented")
+func (c *eventUsecase) DeletePoster(name string) error {
+	err := c.eventRepo.DeletePoster(title)
+
+	if err != nil {
+		return nil
+	}
+
+	return nil
 }
 
 // FindPoster implements interfaces.EventUsecase
-func (*eventUsecase) FindPoster(title string) (*domain.PosterResponse, error) {
-	panic("unimplemented")
+func (c *eventUsecase) FindPoster(title string) (*domain.PosterResponse, error) {
+	poster, err := c.eventRepo.FindPoster(title)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &poster, nil
 }
 
 // PostersByEvent implements interfaces.EventUsecase
-func (*eventUsecase) PostersByEvent(eventid int) (*[]domain.PosterResponse, error) {
-	panic("unimplemented")
+func (c *eventUsecase) PostersByEvent(eventid int) (*[]domain.PosterResponse, error) {
+	fmt.Println("Poster by evnet called from usecase called")
+	Posters, err := c.eventRepo.PostersByEvent(eventid)
+	fmt.Println("posters:", Posters)
+	if err != nil {
+		fmt.Println("error from list organization from usecase:", err)
+		return nil, err
+	}
+
+	return &Posters, nil
 }
 
 // FindUser implements interfaces.EventUsecase

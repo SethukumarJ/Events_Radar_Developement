@@ -94,9 +94,12 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	organization := engine.Group("organization")
 	{
 		organization.GET("/get-organization", userHandler.GetOrganization)
+		organization.GET("/event/list-posters",eventHandler.PostersByEvent)
+		organization.GET("/event/get-posterbyname",eventHandler.GetPosterByTitle)
 		organization.Use(middleware.AuthorizeOrg())
 		{
-
+			organization.POST("/event/create-posters",eventHandler.CreatePosterOrganization)
+			organization.POST("/event/delete-poster",eventHandler.DeletePoster)
 			organization.PATCH("/update-event", eventHandler.UpdateEvent)
 			organization.DELETE("/delete-event", eventHandler.DeleteEvent)
 			organization.GET("/event/list-questions", userHandler.GetQuestions)

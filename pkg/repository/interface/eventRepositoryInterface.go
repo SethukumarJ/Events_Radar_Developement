@@ -8,6 +8,10 @@ import (
 // UserRepository represent the users's repository contract
 type EventRepository interface {
 	
+	CreatePoster(event domain.Posters) (int,error)
+	DeletePoster(name string, eventid int) error
+	FindPoster(title string, eventid int) (domain.PosterResponse, error)
+	PostersByEvent(eventid int) ([]domain.PosterResponse, error)
 	FindEvent(title string) (domain.EventResponse, error)
 	FindUser(username string) (string, error)
 	CreateEvent(event domain.Events) (int, error)

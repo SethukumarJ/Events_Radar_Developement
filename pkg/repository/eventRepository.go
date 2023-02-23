@@ -15,6 +15,134 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+// CreatePoster implements interfaces.EventRepository
+func (c *eventRepository) CreatePoster(poster domain.Posters) (int, error) {
+	var id int
+
+	posterName := poster.Name
+	fmt.Println(posterName)
+	query := `INSERT INTO posters(event_id,
+									name,
+									image,
+									discription,
+									date,
+									colour)VALUES($1, $2, $3, $4, $5, $6)
+									RETURNING poster_id;`
+
+	err := c.db.QueryRow(query,
+		poster.EventId,
+		poster.Name,
+		poster.Image,
+		poster.Discription,
+		poster.Date,
+		poster.Colour).Scan(&id)
+
+	fmt.Println(poster.Name, "from repository poster anname")
+	if err != nil {
+		return id, err
+	}
+
+	fmt.Println("id", id)
+	return id, err
+}
+
+// DeletePoster implements interfaces.EventRepository
+func (c *eventRepository) DeletePoster(name string,eventid int) (error) {
+	var id int
+	query := `DELETE FROM posters WHERE name = $1 && event_id = $2 RETURNING poster_id;`
+
+	err := c.db.QueryRow(query, name,eventid).Scan(&id)
+	fmt.Println("id deleted:", id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FindPoster implements interfaces.EventRepository
+func (c *eventRepository) FindPoster(title string, eventid int) (domain.PosterResponse, error) {
+	var poster domain.PosterResponse
+
+	query := `SELECT poster_id,
+				name,
+				image,
+				discription,
+				date,
+				colour FROM posters
+				WHERE name  = $1 AND event_id = $2;`
+
+	err := c.db.QueryRow(query, title, eventid).Scan(
+		&poster.PosterId,
+		&poster.Name,
+		&poster.Image,
+		&poster.Discription,
+		&poster.Date,
+		&poster.Colour,
+	)
+
+	fmt.Println("poster from find poster :", poster)
+	return poster, err
+}
+
+// PostersByEvent implements interfaces.EventRepository
+func (c *eventRepository) PostersByEvent(eventid int) ([]domain.PosterResponse, error) {
+	fmt.Println("all posters called from repo")
+	var posters []domain.PosterResponse
+
+	query := `SELECT 
+				COUNT(*) OVER(),
+				poster_id,
+				name,
+				image,
+				discription,
+				date,
+				colour FROM posters
+				WHERE event_id = $1
+				ORDER BY date DESC;`
+
+	rows, err := c.db.Query(query, eventid)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("all posters called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("all posters called from repo")
+
+	for rows.Next() {
+		var poster domain.PosterResponse
+		fmt.Println("postername", poster.Name)
+		err = rows.Scan(
+			&totalRecords,
+			&poster.PosterId,
+			&poster.Name,
+			&poster.Image,
+			&poster.Discription,
+			&poster.Date,
+			&poster.Colour,
+		)
+
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("title", poster.Name)
+
+		posters = append(posters, poster)
+	}
+
+	if err = rows.Err(); err != nil {
+		return posters, err
+	}
+	log.Println(posters)
+
+	return posters, nil
+}
+
 // SearchEventUser implements interfaces.EventRepository
 func (c *eventRepository) SearchEventUser(search string) ([]domain.EventResponse, error) {
 	fmt.Println("allevents called from repo")
@@ -48,9 +176,8 @@ func (c *eventRepository) SearchEventUser(search string) ([]domain.EventResponse
 			FROM events WHERE event_date > $1 AND approved = true
 			AND concat(event_id::text, title, organizer_name, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
 			ORDER BY event_date DESC;`
-			
 
-	rows, err := c.db.Query(query, dateString,search)
+	rows, err := c.db.Query(query, dateString, search)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err

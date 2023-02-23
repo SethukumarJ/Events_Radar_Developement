@@ -7,10 +7,14 @@ import (
 
 type EventUsecase interface {
 	CreateEvent(event domain.Events) error
-	UpdateEvent(event domain.Events, title string) error
 	DeleteEvent(title string) error
 	FindEvent(title string) (*domain.EventResponse, error)
-	FindUser(username string) (bool,error)
 	AllApprovedEvents(pagenation utils.Filter , filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error)
+	CreatePoster(event domain.Posters) error
+	DeletePoster(name string,eventid int) error
+	FindPoster(title string, eventid int) (*domain.PosterResponse, error)
+	PostersByEvent(eventid int) (*[]domain.PosterResponse, error)
+	FindUser(username string) (bool,error)
+	UpdateEvent(event domain.Events, title string) error
 	SearchEventUser(search string) (*[]domain.EventResponse, error)
 }

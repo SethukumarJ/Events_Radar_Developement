@@ -16,11 +16,11 @@ type Users struct {
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
 	Profile      string `json:"profile"`
 	EventId      uint   `json:"eventid"`
-} 
+}
 
 type Login struct {
-	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
-	Password     string `json:"password" validate:"required"`
+	Email    string `json:"email" gorm:"notnull;unique" validate:"email,required"`
+	Password string `json:"password" validate:"required"`
 }
 
 type Bios struct {
@@ -73,9 +73,6 @@ type Events struct {
 	WebsiteLink            string    `json:"websitelink"`
 	ApplicationLeft        int       `json:"applicationleft"`
 }
-
-
-
 
 type Posters struct {
 	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
@@ -173,7 +170,6 @@ type ApplicationForm struct {
 	Github        string    `json:"github"`
 	Linkedin      string    `json:"linkedin"`
 }
-
 
 type PageVariables struct {
 	OrderId string

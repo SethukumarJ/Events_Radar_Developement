@@ -50,6 +50,14 @@ type EventResponse struct {
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
 }
+type PosterResponse struct {
+	PosterId    uint   `json:"posterid"`
+	Name        string `json:"name"`
+	Image       string `json:"image"`
+	Discription string `json:"discription"`
+	Date        string `json:"date"`
+	Colour      string `json:"colour"`
+}
 
 type FaqaResponse struct {
 	FaqaId        uint      `json:"faqaid"`
@@ -91,7 +99,6 @@ type UserOrganizationConnectionResponse struct {
 	Role             string `json:"role" gorm:"not null"`
 }
 
-
 type Join_StatusResponse struct {
 	JoinStatusId     uint   `json:"orgstatusid"`
 	OrganizationName string `json:"organizationname"`
@@ -99,7 +106,6 @@ type Join_StatusResponse struct {
 	Pending          string `json:"pending"`
 	Rejected         string `json:"rejected"`
 }
-
 
 type ApplicationFormResponse struct {
 	ApplicationId uint      `json:"applicationid" gorm:"autoIncrement:true;unique"`

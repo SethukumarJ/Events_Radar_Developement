@@ -277,7 +277,7 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 
 }
 
-// @Summary delete event
+// @Summary get event by title
 // @ID Get event by id
 // @Tags User
 // @Produce json
@@ -306,6 +306,64 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 
 }
  
+
+// @Summary Create Poster by organization
+// @ID Create Poster from organization
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param EventName query string true "EventName"
+// @param CreatePoster body domain.Posters{} true "Create poster"
+// @Param organizationName query string true "organizationName: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/create-poster [post]
+// Create posters
+func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
+
+	role := c.Writer.Header().Get("role")
+
+	if role > "2" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+
+	var newPoster domain.Posters
+	fmt.Println("event", newPoster)
+	fmt.Println("Creating event")
+	//fetching data
+	c.Bind(&newPoster)
+	now := time.Now()
+	newPoster.Date  =  now.Format("2006-01-02")
+	
+
+	//check event exit or not
+
+	err := cr.eventUsecase.CreatePoster(newPoster)
+
+	log.Println(newPoster)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	poster, _ := cr.eventUsecase.FindPoster(newPoster.Name,int(newPoster.EventId))
+	response := response.SuccessResponse(true, "SUCCESS", poster)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
 // @Summary Search Event from user side
 // @ID search event with string by user
 // @Tags User
@@ -335,7 +393,107 @@ func (cr *EventHandler) SearchEventUser(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 
 }
+// @Summary Search Event from user side
+// @ID search event with string by user
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param  Eventid   query  int  true  "Posters under event : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/get-Posters [get]
+func (cr *EventHandler) PostersByEvent(c *gin.Context) {
+	
 
+	eventId,_ := strconv.Atoi(c.Query("Eventid"))
+
+	posters, err := cr.eventUsecase.PostersByEvent(eventId)
+
+	fmt.Println("events:", posters)
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting posters from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+
+	response := response.SuccessResponse(true, "posters", posters)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary delete poster
+// @ID Delete poster
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  title   query  string  true  "Title: "
+// @Param  eventid   query  int  true  "Title: "
+// @Param organizationName query string true "organizationName: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/delete-poster [delete]
+func (cr *EventHandler) DeletePoster(c *gin.Context) {
+
+
+	role := c.Writer.Header().Get("role")
+
+	if role > "2" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	title := c.Query("title")
+	eventId,_ := strconv.Atoi(c.Query("Eventid"))
+	err := cr.eventUsecase.DeletePoster(title,eventId)
+
+	if err != nil {
+		response := response.ErrorResponse("Could not delete event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Deleted event successfully!", title)
+	utils.ResponseJSON(*c, response)
+
+}
+
+// @Summary Get poster by title
+// @ID Get event by id
+// @Tags User
+// @Produce json
+// @Param  title   query  string  true  "Title: "
+// @Param  eventid   query  int  true  "Title: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /event/getposterbytitle [get]
+func (cr *EventHandler) GetPosterByTitle(c *gin.Context) {
+
+	title := c.Query("title")
+	eventId,_ := strconv.Atoi(c.Query("Eventid"))
+	poster, err := cr.eventUsecase.FindPoster(title,eventId)
+
+	fmt.Println("event:", poster)
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting poster from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Showing the event", poster)
+	utils.ResponseJSON(*c, response)
+
+}
 // @Summary list all approved upcoming events
 // @ID list all approved events
 // @Tags User

@@ -15,6 +15,136 @@ type eventRepository struct {
 	db *sql.DB
 }
 
+const (
+	listPendingAppications = `SELECT COUNT(*) OVER() AS total_records,app.application_id,app.user_name,
+	app.applied_at,app.first_name,app.last_name,app.event_name,app.proffession,app.college,app.company,app.about,app.email,app.git_hub,app.linked_in,status.application_status_id 
+	FROM applicaitonforms AS app INNER JOIN appllication_statuses AS status 
+	ON app.user_name = status.pending LIMIT $1 OFFSET $2;`
+	listAcceptedApplications =`SELECT COUNT(*) OVER() AS total_records,app.application_id,app.user_name,
+	app.applied_at,app.first_name,app.last_name,app.event_name,app.proffession,app.college,app.company,app.about,app.email,app.git_hub,app.linked_in,status.application_status_id 
+	FROM applicaitonforms AS app INNER JOIN appllication_statuses AS status 
+	ON app.user_name = status.accepted LIMIT $1 OFFSET $2;`
+	listRejectedApplications = `SELECT COUNT(*) OVER() AS total_records,app.application_id,app.user_name,
+	app.applied_at,app.first_name,app.last_name,app.event_name,app.proffession,app.college,app.company,app.about,app.email,app.git_hub,app.linked_in,status.application_status_id 
+	FROM applicaitonforms AS app INNER JOIN appllication_statuses AS status 
+	ON app.user_name = status.rejected LIMIT $1 OFFSET $2;`
+)
+
+// AcceptApplication implements interfaces.EventRepository
+func (c *eventRepository) AcceptApplication(applicationStatusId int) error {
+	var eventName string
+	var userName string
+
+	query := `SELECT app.event_title,status.pending
+				FROM application_forms AS app INNER JOIN appllication_satatuses AS status 
+				ON app.user_name = status.pending WHERE status.appllication_status_id = $1;`
+	err := c.db.QueryRow(query, applicationStatusId).Scan(&eventName, &userName)
+	if err != nil {
+		return err
+	}
+
+	query2 := `UPDATE appllication_satatuses SET pending = null, accepted = $1 WHERE appllication_status_id = $2;`
+	err = c.db.QueryRow(query2, userName, applicationStatusId).Err()
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+	query3 := `UPDATE events SET application_left = appliction_left -1 WHERE event_title = $1;`
+	err = c.db.QueryRow(query3, eventName,).Err()
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+
+	return nil
+}
+
+// ListApplications implements interfaces.EventRepository
+func (c *eventRepository) ListApplications(pagenation utils.Filter, applicationStatus string) ([]domain.ApplicationFormResponse, utils.Metadata, error) {
+	fmt.Println("allevents called from repo")
+	var applications []domain.ApplicationFormResponse
+	var rows *sql.Rows
+	var err error
+	if applicationStatus == "pending" {
+		rows, err = c.db.Query(listPendingAppications, pagenation.Limit(), pagenation.Offset())
+	} else if applicationStatus == "registered"{
+		rows, err = c.db.Query(listAcceptedApplications, pagenation.Limit(), pagenation.Offset())
+	} else if applicationStatus == "rejected"{
+		rows, err = c.db.Query(listRejectedApplications, pagenation.Limit(), pagenation.Offset())
+	}
+		fmt.Println("rows", rows)
+		if err != nil {
+			return nil, utils.Metadata{}, err
+		}
+
+		fmt.Println("List applications called from repo")
+
+		var totalRecords int
+
+		defer rows.Close()
+		fmt.Println("applications called from repo")
+		
+		for rows.Next() {
+			var application domain.ApplicationFormResponse
+			fmt.Println("username :", application.UserName)
+			err = rows.Scan(
+				&application.ApplicationId,
+				&application.UserName,    
+				&application.AppliedAt,     
+				&application.FirstName,    
+				&application.LastName,    
+				&application.Event_name,   
+				&application.Proffession,
+				&application.College,       
+				&application.Company,    
+				&application.About,        
+				&application.Email,         
+				&application.Github,        
+				&application.Linkedin,      
+			)
+
+			fmt.Println("username", application.UserName)
+
+			if err != nil {
+				return applications, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+			}
+			applications = append(applications, application)
+		}
+
+		if err := rows.Err(); err != nil {
+			return applications, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+		}
+		log.Println(applications)
+		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+		return applications, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+}
+
+// RejectApplication implements interfaces.EventRepository
+func (c *eventRepository) RejectApplication(applicationStatusId int) error {
+	var eventName string
+	var userName string
+
+	query := `SELECT app.event_title,status.pending
+				FROM application_forms AS app INNER JOIN appllication_satatuses AS status 
+				ON app.user_name = status.pending WHERE status.appllication_status_id = $1;`
+	err := c.db.QueryRow(query, applicationStatusId).Scan(&eventName, &userName)
+	if err != nil {
+		return err
+	}
+
+	query2 := `UPDATE appllication_satatuses SET pending = null, rejected = $1 WHERE appllication_status_id = $2;`
+	err = c.db.QueryRow(query2, userName, applicationStatusId).Err()
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("err", err)
+		return err
+
+	}
+
+	return nil
+}
+
 // CreatePoster implements interfaces.EventRepository
 func (c *eventRepository) CreatePoster(poster domain.Posters) (int, error) {
 	var id int
@@ -47,11 +177,11 @@ func (c *eventRepository) CreatePoster(poster domain.Posters) (int, error) {
 }
 
 // DeletePoster implements interfaces.EventRepository
-func (c *eventRepository) DeletePoster(name string,eventid int) (error) {
+func (c *eventRepository) DeletePoster(name string, eventid int) error {
 	var id int
 	query := `DELETE FROM posters WHERE name = $1 && event_id = $2 RETURNING poster_id;`
 
-	err := c.db.QueryRow(query, name,eventid).Scan(&id)
+	err := c.db.QueryRow(query, name, eventid).Scan(&id)
 	fmt.Println("id deleted:", id)
 	if err != nil {
 		return err

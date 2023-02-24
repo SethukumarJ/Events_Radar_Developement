@@ -94,6 +94,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	organization := engine.Group("organization")
 	{
 		organization.GET("/get-organization", userHandler.GetOrganization)
+		organization.GET("/list-organizations", userHandler.ListOrganizations)
 		organization.GET("/event/list-posters",eventHandler.PostersByEvent)
 		organization.GET("/event/get-posterbyname",eventHandler.GetPosterByTitle)
 		organization.Use(middleware.AuthorizeOrg())
@@ -109,6 +110,9 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.GET("/accept-invitation", userHandler.AcceptJoinInvitation)
 			organization.PATCH("/admin/admit-member", userHandler.AdmitMember)
 			organization.GET("/join-requests", userHandler.ListJoinRequests)
+			organization.PATCH("/accept-application", eventHandler.AcceptApplication)
+			organization.PATCH("/reject-application", eventHandler.RejectApplication)
+			organization.GET("/list-application", eventHandler.ListApplications)
 
 		}
 

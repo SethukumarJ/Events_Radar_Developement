@@ -131,7 +131,7 @@ type Join_Status struct {
 type Appllication_Satatuses struct {
 	ApplicationStatusId uint   `json:"applicationstatusid" gorm:"autoIncrement:true;unique"`
 	EventName           string `json:"eventname"`
-	Accepted            string `json:"joined"`
+	Accepted            string `json:"accepted"`
 	Pending             string `json:"pending"`
 	Rejected            string `json:"rejected"`
 }

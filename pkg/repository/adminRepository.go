@@ -127,10 +127,15 @@ func (c *adminRepository) SearchEvent(search string) ([]domain.EventResponse, er
 func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationStatus string) ([]domain.OrganizationsResponse, utils.Metadata, error) {
 	fmt.Println("allevents called from repo")
 	var organizations []domain.OrganizationsResponse
-
+	var rows *sql.Rows
+	var err error
 	if applicationStatus == "pending" {
-
-		rows, err := c.db.Query(listPendingOrganizations, pagenation.Limit(), pagenation.Offset())
+		rows, err = c.db.Query(listPendingOrganizations, pagenation.Limit(), pagenation.Offset())
+	} else if applicationStatus == "registered"{
+		rows, err = c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
+	} else if applicationStatus == "rejected"{
+		rows, err = c.db.Query(listRejectedOrganizations, pagenation.Limit(), pagenation.Offset())
+	}
 		fmt.Println("rows", rows)
 		if err != nil {
 			return nil, utils.Metadata{}, err
@@ -175,99 +180,9 @@ func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationSt
 		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
 		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 
-	} else if applicationStatus == "registered" {
+	} 
 
-		rows, err := c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
-		fmt.Println("rows", rows)
-		if err != nil {
-			return nil, utils.Metadata{}, err
-		}
 
-		fmt.Println("List organizations called from repo")
-
-		var totalRecords int
-
-		defer rows.Close()
-		fmt.Println("allevents called from repo")
-
-		for rows.Next() {
-			var organization domain.OrganizationsResponse
-			fmt.Println("username :", organization.OrganizationName)
-			err = rows.Scan(
-				&totalRecords,
-				&organization.OrganizationId,
-				&organization.OrganizationName,
-				&organization.CreatedBy,
-				&organization.Logo,
-				&organization.About,
-				&organization.CreatedAt,
-				&organization.LinkedIn,
-				&organization.WebsiteLink,
-				&organization.Verified,
-				&organization.OrgStatusId,
-			)
-
-			fmt.Println("organization", organization.OrganizationName)
-
-			if err != nil {
-				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-			}
-			organizations = append(organizations, organization)
-		}
-
-		if err := rows.Err(); err != nil {
-			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-		}
-		log.Println(organizations)
-		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
-		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
-	}
-
-	rows, err := c.db.Query(listRejectedOrganizations, pagenation.Limit(), pagenation.Offset())
-	fmt.Println("rows", rows)
-	if err != nil {
-		return nil, utils.Metadata{}, err
-	}
-
-	fmt.Println("List organizations called from repo")
-
-	var totalRecords int
-
-	defer rows.Close()
-	fmt.Println("allevents called from repo")
-
-	for rows.Next() {
-		var organization domain.OrganizationsResponse
-		fmt.Println("username :", organization.OrganizationName)
-		err = rows.Scan(
-			&totalRecords,
-			&organization.OrganizationId,
-			&organization.OrganizationName,
-			&organization.CreatedBy,
-			&organization.Logo,
-			&organization.About,
-			&organization.CreatedAt,
-			&organization.LinkedIn,
-			&organization.WebsiteLink,
-			&organization.Verified,
-			&organization.OrgStatusId,
-		)
-
-		fmt.Println("organization", organization.OrganizationName)
-
-		if err != nil {
-			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-		}
-		organizations = append(organizations, organization)
-	}
-
-	if err := rows.Err(); err != nil {
-		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-	}
-	log.Println(organizations)
-	log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
-	return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
-}
 
 // RegisterOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RegisterOrganization(orgStatudId int) error {

@@ -24,6 +24,121 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 	}
 }
 
+
+// @Summary list all pending application of participant
+// @ID list all application with status
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  page   query  int  true  "Page number: "
+// @Param  pagesize   query  int  true  "Page capacity : "
+// @Param  applicationStatus   query  string  true  "List organization based on status: "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/list-application [get]
+func (cr *EventHandler) ListApplications(c *gin.Context) {
+
+
+	page, _ := strconv.Atoi(c.Query("page"))
+
+	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
+
+	applicationStatus:= c.Query("applicationStatus")
+	fmt.Println("applicationStatus",applicationStatus)
+
+	log.Println(page, "   ", pageSize)
+
+	fmt.Println("page :", page)
+	fmt.Println("pagesize", pageSize)
+
+	pagenation := utils.Filter{
+		Page:     page,
+		PageSize: pageSize,
+	}
+
+	fmt.Println("pagenation", pagenation)
+
+	applications, metadata, err := cr.eventUsecase.ListApplications(pagenation, applicationStatus)
+
+	fmt.Println("applications:", applications)
+
+	result := struct {
+		ApplicationForm *[]domain.ApplicationFormResponse
+		Meta  *utils.Metadata
+	}{
+		ApplicationForm: applications,
+		Meta:  metadata,
+	}
+
+	if err != nil {
+		response := response.ErrorResponse("error while getting event applications from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed All participant applications", result)
+	utils.ResponseJSON(*c, response)
+
+}
+
+
+
+
+// @Summary accept the application for participate in the event
+// @ID Accept application
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  applicationstsid   query  int  true  "orgStatus id : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/accept-application [patch]
+func (cr *EventHandler) AcceptApplication(c *gin.Context)  {
+	
+	applicationstsid,_ := strconv.Atoi(c.Query("applicationstsid"))
+
+	err := cr.eventUsecase.AcceptApplication(applicationstsid)
+
+	if err != nil {
+		response := response.ErrorResponse("accepting request failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "application accepted", applicationstsid)
+	utils.ResponseJSON(*c, response)
+
+}
+// @Summary Rejects the application for participate in the event
+// @ID Reject application
+// @Tags Organization
+// @Produce json
+// @Security BearerAuth
+// @Param  applicationstsid   query  int  true  "applicationstsid  : "
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/reject-application [patch]
+func (cr *EventHandler) RejectApplication(c *gin.Context)  {
+	
+	applicationstsid,_ := strconv.Atoi(c.Query("applicationstsid"))
+
+	err := cr.eventUsecase.RejectApplication(applicationstsid)
+
+	if err != nil {
+		response := response.ErrorResponse("Rjecting applicaiton failed!", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "Application rejected", applicationstsid)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary delete event
 // @ID Delete event
 // @Tags Organization

@@ -16,10 +16,43 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// AcceptApplication implements interfaces.EventUsecase
+func (c *eventUsecase) AcceptApplication(applicationStatusId int) error {
+	err := c.eventRepo.AcceptApplication(applicationStatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// ListApplications implements interfaces.EventUsecase
+func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
+	fmt.Println("List applilcation from usecase called")
+	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus)
+	fmt.Println("applicaition:", applicaition)
+	if err != nil {
+		fmt.Println("error from list applicaition from usecase:", err)
+		return nil, &metadata, err
+	}
+
+	return &applicaition, &metadata, nil
+}
+
+// RejectApplication implements interfaces.EventUsecase
+func (c *eventUsecase) RejectApplication(applicationStatusId int) error {
+	err := c.eventRepo.RejectApplication(applicationStatusId)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // CreatePoster implements interfaces.EventUsecase
 func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 	fmt.Println("create poster from service")
-	_, err := c.eventRepo.FindPoster(poster.Name,int(poster.EventId))
+	_, err := c.eventRepo.FindPoster(poster.Name, int(poster.EventId))
 	fmt.Println("found poster", err)
 
 	if err == nil {
@@ -38,8 +71,8 @@ func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 }
 
 // DeletePoster implements interfaces.EventUsecase
-func (c *eventUsecase) DeletePoster(name string,eventid int) error {
-	err := c.eventRepo.DeletePoster(name,eventid)
+func (c *eventUsecase) DeletePoster(name string, eventid int) error {
+	err := c.eventRepo.DeletePoster(name, eventid)
 
 	if err != nil {
 		return nil
@@ -49,8 +82,8 @@ func (c *eventUsecase) DeletePoster(name string,eventid int) error {
 }
 
 // FindPoster implements interfaces.EventUsecase
-func (c *eventUsecase) FindPoster(title string ,eventid int) (*domain.PosterResponse, error) {
-	poster, err := c.eventRepo.FindPoster(title,eventid)
+func (c *eventUsecase) FindPoster(title string, eventid int) (*domain.PosterResponse, error) {
+	poster, err := c.eventRepo.FindPoster(title, eventid)
 
 	if err != nil {
 		return nil, err

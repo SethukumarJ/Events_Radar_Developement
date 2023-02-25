@@ -122,3 +122,14 @@ type ApplicationFormResponse struct {
 	Github        string    `json:"github"`
 	Linkedin      string    `json:"linkedin"`
 }
+
+
+type PromotionResponse struct {
+	PromotionId uint   `json:"promotionid"`
+	EventTitle  string `json:"eventtitle"`
+	OrderId     string `json:"orderid"`
+	PromotedBy  string `json:"username"`
+	PaymentId   string `json:"paymentid"`
+	Amount      string `json:"amount"`
+	Plan        string `json:"plan"`
+}

@@ -26,5 +26,8 @@ type UserUseCase interface {
 	AddMembers(newMembers []string,memberRole string, organizationName string) error
 	AcceptJoinInvitation(username string, organizationName string,role string) error
 	AdmitMember(JoinStatusId int , memberRole string) error
+    PromoteEvent(promotion domain.Promotion) error
+	FeaturizeEvent(orderid string) error
+
 
 }

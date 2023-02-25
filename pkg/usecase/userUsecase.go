@@ -23,6 +23,28 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// FeaturizeEvent implements interfaces.UserUseCase
+func (c *userUseCase) FeaturizeEvent(orderid string) error {
+	
+	err := c.userRepo.FeaturizeEvent(orderid)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+// PromoteEvent implements interfaces.UserUseCase
+func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
+	err := c.userRepo.PromoteEvent(promotion)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
@@ -156,30 +178,30 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 	}
 
 	subject := "Join invitation to organization " + organizationName + " for the role " + role
-	message  := []byte(
-			"From: Events Radar <eventsRadarversion1@gmail.com>\r\n" +
-				"To: " + email + "\r\n" +
-				"Subject: " + subject + "\r\n" +
-				"MIME-Version: 1.0\r\n" +
-				"Content-Type: text/html; charset=UTF-8\r\n\r\n" +
-				"<html>" +
-				"  <head>" +
-				"    <style>" +
-				"      .blue-button {" +
-				"        background-color: blue;" +
-				"        color: white;" +
-				"        padding: 10px 20px;" +
-				"        border-radius: 5px;" +
-				"        text-decoration: none;" +
-				"        font-size: 16px;" +
-				"      }" +
-				"    </style>" +
-				"  </head>" +
-				"  <body>" +
-				"    <p>Click the button on verify your accout:</p>" +
-				"    <a class=\"blue-button\" href=\"http://localhost:3000/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
-				"  </body>" +
-				"</html>")
+	message := []byte(
+		"From: Events Radar <eventsRadarversion1@gmail.com>\r\n" +
+			"To: " + email + "\r\n" +
+			"Subject: " + subject + "\r\n" +
+			"MIME-Version: 1.0\r\n" +
+			"Content-Type: text/html; charset=UTF-8\r\n\r\n" +
+			"<html>" +
+			"  <head>" +
+			"    <style>" +
+			"      .blue-button {" +
+			"        background-color: blue;" +
+			"        color: white;" +
+			"        padding: 10px 20px;" +
+			"        border-radius: 5px;" +
+			"        text-decoration: none;" +
+			"        font-size: 16px;" +
+			"      }" +
+			"    </style>" +
+			"  </head>" +
+			"  <body>" +
+			"    <p>Click the button on verify your accout:</p>" +
+			"    <a class=\"blue-button\" href=\"http://localhost:3000/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"  </body>" +
+			"</html>")
 
 	// send random code to user's email
 	if err := c.mailConfig.SendMail(c.config, email, []byte(message)); err != nil {
@@ -411,7 +433,6 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 
 	return nil
 }
-
 
 // HashPassword hashes the password
 func HashPassword(password string) string {

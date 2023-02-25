@@ -16,6 +16,81 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// FeaturizeEvent implements interfaces.UserRepository
+func (c *userRepository) FeaturizeEvent(orderid string) error {
+	
+	var event,plan,insertPackage  string 
+	var id int
+	query := `SELECT event_title, plan FROM promotions WHERER order_id = $1;`
+
+	err := c.db.QueryRow(query, orderid).Scan(&event,&plan)
+	if err != nil {
+		return err
+	}
+
+	basic := `INSERT INTO packages(basic)VALUES(true)RETURNING packages_id`
+	standard := `INSERT INTO packages(standard)VALUES(true)RETURNING packages_id`
+	premium := `INSERT INTO packages(premium)VALUES(true)RETURNING packages_id`
+
+	if plan == "basic" {
+		insertPackage = basic
+	} else if plan == "standard"{
+		insertPackage = standard
+	} else if plan == "premium"{
+		insertPackage = premium
+	}
+
+	err = c.db.QueryRow(insertPackage).Scan(&id)
+	if err != nil {
+		return err
+	}
+
+	feature := `INSERT INTO events(featured)VALUES(true) WHERE event_title = $1` 
+
+	err = c.db.QueryRow(feature,event).Err()
+	if err != nil {
+		return err
+	}
+	packages := `INSERT INTO packages(event_title)VALUES($1)` 
+
+	err = c.db.QueryRow(packages,event).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+type Promotion struct {
+	PromotionId uint   `json:"promotionid" gorm:"autoIncrement:true;unique"`
+	EventTitle  string `json:"eventtitle"`
+	OrderId     string `json:"orderid"`
+	PromotedBy  string `json:"organizationname"`
+	PaymentId   string `json:"paymentid"`
+	Amount      string `json:"amount"`
+	Plan        string `json:"plan"`
+	Status      bool   `json:"status" gorm:"default:false"`
+}
+
+// PromoteEvent implements interfaces.UserRepository
+func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {
+	var id int
+
+	query := `INSERT INTO promotions(order_id,event_title,promoted_by,amount,plan)VALUES($1, $2, $3, $4, $5)RETURNING promotion_id;`
+
+	err := c.db.QueryRow(query,
+		promotion.OrderId,
+		promotion.EventTitle,
+		promotion.PromotedBy,
+		promotion.Amount,
+		promotion.Plan).Scan(&id)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var id int
 

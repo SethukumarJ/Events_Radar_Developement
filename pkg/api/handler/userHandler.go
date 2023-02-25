@@ -49,7 +49,7 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 // @Router /user/apply-event [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
-	promotion  := &domain.Promotion{}
+	promotion  := domain.Promotion{}
 	promotion.PromotedBy = c.Writer.Header().Get("userName")
 	promotion.EventTitle = c.Query("eventName")
 	promotion.Amount = c.Query("plan")

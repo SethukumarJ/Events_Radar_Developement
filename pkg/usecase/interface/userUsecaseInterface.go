@@ -27,7 +27,7 @@ type UserUseCase interface {
 	AcceptJoinInvitation(username string, organizationName string,role string) error
 	AdmitMember(JoinStatusId int , memberRole string) error
     PromoteEvent(promotion domain.Promotion) error
-
+	FeaturizeEvent(orderid string) error
 
 
 }

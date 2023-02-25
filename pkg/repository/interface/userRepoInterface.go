@@ -30,4 +30,5 @@ type UserRepository interface {
 	AdmitMember(JoinStatusId int,memberRole string) error
 	FindJoinStatus(JoinStatusId int) (string ,string,error)
 	PromoteEvent(promotion domain.Promotion) error
+	FeaturizeEvent(orderid string) error
 }

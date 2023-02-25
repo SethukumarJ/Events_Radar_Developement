@@ -97,12 +97,16 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 
 }
 
-func PaymentSuccess(c *gin.Context) {
+func(cr *UserHandler) PaymentSuccess(c *gin.Context) {
 
 	paymentid := c.Query("paymentid")
 	orderid := c.Query("orderid")
 	signature := c.Query("signature")
 
+	err := cr.userUseCase.FeaturizeEvent(orderid)
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(paymentid,"paymentid")
 	fmt.Println(orderid,"orderid")
 	fmt.Println(signature,"signature")

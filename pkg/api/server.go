@@ -40,7 +40,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	engine.GET("/pay",userHandler.Pay)
-	engine.GET("payment-success",handler.PaymentSuccess)
+	engine.GET("payment-success",userHandler.PaymentSuccess)
 	//User routes
 	user := engine.Group("user")
 	{

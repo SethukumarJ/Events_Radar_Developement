@@ -189,3 +189,11 @@ type Promotion struct {
 	Plan        string `json:"plan"`
 	Status      bool   `json:"status" gorm:"default:false"`
 }
+
+type Packages struct {
+	PackagesId uint   `json:"packagesid" gorm:"autoIncrement:true;unique"`
+	EventTitle string `json:"eventtitle"`
+	Basic      bool   `json:"basic" gorm:"default: false"`
+	Standard   bool   `json:"standard" gorm:"default: false"`
+	Premium    bool   `json:"premium" gorm:"default: false"`
+}

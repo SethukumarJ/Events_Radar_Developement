@@ -23,6 +23,18 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// FeaturizeEvent implements interfaces.UserUseCase
+func (c *userUseCase) FeaturizeEvent(orderid string) error {
+	
+	err := c.userRepo.FeaturizeEvent(orderid)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
 // PromoteEvent implements interfaces.UserUseCase
 func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
 	err := c.userRepo.PromoteEvent(promotion)

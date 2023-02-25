@@ -15,6 +15,36 @@ import (
 type userRepository struct {
 	db *sql.DB
 }
+type Promotion struct {
+	PromotionId uint   `json:"promotionid" gorm:"autoIncrement:true;unique"`
+	EventTitle  string `json:"eventtitle"`
+	OrderId     string `json:"orderid"`
+	PromotedBy  string `json:"organizationname"`
+	PaymentId   string `json:"paymentid"`
+	Amount      string `json:"amount"`
+	Plan        string `json:"plan"`
+	Status      bool   `json:"status" gorm:"default:false"`
+}
+
+
+// PromoteEvent implements interfaces.UserRepository
+func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {
+	var id int
+
+	query := `INSERT INTO promotions(order_id,event_title,promoted_by,amount,plan)VALUES($1, $2, $3, $4, $5)RETURNING promotion_id;`
+
+	err := c.db.QueryRow(query, 
+		promotion.OrderId,
+		promotion.EventTitle,
+		promotion.PromotedBy,
+		promotion.Amount,
+		promotion.Plan).Scan(&id)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var id int

@@ -25,7 +25,7 @@ type userUseCase struct {
 
 // PromoteEvent implements interfaces.UserUseCase
 func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
-	_, err := c.userRepo.PromoteEvent(promotion)
+	err := c.userRepo.PromoteEvent(promotion)
 
 	if err != nil {
 		return err

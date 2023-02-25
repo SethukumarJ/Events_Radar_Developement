@@ -34,14 +34,14 @@ func Triggers(cfg config.Config) (*gorm.DB, error) {
 
 
 	err = db.Exec(organization_created_notification)
-	if err != nil {
-	fmt.Println("organization_created_notification_trigger", err)
+		if err != nil {
+		fmt.Println("organization_created_notification_trigger", err)
 	}
 
 
-err = db.Exec(organization_created_notification_trigger)
-	if err != nil {
-	fmt.Println("organization_created_notification_trigger", err)
+	err = db.Exec(organization_created_notification_trigger)
+		if err != nil {
+		fmt.Println("organization_created_notification_trigger", err)
 	}
 
 	return db, dbErr
@@ -74,7 +74,5 @@ const (
 	AFTER UPDATE ON org_statuses
 	FOR EACH ROW
 	EXECUTE FUNCTION org_created_notification();`
-
-
 
 )

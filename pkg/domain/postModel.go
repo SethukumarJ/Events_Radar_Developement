@@ -178,3 +178,14 @@ type PageVariables struct {
 	Amount  string
 	Contact string
 }
+
+type Promotion struct {
+	PromotionId uint   `json:"promotionid" gorm:"autoIncrement:true;unique"`
+	EventTitle  string `json:"eventtitle"`
+	OrderId     string `json:"orderid"`
+	PromotedBy  string `json:"organizationname"`
+	PaymentId   string `json:"paymentid"`
+	Amount      string `json:"amount"`
+	Plan        string `json:"plan"`
+	Status      bool   `json:"status" gorm:"default:false"`
+}

@@ -30,18 +30,40 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 	}
 }
 
+
+
+// Initialize a map with key/value pairs
+var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
+
+
+
+// @Summary Promote
+// @ID promote event
+// @Tags User
+// @Produce json
+// @Security BearerAuth
+// @Param eventName query string true "event name"
+// @param plan query string true "plan"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /user/apply-event [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
+	promotion  := &domain.Promotion{}
+	promotion.PromotedBy = c.Writer.Header().Get("userName")
+	promotion.EventTitle = c.Query("eventName")
+	promotion.Amount = c.Query("plan")
+	promotion.Plan = c.Query("plan")
 	page := &domain.PageVariables{}
-	page.Amount = "9000"
+	page.Amount = promotion.Amount
 	page.Email = "sethukumarj.76@gmail.com"
-	page.Name = "Sethukumar"
-	page.Contact = "7025493834"
+	page.Name = promotion.PromotedBy
+	page.Contact = ""
 	//Create order_id from the server
 	client := razorpay.NewClient("rzp_test_kEtg65WKqGTpKd", "gPURxG4gzTmeNJKqqz61YCHV")
 
 	data := map[string]interface{}{
-		"amount":   page.Amount,
+		"amount":   promotion.Amount,
 		"currency": "INR",
 		"receipt":  "some_receipt_id",
 	}
@@ -55,6 +77,7 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	value := body["id"]
 
 	str := value.(string)
+	promotion.OrderId = str
 	fmt.Println("str////////////////", str)
 	HomePageVars := domain.PageVariables{ //store the order_id in a struct
 		OrderId: str,
@@ -62,6 +85,12 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 		Email:   page.Email,
 		Name:    page.Name,
 		Contact: page.Contact,
+	}
+
+	err = cr.userUseCase.PromoteEvent(promotion)
+	if err != nil {
+
+		fmt.Println(err)
 	}
 
 	c.HTML(http.StatusOK, "index.html", HomePageVars)
@@ -239,7 +268,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 	user, err := cr.userUseCase.FindUser(email)
 	if err != nil {
-		response := response.ErrorResponse("Joining failed, something wrong!", err.Error(), nil)
+		response := response.ErrorResponse("Joining failed, User is not signed up. signup to join the organization!", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		utils.ResponseJSON(*c, response)

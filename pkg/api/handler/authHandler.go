@@ -201,30 +201,110 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		}
 		defer resp.Body.Close()
 
-		response, err := ioutil.ReadAll(resp.Body)
+		response1, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println("//////////////////////hai3////////////////////////////////////")
 			c.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
 		fmt.Println("//////////////////////hai4////////////////////////////////////")
-		type date struct {
-			id             string
-			email          string
-			verified_email bool
-			picture        string
+		type data struct {
+			Id             int
+			Email          string
+			Verified_email bool
+			Picture        string
 			// data           string
 		}
-		var any date
-		json.Unmarshal(response, &any)
-		fmt.Printf("\n\ndata :%v\n\n", string(response))
+		var any data
+		json.Unmarshal(response1, &any)
+		
+		fmt.Printf("\n\ndata :%v\n\n", string(response1))
 		fmt.Printf("\n\ndata :%v\n\n", any)
+		fmt.Println("email",any.Email)
+
+		newUser := domain.Users{}
+		newUser.UserName,newUser.Email,newUser.Profile = any.Email, any.Email,any.Picture
+	
+
+		user, err := cr.userUsecase.FindUser(any.Email)
+		if err != nil {
+			fmt.Println(err)
+		}
+		if user == nil {
+			err = cr.userUsecase.CreateUser(newUser)
+			log.Println(newUser)
+			
+
+			if err != nil {
+				response := response.ErrorResponse("Failed to create user", err.Error(), nil)
+				c.Writer.Header().Add("Content-Type", "application/json")
+				c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+				utils.ResponseJSON(*c, response)
+				return
+			}
+			newUser, err := cr.userUsecase.FindUser(any.Email)
+			if err != nil {
+				fmt.Println(err)
+			}
+			accesstoken, err := cr.jwtUsecase.GenerateAccessToken(newUser.UserId, newUser.UserName, "user")
+			if err != nil {
+				response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
+				c.Writer.Header().Add("Content-Type", "application/json")
+				c.Writer.WriteHeader(http.StatusUnauthorized)
+				utils.ResponseJSON(*c, response)
+				return
+			}
+			newUser.AccessToken = accesstoken
+			refreshtoken, err := cr.jwtUsecase.GenerateRefreshToken(newUser.UserId, newUser.UserName, "user")
+			if err != nil {
+				response := response.ErrorResponse("Failed to generate refresh token", err.Error(), nil)
+				c.Writer.Header().Add("Content-Type", "application/json")
+				c.Writer.WriteHeader(http.StatusUnauthorized)
+				utils.ResponseJSON(*c, response)
+				return
+			}
+			newUser.RefreshToken = refreshtoken
+
+			Tokens := map[string]string{"AccessToken": newUser.AccessToken, "RefreshToken": newUser.RefreshToken}
+			response := response.SuccessResponse(true, "SUCCESS", Tokens)
+			utils.ResponseJSON(*c, response)
+
+			fmt.Println("google login function returned successfully")
+		} else {
+			
+			accesstoken, err := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
+			if err != nil {
+				response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
+				c.Writer.Header().Add("Content-Type", "application/json")
+				c.Writer.WriteHeader(http.StatusUnauthorized)
+				utils.ResponseJSON(*c, response)
+				return
+			}
+			user.AccessToken = accesstoken
+			refreshtoken, err := cr.jwtUsecase.GenerateRefreshToken(user.UserId, user.UserName, "user")
+			if err != nil {
+				response := response.ErrorResponse("Failed to generate refresh token", err.Error(), nil)
+				c.Writer.Header().Add("Content-Type", "application/json")
+				c.Writer.WriteHeader(http.StatusUnauthorized)
+				utils.ResponseJSON(*c, response)
+				return
+			}
+			user.RefreshToken = refreshtoken
+
+			Tokens := map[string]string{"AccessToken": user.AccessToken, "RefreshToken": user.RefreshToken}
+			response := response.SuccessResponse(true, "SUCCESS", Tokens)
+			utils.ResponseJSON(*c, response)
+
+		}
 
 		c.JSON(http.StatusOK, "Hello, I'm protected\n")
-		c.JSON(http.StatusOK, string(response))
+		c.JSON(http.StatusOK, string(response1))
 		return
 	}
 }
+
+
+
 
 
 // UserLogin handles the user login

@@ -34,6 +34,7 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Notificaiton{})
 	db.AutoMigrate(&domain.ApplicationForm{})
 	db.AutoMigrate(&domain.Posters{})
+	db.AutoMigrate(&domain.Packages{})
 
 	return db, dbErr
 }

@@ -20,61 +20,56 @@ func Triggers(cfg config.Config) (*gorm.DB, error) {
 
 	//Migrating triggers
 
-	
 	err := db.Exec(joined_notification)
-		if err != nil {
+	if err != nil {
 		fmt.Println("joined_notificationerr", err)
-		}
-
+	}
 
 	err = db.Exec(admit_member_notification_trigger)
-		if err != nil {
+	if err != nil {
 		fmt.Println("admit_member_notification_trigger", err)
-		}
-
+	}
 
 	err = db.Exec(organization_created_notification)
-		if err != nil {
+	if err != nil {
 		fmt.Println("organization_created_notification_trigger", err)
 	}
-
 
 	err = db.Exec(organization_created_notification_trigger)
-		if err != nil {
+	if err != nil {
 		fmt.Println("organization_created_notification_trigger", err)
-	}
-
-
-	err = db.Exec(featured_basic_trigger)
-		if err != nil {
-		fmt.Println("featured_basic_trigger", err)
-	}
-	err = db.Exec(featured_standard_trigger)
-		if err != nil {
-		fmt.Println("featured_standard_trigger", err)
-	}
-	err = db.Exec(featured_premium_trigger)
-		if err != nil {
-		fmt.Println("featured_premium_trigger", err)
 	}
 
 	err = db.Exec(featured_basic)
-		if err != nil {
+	if err != nil {
 		fmt.Println("featured_basic", err)
 	}
 	err = db.Exec(featured_standard)
-		if err != nil {
+	if err != nil {
 		fmt.Println("featured_standard", err)
 	}
 	err = db.Exec(featured_premium)
-		if err != nil {
+	if err != nil {
 		fmt.Println("featured_premium", err)
 	}
 
+	err = db.Exec(featured_basic_trigger)
+	if err != nil {
+		fmt.Println("featured_basic_trigger", err)
+	}
+	err = db.Exec(featured_standard_trigger)
+	if err != nil {
+		fmt.Println("featured_standard_trigger", err)
+	}
+	err = db.Exec(featured_premium_trigger)
+	if err != nil {
+		fmt.Println("featured_premium_trigger", err)
+	}
+
+	
 
 	return db, dbErr
 }
-
 
 const (
 
@@ -112,7 +107,7 @@ const (
 		RETURN NEW;
 	END; $$ LANGUAGE plpgsql;`
 
-	featured_basic_trigger = `CREATE TRIGGER update_column_trigger
+	featured_basic_trigger = `CREATE OR REPLACE TRIGGER update_basic_trigger
 	AFTER UPDATE OF basic ON packages
 	FOR EACH ROW
 	EXECUTE FUNCTION update_column_after_7_days();`
@@ -126,7 +121,7 @@ const (
 		RETURN NEW;
 	END; $$ LANGUAGE plpgsql;`
 
-	featured_standard_trigger = `CREATE TRIGGER update_column_trigger
+	featured_standard_trigger = `CREATE OR REPLACE TRIGGER update_standard_trigger
 	AFTER UPDATE OF standard ON packages
 	FOR EACH ROW
 	EXECUTE FUNCTION update_column_after_12_days();`
@@ -140,10 +135,8 @@ const (
 		RETURN NEW;
 	END; $$ LANGUAGE plpgsql;`
 
-	featured_premium_trigger = `CREATE TRIGGER update_column_trigger
+	featured_premium_trigger = `CREATE OR REPLACE TRIGGER update_premium_trigger
 	AFTER UPDATE OF premium ON packages
 	FOR EACH ROW
 	EXECUTE FUNCTION update_column_after_16_days();`
-	
-
 )

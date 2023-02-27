@@ -28,6 +28,7 @@ type UserUseCase interface {
 	AdmitMember(JoinStatusId int , memberRole string) error
     PromoteEvent(promotion domain.Promotion) error
 	FeaturizeEvent(orderid string) error
+	// PaymentFaliure(orderid string) error
 
 
 }

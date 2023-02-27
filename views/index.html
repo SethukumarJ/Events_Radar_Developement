@@ -41,7 +41,7 @@ rzp1.on('payment.failed', function (response){
         (response.error.reason);
         b = (response.error.metadata.order_id);
         (response.error.metadata.payment_id);
-        window.location.replace("http:/payment-Faliure?orderid=+"+b+"&err="+a);
+        window.location.replace("http:/payment-Faliure?orderid=+"+b+"&errmsg="+a);
 });
 document.getElementById('rzp-button1').onclick = function(e){
     rzp1.open();

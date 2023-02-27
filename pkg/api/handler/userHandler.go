@@ -107,9 +107,37 @@ func(cr *UserHandler) PaymentSuccess(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	if err != nil {
+		response := response.ErrorResponse("Failed to apply event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "SUCCESS", orderid)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
 	fmt.Println(paymentid,"paymentid")
 	fmt.Println(orderid,"orderid")
 	fmt.Println(signature,"signature")
+}
+
+func(cr *UserHandler) PaymentFaliure(c *gin.Context) {
+
+	
+	orderid := c.Query("orderid")
+	errmsg := c.Query("errmsg")
+	fmt.Println(orderid,"orderid")
+	fmt.Println(errmsg,"errmsg")
+	res := []string{orderid,errmsg}
+	response := response.ErrorResponse("Failed to make payments and cannot promote event", "", res)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusOK)
+		utils.ResponseJSON(*c, response)
+		return
+	
 }
 
 

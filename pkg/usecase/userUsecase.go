@@ -23,9 +23,21 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// // PaymentFaliure implements interfaces.UserUseCase
+// func (c *userUseCase) PaymentFaliure(orderid string) error {
+	
+// 	err := c.userRepo.PaymentFaliure(orderid)
+
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return err
+// 	}
+// 	return nil
+// }
+
 // FeaturizeEvent implements interfaces.UserUseCase
 func (c *userUseCase) FeaturizeEvent(orderid string) error {
-	
+
 	err := c.userRepo.FeaturizeEvent(orderid)
 
 	if err != nil {

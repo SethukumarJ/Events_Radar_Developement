@@ -40,5 +40,8 @@ wire: ## Generate wire_gen.go
 swag: ## Generate swagger docs
 	cd cmd/api && swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
 
+swag2: ## Generate swagger docs
+	swag init -g pkg/api/handler/authHandler.go -o ./cmd/api/docs
+
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

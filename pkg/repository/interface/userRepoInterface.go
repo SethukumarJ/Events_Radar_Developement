@@ -31,4 +31,5 @@ type UserRepository interface {
 	FindJoinStatus(JoinStatusId int) (string ,string,error)
 	PromoteEvent(promotion domain.Promotion) error
 	FeaturizeEvent(orderid string) error
+	
 }

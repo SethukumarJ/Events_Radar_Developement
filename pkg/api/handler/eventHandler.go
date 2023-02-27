@@ -393,7 +393,7 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 }
 
 // @Summary get event by title
-// @ID Get event by id
+// @ID Get event by title
 // @Tags User
 // @Produce json
 // @Param  title   query  string  true  "Title: "
@@ -480,7 +480,7 @@ func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
 
 
 // @Summary Search Event from user side
-// @ID search event with string by user
+// @ID search sdf with string by user
 // @Tags User
 // @Produce json
 // @Security BearerAuth

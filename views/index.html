@@ -35,12 +35,13 @@ var options = {
 var rzp1 = new Razorpay(options);
 rzp1.on('payment.failed', function (response){
         (response.error.code);
-        (response.error.description);
+        a = (response.error.description);
         (response.error.source);
         (response.error.step);
         (response.error.reason);
-        (response.error.metadata.order_id);
+        b = (response.error.metadata.order_id);
         (response.error.metadata.payment_id);
+        window.location.replace("http:/payment-Faliure?orderid=+"+b+"&err="+a);
 });
 document.getElementById('rzp-button1').onclick = function(e){
     rzp1.open();

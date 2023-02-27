@@ -39,8 +39,8 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	engine.GET("/pay",userHandler.Pay)
-	engine.GET("payment-success",userHandler.PaymentSuccess)
+	engine.GET("/payment-success",userHandler.PaymentSuccess)
+	engine.GET("/payment-faliure",userHandler.PaymentFaliure)
 	//User routes
 	user := engine.Group("user")
 	{
@@ -65,6 +65,8 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/create-organization", userHandler.CreateOrganization)
 			user.POST("/create-event", eventHandler.CreateEventUser)
 			user.PATCH("/join-organization", userHandler.JoinOrganization)
+			engine.GET("/pay",userHandler.Pay)
+			
 		}
 
 	}

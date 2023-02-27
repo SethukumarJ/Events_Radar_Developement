@@ -266,7 +266,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 			newUser.RefreshToken = refreshtoken
 
 			Tokens := map[string]string{"AccessToken": newUser.AccessToken, "RefreshToken": newUser.RefreshToken}
-			response := response.SuccessResponse(true, "SUCCESS", Tokens)
+			response := response.SuccessResponse(true, "SUCCESSfully created the user and signed in", Tokens)
 			utils.ResponseJSON(*c, response)
 
 			fmt.Println("google login function returned successfully")
@@ -292,7 +292,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 			user.RefreshToken = refreshtoken
 
 			Tokens := map[string]string{"AccessToken": user.AccessToken, "RefreshToken": user.RefreshToken}
-			response := response.SuccessResponse(true, "SUCCESS", Tokens)
+			response := response.SuccessResponse(true, "SUCCESS, logged in", Tokens)
 			utils.ResponseJSON(*c, response)
 
 		}

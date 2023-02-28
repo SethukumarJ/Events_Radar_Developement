@@ -18,7 +18,7 @@ var options = {
         a = (response.razorpay_payment_id);
         b =(response.razorpay_order_id);
         c = (response.razorpay_signature)
-        window.location.replace("http:/payment-success?paymentid="+a+"&orderid=+"+b+"&signature="+c);
+        window.location.replace("http:/payment-success?paymentid="+a+"&orderid="+b+"&signature="+c);
     },
     "prefill": {
         "name": '{{.Name}}',
@@ -40,8 +40,8 @@ rzp1.on('payment.failed', function (response){
         (response.error.step);
         (response.error.reason);
         b = (response.error.metadata.order_id);
-        (response.error.metadata.payment_id);
-        window.location.replace("http:/payment-Faliure?orderid=+"+b+"&errmsg="+a);
+        c = (response.error.metadata.payment_id);
+        window.location.replace("http:/payment-faliure?orderid="+b+"&errmsg="+a+"&paymentid="+c);
 });
 document.getElementById('rzp-button1').onclick = function(e){
     rzp1.open();

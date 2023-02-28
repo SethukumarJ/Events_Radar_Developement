@@ -16,31 +16,73 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// Prmotion_Success implements interfaces.UserRepository
+func (c *userRepository) Prmotion_Success(orderid string,paymentid string) error {
+	fmt.Println(orderid, paymentid,"from repo///////////////")
+	updatePromotion :=  `UPDATE promotions SET status = true,payment_id = $1 WHERE order_id =$2;`
+	err := c.db.QueryRow(updatePromotion,paymentid,orderid).Err()
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
+
+// Prmotion_Success implements interfaces.UserRepository
+func (c *userRepository) Prmotion_Faliure(orderid string,paymentid string) error {
+	
+	fmt.Println(orderid, paymentid,"from repo hello///////////////")
+	updatePromotion :=  `UPDATE promotions SET status = false, payment_id = $1 WHERE order_id = $2;`
+	err := c.db.QueryRow(updatePromotion, paymentid,orderid).Err()
+	if err != nil {
+		return err
+	}
+	var event string
+	getEvent := `SELECT event_title FROM promotions WHERE order_id = $1;`
+	err = c.db.QueryRow(getEvent,orderid).Scan(&event)
+	if err != nil {
+		return err
+	}
+
+	updatePackage :=  `UPDATE packages SET basic = false, standard = false , premium = false WHERE event_title = $1;`
+	err = c.db.QueryRow(updatePackage,event).Err()
+	if err != nil {
+		return err
+	}
+
+	unfeature :=  `UPDATE events SET featured = false WHERE title = $1;`
+	err = c.db.QueryRow(unfeature,event).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // FeaturizeEvent implements interfaces.UserRepository
 func (c *userRepository) FeaturizeEvent(orderid string) error {
 
 	var event, plan, insertPackage string
-	var id int
+
 	query := `SELECT event_title, plan FROM promotions WHERE order_id = $1;`
 
-	err := c.db.QueryRow(query, orderid).Scan(&event, &plan)
+	err := c.db.QueryRow(query, orderid).Scan(&event,&plan)
 	if err != nil {
+		fmt.Println("1////////////////////////////")
 		return err
 	}
 
-	
-	feature := `INSERT INTO events(featured)VALUES(true) WHERE event_title = $1`
+	feature := `UPDATE events SET featured = true  WHERE title = $1`
 
 	err = c.db.QueryRow(feature, event).Err()
 	if err != nil {
+		fmt.Println("2////////////////////////////")
 		return err
 	}
 	packages := `INSERT INTO packages(event_title)VALUES($1)`
 
 	err = c.db.QueryRow(packages, event).Err()
 	if err != nil {
+		fmt.Println("3////////////////////////////")
 		return err
 	}
 
@@ -56,16 +98,15 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 		insertPackage = premium
 	}
 
-	err = c.db.QueryRow(insertPackage,event).Scan(&id)
+	err = c.db.QueryRow(insertPackage, event).Err()
 	if err != nil {
+		fmt.Println("4////////////////////////////")
 		return err
 	}
 
 	return nil
 
 }
-
-
 
 // PromoteEvent implements interfaces.UserRepository
 func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {

@@ -73,6 +73,7 @@ type Events struct {
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
 	ApplicationLeft        int       `json:"applicationleft"`
+	Featured               bool      `json:"featred" gorm:"default:false"`
 }
 
 type Posters struct {

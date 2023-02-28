@@ -23,9 +23,31 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// Prmotion_Faliure implements interfaces.UserUseCase
+func (c *userUseCase) Prmotion_Faliure(orderid string, paymentid string) error {
+	err := c.userRepo.Prmotion_Faliure(orderid, paymentid)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+// Prmotion_Success implements interfaces.UserUseCase
+func (c *userUseCase) Prmotion_Success(orderid string, paymentid string) error {
+	err := c.userRepo.Prmotion_Success(orderid, paymentid)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
 // // PaymentFaliure implements interfaces.UserUseCase
 // func (c *userUseCase) PaymentFaliure(orderid string) error {
-	
+
 // 	err := c.userRepo.PaymentFaliure(orderid)
 
 // 	if err != nil {

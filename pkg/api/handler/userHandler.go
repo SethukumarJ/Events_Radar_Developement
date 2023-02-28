@@ -50,10 +50,10 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 func (cr *UserHandler) Pay(c *gin.Context) {
 
 	promotion  := domain.Promotion{}
-	promotion.PromotedBy = c.Writer.Header().Get("userName")
-	promotion.EventTitle = c.Query("eventName")
-	promotion.Amount = c.Query("plan")
-	promotion.Plan = c.Query("plan")
+	promotion.PromotedBy = "sethukumar"
+	promotion.EventTitle = "hello"
+	promotion.Amount = "10000"
+	promotion.Plan = "basic"
 	page := &domain.PageVariables{}
 	page.Amount = promotion.Amount
 	page.Email = "sethukumarj.76@gmail.com"
@@ -89,21 +89,25 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 
 	err = cr.userUseCase.PromoteEvent(promotion)
 	if err != nil {
-
-		fmt.Println(err)
+		response := response.ErrorResponse("Failed promote event event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
 	}
 	err = cr.userUseCase.FeaturizeEvent(str)
 	if err != nil {
 		fmt.Println(err)
 	}
 	if err != nil {
-		response := response.ErrorResponse("Failed promote event", err.Error(), nil)
+		response := response.ErrorResponse("Failed featurizing event", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
 		utils.ResponseJSON(*c, response)
 		return
 	}
 
+	
 	c.HTML(http.StatusOK, "index.html", HomePageVars)
 
 }
@@ -113,9 +117,12 @@ func(cr *UserHandler) PaymentSuccess(c *gin.Context) {
 	paymentid := c.Query("paymentid")
 	orderid := c.Query("orderid")
 	signature := c.Query("signature")
-
+	err := cr.userUseCase.Prmotion_Success(orderid,paymentid)
+	if err != nil {
+		fmt.Println(err)
+	}
 	
-	response := response.SuccessResponse(true, "SUCCESS", orderid)
+	response := response.SuccessResponse(true, "SUCCESSFULLLY promoted event", orderid)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
 	utils.ResponseJSON(*c, response)
@@ -132,9 +139,11 @@ func(cr *UserHandler) PaymentFaliure(c *gin.Context) {
 	
 	orderid := c.Query("orderid")
 	errmsg := c.Query("errmsg")
+	paymentid := c.Query("paymentid")
 	fmt.Println(orderid,"orderid")
 	fmt.Println(errmsg,"errmsg")
-	res := []string{orderid,errmsg}
+	res := []string{orderid,errmsg,paymentid}
+	cr.userUseCase.Prmotion_Faliure(orderid,paymentid)
 	response := response.ErrorResponse("Failed to make payments and cannot promote event", "", res)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusOK)

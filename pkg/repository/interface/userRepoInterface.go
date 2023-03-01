@@ -9,7 +9,7 @@ import (
 type UserRepository interface {
 	FindUser(email string) (domain.UserResponse, error)
 	FindOrganization(organizationName string) (domain.OrganizationsResponse, error)
-	FindApplication(username string) (domain.ApplicationFormResponse, error)
+	FindApplication(username string,eventname string) (domain.ApplicationFormResponse, error)
 	FindRole(username string, organizationName string) (string, error)
 	FindRelation(username string, organizationName string) (string, error)
 	UpdateProfile(user domain.Bios, username string) (int, error)

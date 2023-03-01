@@ -5,18 +5,17 @@ import (
 )
 
 type Users struct {
-	UserId       uint   `json:"userid" gorm:"autoIncrement:true;unique"`
+	UserId       uint   `json:"userid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	UserName     string `json:"username" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	FirstName    string `json:"firstname" validate:"required,min=2,max=50"`
 	LastName     string `json:"lastname" validate:"required,min=1,max=50"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
 	Password     string `json:"password"`
 	Verification bool   `json:"verification" gorm:"default:false"`
-	Vip          bool   `json:"vip" gorm:"default:false"`
+	Vip          bool   `json:"vip" gorm:"default:false" swaggerignore:"true"`
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
 	Profile      string `json:"profile"`
-	EventId      uint   `json:"eventid"`
-	
+	EventId      uint   `json:"eventid" swaggerignore:"true"`
 }
 
 type Login struct {
@@ -25,7 +24,7 @@ type Login struct {
 }
 
 type Bios struct {
-	BioId         uint   `json:"bioid" gorm:"autoIncrement:true;unique"`
+	BioId         uint   `json:"bioid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	UserName      string `json:"username" validate:"required,min=2,max=50"`
 	About         string `json:"about"`
 	Twitter       string `json:"twitterlink"`
@@ -48,11 +47,11 @@ type Admins struct {
 	Password     string `json:"password" validate:"required"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
 	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
-	Verification bool   `json:"verification" gorm:"default:false"`
+	Verification bool   `json:"verification" gorm:"default:false" swaggerignore:"true"`
 }
 
 type Events struct {
-	EventId                uint      `json:"eventid" gorm:"autoIncrement:true;unique"`
+	EventId                uint      `json:"eventid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	Title                  string    `json:"title" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	OrganizerName          string    `json:"organizername" validate:"required"`
 	EventPic               string    `json:"eventpic" validate:"required"`
@@ -60,12 +59,12 @@ type Events struct {
 	LongDiscription        string    `json:"longdiscription"`
 	EventDate              string    `json:"eventdate" validate:"required"`
 	Location               string    `json:"location"`
-	CreatedAt              time.Time `json:"createdat"`
-	Approved               bool      `json:"approved" gorm:"default:false"`
+	CreatedAt              time.Time `json:"createdat" swaggerignore:"true"`
+	Approved               bool      `json:"approved" gorm:"default:false" swaggerignore:"true"`
 	Paid                   bool      `json:"paid" gorm:"default:false"`
-	Sex                    string    `json:"sex" gorm:"default:any"`
+	Sex                    string    `json:"sex" default:"any"`
 	CusatOnly              bool      `json:"cusatonly" gorm:"default:false"`
-	Archived               bool      `json:"archived"`
+	Archived               bool      `json:"archived" swaggerignore:"true"`
 	SubEvents              string    `json:"subevents"`
 	Online                 bool      `json:"online" gorm:"default:false"`
 	MaxApplications        int       `json:"maxapplications"`
@@ -73,46 +72,46 @@ type Events struct {
 	ApplicationLink        string    `json:"applicationlink"`
 	WebsiteLink            string    `json:"websitelink"`
 	ApplicationLeft        int       `json:"applicationleft"`
-	Featured               bool      `json:"featred" gorm:"default:false"`
+	Featured               bool      `json:"featred" gorm:"default:false" swaggerignore:"true"`
 }
 
 type Posters struct {
-	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique"`
+	PosterId    uint   `json:"posterid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	Name        string `json:"name"`
-	Events      Events `gorm:"foreignKey:EventId;references:EventId"`
-	EventId     uint   `json:"event_id"`
+	Events      Events `gorm:"foreignKey:EventId;references:EventId" swaggerignore:"true"`
+	EventId     int    `json:"eventid" swaggerignore:"true" `
 	Image       string `json:"image"`
 	Discription string `json:"discription"`
-	Date        string `json:"date"`
+	Date        string `json:"date" swaggerignore:"true" `
 	Colour      string `json:"colour"`
 }
 
 type Faqas struct {
-	FaqaId        uint      `json:"faqaid" gorm:"autoIncrement:true;unique"`
+	FaqaId        uint      `json:"faqaid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	Question      string    `json:"question" validate:"required,min=2,max=50"`
-	AnswerId      int       `json:"answerid" gorm:"default:0"`
-	Title         string    `json:"title"`
-	CreatedAt     time.Time `json:"createdat"`
-	UserName      string    `json:"username"`
-	OrganizerName string    `json:"organizername"`
-	Public        bool      `json:"public" gorm:"default:false"`
+	AnswerId      int       `json:"answerid" gorm:"default:0" swaggerignore:"true"`
+	Title         string    `json:"title" swaggerignore:"true"`
+	CreatedAt     time.Time `json:"createdat" swaggerignore:"true"`
+	UserName      string    `json:"username" swaggerignore:"true"`
+	OrganizerName string    `json:"organizername" swaggerignore:"true"`
+	Public        bool      `json:"public" gorm:"default:false" swaggerignore:"true"`
 }
 
 type Answers struct {
-	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique"`
+	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	Answer   string `json:"answer"`
 }
 
 type Organizations struct {
-	OrganizationId   uint      `json:"organizationid" gorm:"autoIncrement:true;unique"`
+	OrganizationId   uint      `json:"organizationid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
 	OrganizationName string    `json:"organizationname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
-	CreatedBy        string    `json:"createdby"`
+	CreatedBy        string    `json:"createdby" swaggerignore:"true"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
 	CreatedAt        time.Time `json:"createdat"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"websitelink"`
-	Verified         bool      `json:"verified" gorm:"default:false"`
+	Verified         bool      `json:"verified" gorm:"default:false" swaggerignore:"true"`
 }
 
 type Org_Status struct {
@@ -130,7 +129,7 @@ type Join_Status struct {
 	Rejected         string `json:"rejected"`
 }
 
-type Appllication_Satatuses struct {
+type Appllication_Statuses struct {
 	ApplicationStatusId uint   `json:"applicationstatusid" gorm:"autoIncrement:true;unique"`
 	EventName           string `json:"eventname"`
 	Accepted            string `json:"accepted"`
@@ -158,19 +157,19 @@ type Notificaiton struct {
 }
 
 type ApplicationForm struct {
-	ApplicationId uint      `json:"applicationid" gorm:"autoIncrement:true;unique"`
-	UserName      string    `json:"username"`
-	AppliedAt     time.Time `json:"appliedat"`
-	FirstName     string    `json:"firstname"`
-	LastName      string    `json:"lastname"`
-	Event_name    string    `json:"event_name"`
-	Proffession   string    `json:"proffession"`
-	College       string    `json:"college"`
-	Company       string    `json:"company"`
-	About         string    `json:"about"`
-	Email         string    `json:"email"`
-	Github        string    `json:"github"`
-	Linkedin      string    `json:"linkedin"`
+	ApplicationId       uint      `json:"applicationid" gorm:"autoIncrement:true;unique" swaggerignore:"true" `
+	UserName            string    `json:"username" swaggerignore:"true"`
+	AppliedAt           time.Time `json:"appliedat" swaggerignore:"true"`
+	FirstName           string    `json:"firstname"`
+	LastName            string    `json:"lastname"`
+	Event_name          string    `json:"event_name" swaggerignore:"true"`
+	Proffession         string    `json:"proffession"`
+	College             string    `json:"college"`
+	Company             string    `json:"company"`
+	About               string    `json:"about"`
+	Email               string    `json:"email"`
+	Github              string    `json:"github"`
+	Linkedin            string    `json:"linkedin"`
 }
 
 type PageVariables struct {

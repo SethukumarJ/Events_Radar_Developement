@@ -17,8 +17,8 @@ type eventUsecase struct {
 }
 
 // AcceptApplication implements interfaces.EventUsecase
-func (c *eventUsecase) AcceptApplication(applicationStatusId int) error {
-	err := c.eventRepo.AcceptApplication(applicationStatusId)
+func (c *eventUsecase) AcceptApplication(applicationStatusId int,eventname string) error {
+	err := c.eventRepo.AcceptApplication(applicationStatusId,eventname)
 
 	if err != nil {
 		return err
@@ -27,9 +27,9 @@ func (c *eventUsecase) AcceptApplication(applicationStatusId int) error {
 }
 
 // ListApplications implements interfaces.EventUsecase
-func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
+func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string,eventname string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
 	fmt.Println("List applilcation from usecase called")
-	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus)
+	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus,eventname)
 	fmt.Println("applicaition:", applicaition)
 	if err != nil {
 		fmt.Println("error from list applicaition from usecase:", err)
@@ -40,8 +40,8 @@ func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStat
 }
 
 // RejectApplication implements interfaces.EventUsecase
-func (c *eventUsecase) RejectApplication(applicationStatusId int) error {
-	err := c.eventRepo.RejectApplication(applicationStatusId)
+func (c *eventUsecase) RejectApplication(applicationStatusId int,eventname string) error {
+	err := c.eventRepo.RejectApplication(applicationStatusId,eventname)
 
 	if err != nil {
 		return err

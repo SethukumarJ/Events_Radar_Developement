@@ -9,52 +9,20 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "API Support",
+            "url": "sethukumarj.com",
+            "email": "sethukumarj.76@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/accept-invitation": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "Accept invitation to join an organization",
-                "operationId": "Accept invitation to join organization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token: ",
-                        "name": "token",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/approve-event": {
             "patch": {
                 "security": [
@@ -66,7 +34,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Event Management"
                 ],
                 "summary": "approves the event for admin",
                 "operationId": "approves event",
@@ -106,7 +74,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Event Management"
                 ],
                 "summary": "Create event",
                 "operationId": "Create event from admin",
@@ -148,7 +116,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Event Management"
                 ],
                 "summary": "list all upcoming events for admin",
                 "operationId": "list all upcoming events",
@@ -202,7 +170,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Organization Management"
                 ],
                 "summary": "list all pending organizations for admin",
                 "operationId": "list all organization with status",
@@ -256,7 +224,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-User Profile"
                 ],
                 "summary": "list all active users for admin",
                 "operationId": "list all active users",
@@ -298,8 +266,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin",
-                    "Admin"
+                    "Admin Authentication"
                 ],
                 "summary": "Login for Admin",
                 "operationId": "Admin Login",
@@ -330,74 +297,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/make/vip-user": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "makes the user vip",
-                "operationId": "make vip user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User Name : ",
-                        "name": "username",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/refresh-tocken": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Authenticate With Google",
-                "operationId": "Authenticate With Google",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/register-organization": {
             "patch": {
                 "security": [
@@ -409,7 +308,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Organization Management"
                 ],
                 "summary": "Resginter the organization",
                 "operationId": "Register organization",
@@ -449,7 +348,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Organization Management"
                 ],
                 "summary": "Rejects the organization",
                 "operationId": "Reject organization",
@@ -480,22 +379,17 @@ const docTemplate = `{
         },
         "/admin/search-event": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Admin"
+                    "Admin-Event Management"
                 ],
                 "summary": "Search Event",
                 "operationId": "search event with string",
                 "parameters": [
                     {
-                        "description": "List event by approved non approved : ",
+                        "description": "search string: ",
                         "name": "search",
                         "in": "body",
                         "required": true,
@@ -526,11 +420,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin",
-                    "Admin"
+                    "Admin Authentication"
                 ],
                 "summary": "SignUp for Admin",
-                "operationId": "SignUp authentication",
+                "operationId": "Admin signup",
                 "parameters": [
                     {
                         "description": "admin signup with username, phonenumber email ,password",
@@ -569,8 +462,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Admin",
-                    "Admin"
+                    "Admin Authentication"
                 ],
                 "summary": "Refresh token for admin",
                 "operationId": "Admin RefreshToken",
@@ -599,199 +491,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/event/create-poster": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "Create Poster by organization",
-                "operationId": "Create Poster from organization",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "EventName",
-                        "name": "EventName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Create poster",
-                        "name": "CreatePoster",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Posters"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/delete-poster": {
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "delete poster",
-                "operationId": "Delete poster",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Title: ",
-                        "name": "eventid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/get-Posters": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Search Event from user side",
-                "operationId": "search event with string by user",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Posters under event : ",
-                        "name": "Eventid",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/getposterbytitle": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get poster by title",
-                "operationId": "Get event by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Title: ",
-                        "name": "eventid",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/organization/accept-application": {
+        "/admin/vipfy-user": {
             "patch": {
                 "security": [
                     {
@@ -802,15 +502,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "Admin-User Profile"
                 ],
-                "summary": "accept the application for participate in the event",
-                "operationId": "Accept application",
+                "summary": "makes the user vip",
+                "operationId": "make vip user",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "orgStatus id : ",
-                        "name": "applicationstsid",
+                        "type": "string",
+                        "description": "User Name : ",
+                        "name": "username",
                         "in": "query",
                         "required": true
                     }
@@ -842,7 +542,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "Organizaton-Admin Role"
                 ],
                 "summary": "Add Admins",
                 "operationId": "Add admins for the organizaition",
@@ -869,7 +569,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "member role",
-                        "name": "role",
+                        "name": "memberrole",
                         "in": "query",
                         "required": true
                     }
@@ -901,7 +601,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "Organizaton-Admin Role"
                 ],
                 "summary": "Admit member",
                 "operationId": "Admit member",
@@ -993,7 +693,110 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/delete-event": {
+        "/organization/event/accept-application": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "accept the application for participate in the event",
+                "operationId": "Accept application",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "orgStatus id : ",
+                        "name": "applicationstsid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/event/create-poster": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization-Event-Poster Management"
+                ],
+                "summary": "Create Poster by organization",
+                "operationId": "Create Poster from organization",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Event id",
+                        "name": "EventId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Create poster",
+                        "name": "CreatePoster",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Posters"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/event/delete-event": {
             "delete": {
                 "security": [
                     {
@@ -1040,8 +843,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/get-organization": {
-            "get": {
+        "/organization/event/delete-poster": {
+            "delete": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -1051,14 +854,28 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "Organization-Event-Poster Management"
                 ],
-                "summary": "Get Organization",
-                "operationId": "Get Organizaition by name",
+                "summary": "delete poster",
+                "operationId": "Delete poster",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "OrganizationName: ",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Title: ",
+                        "name": "eventid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
                         "name": "organizationName",
                         "in": "query",
                         "required": true
@@ -1080,26 +897,28 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/join-requests": {
+        "/organization/event/get-posterbytitle": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "Organization-Event-Poster Management"
                 ],
-                "summary": "List Join Requests",
-                "operationId": "Join requests to organization",
+                "summary": "Get poster by title",
+                "operationId": "Get event by id",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
+                        "description": "Title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "event id: ",
+                        "name": "eventid",
                         "in": "query",
                         "required": true
                     }
@@ -1120,7 +939,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/list-application": {
+        "/organization/event/get-posters": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization-Event-Poster Management"
+                ],
+                "summary": "Search Event from user side",
+                "operationId": "search event with string by user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Posters under event : ",
+                        "name": "Eventid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/event/list-applications": {
             "get": {
                 "security": [
                     {
@@ -1137,6 +996,13 @@ const docTemplate = `{
                 "operationId": "list all application with status",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "event Name: ",
+                        "name": "eventname",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "Page number: ",
                         "name": "page",
@@ -1152,7 +1018,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "List organization based on status: ",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "List application based on status: ",
                         "name": "applicationStatus",
                         "in": "query",
                         "required": true
@@ -1174,8 +1047,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/reject-application": {
-            "patch": {
+        "/organization/event/list-questions": {
+            "get": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -1185,15 +1058,22 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Organization"
+                    "FAQA-organization-volunteers\u003e"
                 ],
-                "summary": "Rejects the application for participate in the event",
-                "operationId": "Reject application",
+                "summary": "list all Asked questions",
+                "operationId": "list all asked questions",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "applicationstsid  : ",
-                        "name": "applicationstsid",
+                        "type": "string",
+                        "description": "organizationName",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Event title: ",
+                        "name": "title",
                         "in": "query",
                         "required": true
                     }
@@ -1214,7 +1094,117 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/update-event": {
+        "/organization/event/post-answer": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQA-organization-volunteers\u003e"
+                ],
+                "summary": "Post Answer function",
+                "operationId": "User Post Answer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organizationName",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Getting the id of the question",
+                        "name": "faqaid",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Post Answer",
+                        "name": "PostAnswer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Answers"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/event/promote": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizaton-Admin Role"
+                ],
+                "summary": "Promote",
+                "operationId": "promote event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "event name",
+                        "name": "eventName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "plan",
+                        "name": "plan",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/event/update-event": {
             "patch": {
                 "security": [
                     {
@@ -1270,21 +1260,153 @@ const docTemplate = `{
                 }
             }
         },
-        "/user//list-faqas": {
+        "/organization/get-organization": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Organization Management"
                 ],
-                "summary": "list all Public faqas",
-                "operationId": "list all public faqas",
+                "summary": "Get Organization",
+                "operationId": "Get Organizaition by name",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Event title: ",
-                        "name": "title",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/join-requests": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizaton-Admin Role"
+                ],
+                "summary": "List Join Requests",
+                "operationId": "Join requests to organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/reject-application": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organization"
+                ],
+                "summary": "Rejects the application for participate in the event",
+                "operationId": "Reject application",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "applicationstsid  : ",
+                        "name": "applicationstsid",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/accept-invitation": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Organization Management"
+                ],
+                "summary": "Accept invitation to join an organization",
+                "operationId": "Accept invitation to join organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token: ",
+                        "name": "token",
                         "in": "query",
                         "required": true
                     }
@@ -1306,51 +1428,6 @@ const docTemplate = `{
             }
         },
         "/user/apply-event": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Promote",
-                "operationId": "promote event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "event name",
-                        "name": "eventName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "plan",
-                        "name": "plan",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1361,7 +1438,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Event Management"
                 ],
                 "summary": "ApplyEvent",
                 "operationId": "Apply event",
@@ -1410,7 +1487,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Event Management"
                 ],
                 "summary": "Create event",
                 "operationId": "Create event from user",
@@ -1452,7 +1529,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Organization Management"
                 ],
                 "summary": "Create Organization",
                 "operationId": "Create Organizatioin from user",
@@ -1494,7 +1571,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "FAQA-user"
                 ],
                 "summary": "Post Question function",
                 "operationId": "User Post Question",
@@ -1539,69 +1616,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/event/post/answer": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Post Answer function",
-                "operationId": "User Post Answer",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "organizationName",
-                        "name": "organizationName",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Getting the id of the question",
-                        "name": "faqaid",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Post Answer",
-                        "name": "PostAnswer",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.Answers"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/user/geteventbytitle": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Event Management"
                 ],
                 "summary": "get event by title",
                 "operationId": "Get event by title",
@@ -1641,7 +1662,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Organization Management"
                 ],
                 "summary": "Joining organization",
                 "operationId": "Join organization",
@@ -1670,13 +1691,111 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/list-approved-events": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User-Event Management"
+                ],
+                "summary": "list all approved upcoming events",
+                "operationId": "list all approved events",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Page number: ",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Cusat only: ",
+                        "name": "cusatonly",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Online: ",
+                        "name": "online",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sex (options: male, female, any)",
+                        "name": "sex",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page capacity : ",
+                        "name": "pagesize",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/list-faqas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQA-user"
+                ],
+                "summary": "list all Public faqas",
+                "operationId": "list all public faqas",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event title: ",
+                        "name": "title",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/list-organizations": {
             "get": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Organization Management"
                 ],
                 "summary": "list all registered organizations for user",
                 "operationId": "list all registered organizations",
@@ -1712,117 +1831,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/list/approved-events": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "list all approved upcoming events",
-                "operationId": "list all approved events",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Page number: ",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Cusat only: ",
-                        "name": "cusatonly",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Online: ",
-                        "name": "online",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "sex: ",
-                        "name": "sex",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Page capacity : ",
-                        "name": "pagesize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/list/questions": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Organization"
-                ],
-                "summary": "list all Asked questions",
-                "operationId": "list all asked questions",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event title: ",
-                        "name": "title",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/user/login": {
             "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "User",
-                    "User"
+                    "User Authentication"
                 ],
                 "summary": "Login for users",
                 "operationId": "User Login",
@@ -1864,7 +1879,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User-Event Management"
                 ],
                 "summary": "Search Event from user side",
                 "operationId": "search sdf with string by user",
@@ -1901,7 +1916,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Verification mail"
                 ],
                 "summary": "Send verification",
                 "operationId": "Send verifiation code via email",
@@ -1938,7 +1953,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User Authentication"
                 ],
                 "summary": "SignUp for users",
                 "operationId": "User SignUp",
@@ -1969,6 +1984,37 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/sso-google": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Authentication"
+                ],
+                "summary": "Authenticate With Google",
+                "operationId": "Authenticate With Google",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/token-refresh": {
             "post": {
                 "security": [
@@ -1980,8 +2026,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User",
-                    "User"
+                    "User Authentication"
                 ],
                 "summary": "Refresh token for users",
                 "operationId": "User RefreshToken",
@@ -2007,7 +2052,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User Profile"
                 ],
                 "summary": "update password",
                 "operationId": "Update password",
@@ -2056,7 +2101,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "User Profile"
                 ],
                 "summary": "update Profileabout",
                 "operationId": "Update userprofile",
@@ -2113,9 +2158,6 @@ const docTemplate = `{
                 },
                 "phonenumber": {
                     "type": "string"
-                },
-                "verification": {
-                    "type": "boolean"
                 }
             }
         },
@@ -2124,9 +2166,6 @@ const docTemplate = `{
             "properties": {
                 "answer": {
                     "type": "string"
-                },
-                "answerid": {
-                    "type": "integer"
                 }
             }
         },
@@ -2136,12 +2175,6 @@ const docTemplate = `{
                 "about": {
                     "type": "string"
                 },
-                "applicationid": {
-                    "type": "integer"
-                },
-                "appliedat": {
-                    "type": "string"
-                },
                 "college": {
                     "type": "string"
                 },
@@ -2149,9 +2182,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
-                    "type": "string"
-                },
-                "event_name": {
                     "type": "string"
                 },
                 "firstname": {
@@ -2168,9 +2198,6 @@ const docTemplate = `{
                 },
                 "proffession": {
                     "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -2182,9 +2209,6 @@ const docTemplate = `{
             "properties": {
                 "about": {
                     "type": "string"
-                },
-                "bioid": {
-                    "type": "integer"
                 },
                 "devfolio": {
                     "type": "string"
@@ -2232,23 +2256,11 @@ const docTemplate = `{
                 "applicationlink": {
                     "type": "string"
                 },
-                "approved": {
-                    "type": "boolean"
-                },
-                "archived": {
-                    "type": "boolean"
-                },
-                "createdat": {
-                    "type": "string"
-                },
                 "cusatonly": {
                     "type": "boolean"
                 },
                 "eventdate": {
                     "type": "string"
-                },
-                "eventid": {
-                    "type": "integer"
                 },
                 "eventpic": {
                     "type": "string"
@@ -2272,7 +2284,8 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "sex": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "any"
                 },
                 "shortdiscription": {
                     "type": "string"
@@ -2296,31 +2309,10 @@ const docTemplate = `{
                 "question"
             ],
             "properties": {
-                "answerid": {
-                    "type": "integer"
-                },
-                "createdat": {
-                    "type": "string"
-                },
-                "faqaid": {
-                    "type": "integer"
-                },
-                "organizername": {
-                    "type": "string"
-                },
-                "public": {
-                    "type": "boolean"
-                },
                 "question": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
-                },
-                "title": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
                 }
             }
         },
@@ -2351,25 +2343,16 @@ const docTemplate = `{
                 "createdat": {
                     "type": "string"
                 },
-                "createdby": {
-                    "type": "string"
-                },
                 "linkedin": {
                     "type": "string"
                 },
                 "logo": {
                     "type": "string"
                 },
-                "organizationid": {
-                    "type": "integer"
-                },
                 "organizationname": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
-                },
-                "verified": {
-                    "type": "boolean"
                 },
                 "websitelink": {
                     "type": "string"
@@ -2382,26 +2365,14 @@ const docTemplate = `{
                 "colour": {
                     "type": "string"
                 },
-                "date": {
-                    "type": "string"
-                },
                 "discription": {
                     "type": "string"
-                },
-                "event_id": {
-                    "type": "integer"
-                },
-                "events": {
-                    "$ref": "#/definitions/domain.Events"
                 },
                 "image": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
-                },
-                "posterid": {
-                    "type": "integer"
                 }
             }
         },
@@ -2416,9 +2387,6 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string"
-                },
-                "eventid": {
-                    "type": "integer"
                 },
                 "firstname": {
                     "type": "string",
@@ -2439,18 +2407,12 @@ const docTemplate = `{
                 "profile": {
                     "type": "string"
                 },
-                "userid": {
-                    "type": "integer"
-                },
                 "username": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
                 },
                 "verification": {
-                    "type": "boolean"
-                },
-                "vip": {
                     "type": "boolean"
                 }
             }
@@ -2468,17 +2430,29 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:3000",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Go + Gin Radar API",
+	Description:      "This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

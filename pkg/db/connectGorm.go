@@ -33,6 +33,7 @@ func ConnectGormDB(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Join_Status{})
 	db.AutoMigrate(&domain.Notificaiton{})
 	db.AutoMigrate(&domain.ApplicationForm{})
+	db.AutoMigrate(&domain.Appllication_Statuses{})
 	db.AutoMigrate(&domain.Posters{})
 	db.AutoMigrate(&domain.Packages{})
 	db.AutoMigrate(&domain.Promotion{})

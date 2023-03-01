@@ -17,7 +17,7 @@ type EventUsecase interface {
 	FindUser(username string) (bool,error)
 	UpdateEvent(event domain.Events, title string) error
 	SearchEventUser(search string) (*[]domain.EventResponse, error)
-	ListApplications(pagenation utils.Filter, applicationStatus string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error)
-	AcceptApplication(applicationStatusId int) error
-	RejectApplication(applicationStatusId int) error
+	ListApplications(pagenation utils.Filter, applicationStatus string,eventname string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error)
+	AcceptApplication(applicationStatusId int,eventname string) error
+	RejectApplication(applicationStatusId int,eventname string) error
 }

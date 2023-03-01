@@ -82,7 +82,7 @@ func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 
 // @Summary SignUp for users
 // @ID User SignUp
-// @Tags User
+// @Tags User Authentication
 // @Produce json
 // @param RegisterUser body domain.Users{} true "user signup with username, phonenumber email ,password"
 // @Success 200 {object} response.Response{}
@@ -138,11 +138,12 @@ func (cr *AuthHandler) InitializeOAuthGoogle() {
 
 // @Summary Authenticate With Google
 // @ID Authenticate With Google
+// @Tags User Authentication
 // @Security BearerAuth
 // @Produce json
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/refresh-tocken [get]
+// @Router /user/sso-google [get]
 func (cr *AuthHandler) GoogleAuth(c *gin.Context) {
 	HandileLogin(c, oauthConfGl, oauthStateStringGl)
 }
@@ -311,9 +312,8 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 
 // @Summary Login for users
 // @ID User Login
-// @Tags User
+// @Tags User Authentication
 // @Produce json
-// @Tags User
 // @Param  UserLogin   body  domain.Login{}  true  "userlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -369,9 +369,8 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 
 // @Summary Refresh token for users
 // @ID User RefreshToken
-// @Tags User
+// @Tags User Authentication
 // @Produce json
-// @Tags User
 // @Security BearerAuth
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -409,10 +408,9 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 
 // UserSignup handles the admin signup
 // @Summary SignUp for Admin
-// @ID SignUp authentication
-// @Tags Admin
+// @ID Admin signup
+// @Tags Admin Authentication
 // @Produce json
-// @Tags Admin
 // @param RegisterAdmin body domain.Admins{} true "admin signup with username, phonenumber email ,password"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -451,9 +449,8 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 
 // @Summary Login for Admin
 // @ID Admin Login
-// @Tags Admin
+// @Tags Admin Authentication
 // @Produce json
-// @Tags Admin
 // @Param  AdminLogin   body  domain.Login{}  true  "adminlogin: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -508,9 +505,8 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 // user refresh token
 // @Summary Refresh token for admin
 // @ID Admin RefreshToken
-// @Tags Admin
+// @Tags Admin Authentication
 // @Produce json
-// @Tags Admin
 // @Security BearerAuth
 // @Param  Authorization   header  string  true  "token string: "
 // @Success 200 {object} response.Response{}

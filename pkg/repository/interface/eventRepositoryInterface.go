@@ -19,7 +19,7 @@ type EventRepository interface {
 	DeleteEvent(title string) error
 	AllApprovedEvents(pagenation utils.Filter, filter  utils.FilterEvent) ([]domain.EventResponse, utils.Metadata, error)
 	SearchEventUser(search string) ([]domain.EventResponse,error)
-	ListApplications(pagenation utils.Filter,applicationStatus string) ([]domain.ApplicationFormResponse, utils.Metadata, error)
-	AcceptApplication(applicationStatusId int) error
-	RejectApplication(applicationStatusId int) error
+	ListApplications(pagenation utils.Filter,applicationStatus string,eventname string) ([]domain.ApplicationFormResponse, utils.Metadata, error)
+	AcceptApplication(applicationStatusId int,eventname string) error
+	RejectApplication(applicationStatusId int,eventname string) error
 }

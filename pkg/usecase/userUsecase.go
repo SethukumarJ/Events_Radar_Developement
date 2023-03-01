@@ -82,7 +82,7 @@ func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.FindApplication(applicationForm.UserName)
+	_, err := c.userRepo.FindApplication(applicationForm.UserName,applicationForm.Event_name)
 	fmt.Println("found applicationForm", err)
 
 	if err == nil {
@@ -101,8 +101,8 @@ func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 }
 
 // FindApplication implements interfaces.UserUseCase
-func (c *userUseCase) FindApplication(userName string) (*domain.ApplicationFormResponse, error) {
-	Application, err := c.userRepo.FindApplication(userName)
+func (c *userUseCase) FindApplication(userName string,eventname string) (*domain.ApplicationFormResponse, error) {
+	Application, err := c.userRepo.FindApplication(userName,eventname)
 
 	if err != nil {
 		return nil, err
@@ -233,7 +233,7 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"http://localhost:3000/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 

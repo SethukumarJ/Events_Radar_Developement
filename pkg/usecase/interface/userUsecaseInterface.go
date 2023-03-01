@@ -10,7 +10,7 @@ type UserUseCase interface {
 	PostAnswer(answer domain.Answers, question int) error
 	CreateOrganization(organization domain.Organizations) error
 	ApplyEvent(applicationForm domain.ApplicationForm) error
-	FindApplication(userName string) (*domain.ApplicationFormResponse, error)
+	FindApplication(userName string,eventname string) (*domain.ApplicationFormResponse, error)
 	JoinOrganization(organizationName string, userName string) error
 	VerifyRole(username string, organizationName string) (string, error)
 	FindOrganization(organizationName string) (*domain.OrganizationsResponse, error)

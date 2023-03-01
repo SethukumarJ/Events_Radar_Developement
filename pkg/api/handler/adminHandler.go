@@ -33,7 +33,7 @@ func NewAdminHandler(
 
 // @Summary list all pending organizations for admin
 // @ID list all organization with status
-// @Tags Admin
+// @Tags Admin-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  page   query  int  true  "Page number: "
@@ -94,7 +94,7 @@ func (cr *AdminHandler) ListOrgRequests(c *gin.Context) {
 
 // @Summary Resginter the organization
 // @ID Register organization
-// @Tags Admin
+// @Tags Admin-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  orgstatusid   query  int  true  "orgStatus id : "
@@ -120,7 +120,7 @@ func (cr *AdminHandler) RegisterOrganization(c *gin.Context)  {
 }
 // @Summary Rejects the organization
 // @ID Reject organization
-// @Tags Admin
+// @Tags Admin-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  orgstatusid   query  int  true  "orgStatus id : "
@@ -148,13 +148,13 @@ func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 
 // @Summary makes the user vip
 // @ID make vip user
-// @Tags Admin
+// @Tags Admin-User Profile
 // @Produce json
 // @Security BearerAuth
 // @Param  username   query  string  true  "User Name : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /admin/make/vip-user [patch]
+// @Router /admin/vipfy-user [patch]
 func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
 	username := c.Query("username")
@@ -175,7 +175,7 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 
 // @Summary approves the event for admin
 // @ID approves event
-// @Tags Admin
+// @Tags Admin-Event Management
 // @Produce json
 // @Security BearerAuth
 // @Param  title   query  string  true  "Event Name : "
@@ -202,10 +202,9 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 
 // @Summary Search Event
 // @ID search event with string
-// @Tags Admin
+// @Tags Admin-Event Management
 // @Produce json
-// @Security BearerAuth
-// @Param  search   body  string  true  "List event by approved non approved : "
+// @Param  search   body  string  true  "search string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/search-event [get]
@@ -234,7 +233,7 @@ func (cr *AdminHandler) SearchEvent(c *gin.Context) {
 
 // @Summary list all upcoming events for admin
 // @ID list all upcoming events
-// @Tags Admin
+// @Tags Admin-Event Management
 // @Produce json
 // @Security BearerAuth
 // @Param  page   query  int  true  "Page number: "
@@ -292,7 +291,7 @@ func (cr *AdminHandler) ViewAllEvents(c *gin.Context) {
 
 // @Summary list all active users for admin
 // @ID list all active users
-// @Tags Admin
+// @Tags Admin-User Profile
 // @Produce json
 // @Security BearerAuth
 // @Param  page   query  string  true  "Page number: "

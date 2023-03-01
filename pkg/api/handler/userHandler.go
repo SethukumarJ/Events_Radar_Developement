@@ -39,24 +39,40 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 
 // @Summary Promote
 // @ID promote event
-// @Tags User
+// @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
 // @Param eventName query string true "event name"
 // @param plan query string true "plan"
+// @param email query string true "email"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/apply-event [Get]
+// @Router /organization/event/promote [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+	organizationName := c.Writer.Header().Get("organizationName")
+	fmt.Println("organizationName ", organizationName)
+	role := c.Writer.Header().Get("role")
+	fmt.Println("role ", role)
+
+	if role > "1" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
 	promotion  := domain.Promotion{}
-	promotion.PromotedBy = "sethukumar"
-	promotion.EventTitle = "hello"
-	promotion.Amount = "10000"
-	promotion.Plan = "basic"
+	promotion.PromotedBy = c.Writer.Header().Get("userName")
+	promotion.EventTitle = c.Query("eventName")
+	promotion.Amount = fmt.Sprint(packages[c.Query("plan")])
+	promotion.Plan = c.Query("plan")
 	page := &domain.PageVariables{}
 	page.Amount = promotion.Amount
-	page.Email = "sethukumarj.76@gmail.com"
+	page.Email = c.Query("email")
 	page.Name = promotion.PromotedBy
 	page.Contact = ""
 	//Create order_id from the server
@@ -155,7 +171,7 @@ func(cr *UserHandler) PaymentFaliure(c *gin.Context) {
 
 // @Summary ApplyEvent
 // @ID Apply event
-// @Tags User
+// @Tags User-Event Management
 // @Produce json
 // @Security BearerAuth
 // @Param eventName query string true "event name"
@@ -189,7 +205,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 		return
 	}
 
-	application, _ := cr.userUseCase.FindApplication(newApplication.UserName)
+	application, _ := cr.userUseCase.FindApplication(newApplication.UserName,newApplication.Event_name)
 	response := response.SuccessResponse(true, "SUCCESS", application)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -198,7 +214,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 
 // @Summary Admit member
 // @ID Admit member
-// @Tags Organization
+// @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
 // @Param  joinstatusid   query  int  true  "JoinStatusId: "
@@ -241,7 +257,7 @@ func (cr *UserHandler) AdmitMember(c *gin.Context) {
 
 // @Summary List Join Requests
 // @ID Join requests to organization
-// @Tags Organization
+// @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
 // @Param  organizationName  query  string  true  "OrganizationName: "
@@ -280,13 +296,13 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 
 // @Summary Accept invitation to join an organization
 // @ID Accept invitation to join organization
-// @Tags Organization
+// @Tags User-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  token   query  string  true  "token: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /accept-invitation [get]
+// @Router /user/accept-invitation [get]
 func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 	tokenString := c.Query("token")
@@ -336,12 +352,12 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 // @Summary Add Admins
 // @ID Add admins for the organizaition
-// @Tags Organization
+// @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
 // @Param addMembers body []string true "addMembers:"
 // @Param  organizationName   query  string  true  "OrganizationName: "
-// @Param role query string true "member role"
+// @Param memberrole query string true "member role"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/admin/add-members [post]
@@ -353,7 +369,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 	organizationName := c.Writer.Header().Get("organizationName")
 	fmt.Println("organizationName ", organizationName)
 	role := c.Writer.Header().Get("role")
-	memberRole := c.Query("role")
+	memberRole := c.Query("memberarole")
 	fmt.Println("role ", role)
 
 	c.Bind(&newMembers)
@@ -381,7 +397,7 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 
 // @Summary Get Organization
 // @ID Get Organizaition by name
-// @Tags Organization
+// @Tags User-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  organizationName   query  string  true  "OrganizationName: "
@@ -413,7 +429,7 @@ func (cr *UserHandler) GetOrganization(c *gin.Context) {
 
 // @Summary Joining organization
 // @ID Join organization
-// @Tags User
+// @Tags User-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @Param  organizationName   query  string  true  "organization name: "
@@ -443,7 +459,7 @@ func (cr *UserHandler) JoinOrganization(c *gin.Context) {
 
 // @Summary list all registered organizations for user
 // @ID list all registered organizations
-// @Tags User
+// @Tags User-Organization Management
 // @Produce json
 // @Param  page   query  int  true  "Page number: "
 // @Param  pagesize   query  int  true  "Page capacity : "
@@ -495,7 +511,7 @@ func (cr *UserHandler) ListOrganizations(c *gin.Context) {
 
 // @Summary Create Organization
 // @ID Create Organizatioin from user
-// @Tags User
+// @Tags User-Organization Management
 // @Produce json
 // @Security BearerAuth
 // @param CreateOrganization body domain.Organizations{} true "Create organization"
@@ -536,7 +552,7 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 
 // @Summary update Profileabout
 // @ID Update userprofile
-// @Tags User
+// @Tags User Profile
 // @Produce json
 // @Security BearerAuth
 // @param UpdateProfile body domain.Bios{} true "update profile with new body"
@@ -577,7 +593,7 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 
 // @Summary update password
 // @ID Update password
-// @Tags User
+// @Tags User Profile
 // @Produce json
 // @Param  email   query  string  true  "Email: "
 // @param Updatepassword body string true "update password with new body"
@@ -619,7 +635,7 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 
 // @Summary Send verification
 // @ID Send verifiation code via email
-// @Tags User
+// @Tags Verification mail
 // @Produce json
 // @Param  email   body  string  true  "Email: "
 // @Success 200 {object} response.Response{}
@@ -658,12 +674,12 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 // @Summary list all Public faqas
 // @ID list all public faqas
-// @Tags User
+// @Tags FAQA-user
 // @Produce json
 // @Param  title   query  string  true  "Event title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user//list-faqas [get]
+// @Router /user/list-faqas [get]
 func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 	title := c.Query("title")
@@ -685,13 +701,14 @@ func (cr *UserHandler) GetPublicFaqas(c *gin.Context) {
 
 // @Summary list all Asked questions
 // @ID list all asked questions
-// @Tags Organization
+// @Tags FAQA-organization-volunteers>
 // @Produce json
 // @Security BearerAuth
+// @Param organizationName query string true "organizationName"
 // @Param  title   query  string  true  "Event title: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/list/questions [get]
+// @Router /organization/event/list-questions [get]
 func (cr *UserHandler) GetQuestions(c *gin.Context) {
 
 	role := c.Writer.Header().Get("role")
@@ -723,7 +740,7 @@ func (cr *UserHandler) GetQuestions(c *gin.Context) {
 
 // @Summary Post Question function
 // @ID User Post Question
-// @Tags User
+// @Tags FAQA-user
 // @Produce json
 // @Security BearerAuth
 // @param title query string true "Getting the title of the event"
@@ -766,7 +783,7 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 
 // @Summary Post Answer function
 // @ID User Post Answer
-// @Tags User
+// @Tags FAQA-organization-volunteers>
 // @Produce json
 // @Security BearerAuth
 // @Param organizationName query string true "organizationName"
@@ -774,7 +791,7 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 // @param PostAnswer body domain.Answers{} true "Post Answer"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/event/post/answer [post]
+// @Router /organization/event/post-answer [post]
 // PostQuesition handles Posting events
 func (cr *UserHandler) PostAnswer(c *gin.Context) {
 

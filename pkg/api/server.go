@@ -39,23 +39,24 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	engine.GET("/payment-success",userHandler.PaymentSuccess)
-	engine.GET("/payment-faliure",userHandler.PaymentFaliure)
-	//User routes
+	engine.GET("/payment-success", userHandler.PaymentSuccess)
+	engine.GET("/payment-faliure", userHandler.PaymentFaliure)
+
 	user := engine.Group("user")
 	{
-		user.GET("/login-gl", authHandler.GoogleAuth)
+		user.GET("/sso-google", authHandler.GoogleAuth)
 		user.GET("/callback-gl", authHandler.CallBackFromGoogle)
 		user.POST("/signup", authHandler.UserSignup)
 		user.POST("/login", authHandler.UserLogin)
 		user.POST("/send-verification", userHandler.SendVerificationMail)
 		user.GET("/verify-account", authHandler.VerifyAccount)
-		user.PATCH("/update-password", userHandler.UpdatePassword)
 		user.GET("/list-faqas", userHandler.GetPublicFaqas)
 		user.GET("/list-organizations", userHandler.ListOrganizations)
-		user.GET("/list/approved-events", eventHandler.ViewAllApprovedEvents)
+		user.GET("/list-approved-events", eventHandler.ViewAllApprovedEvents)
 		user.GET("/geteventbytitle", eventHandler.GetEventByTitle)
-		user.GET("/search-event",eventHandler.SearchEventUser)
+		user.PATCH("/update-password", userHandler.UpdatePassword)
+		user.GET("/search-event", eventHandler.SearchEventUser)
+		user.GET("/accept-invitation", userHandler.AcceptJoinInvitation)
 		user.Use(middleware.AuthorizeJwt())
 		{
 			user.POST("/token-refresh", authHandler.UserRefreshToken)
@@ -65,7 +66,6 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/create-organization", userHandler.CreateOrganization)
 			user.POST("/create-event", eventHandler.CreateEventUser)
 			user.PATCH("/join-organization", userHandler.JoinOrganization)
-			engine.GET("/pay",userHandler.Pay)
 			
 		}
 
@@ -76,19 +76,19 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	{
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
-		
+
 		admin.Use(middleware.AuthorizeJwt())
 		{
-			admin.GET("/token/refresh", authHandler.AdminRefreshToken)
+			admin.GET("/token-refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)
 			admin.POST("/create-event", eventHandler.CreateEventAdmin)
 			admin.GET("/list-users", adminHandler.ViewAllUsers)
-			admin.GET("/search-event",adminHandler.SearchEvent)
-			admin.PATCH("/make/vip-user", adminHandler.VipUser)
 			admin.GET("/list-events", adminHandler.ViewAllEvents)
 			admin.PATCH("/register-organization", adminHandler.RegisterOrganization)
 			admin.PATCH("/reject-organization", adminHandler.RejectOrganization)
 			admin.GET("/list-organizations", adminHandler.ListOrgRequests)
+			admin.PATCH("/vipfy-user", adminHandler.VipUser)
+			admin.GET("/search-event", adminHandler.SearchEvent)
 		}
 	}
 
@@ -96,25 +96,25 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	organization := engine.Group("organization")
 	{
 		organization.GET("/get-organization", userHandler.GetOrganization)
-		organization.GET("/accept-invitation", userHandler.AcceptJoinInvitation)
 		organization.GET("/list-organizations", userHandler.ListOrganizations)
-		organization.GET("/event/list-posters",eventHandler.PostersByEvent)
-		organization.GET("/event/get-posterbyname",eventHandler.GetPosterByTitle)
+		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
+		organization.GET("/event/get-posterbytitle", eventHandler.GetPosterByTitle)
 		organization.Use(middleware.AuthorizeOrg())
 		{
-			organization.POST("/event/create-posters",eventHandler.CreatePosterOrganization)
-			organization.POST("/event/delete-poster",eventHandler.DeletePoster)
-			organization.PATCH("/update-event", eventHandler.UpdateEvent)
-			organization.DELETE("/delete-event", eventHandler.DeleteEvent)
+			organization.POST("/event/create-poster", eventHandler.CreatePosterOrganization)
+			organization.DELETE("/event/delete-poster", eventHandler.DeletePoster)
+			organization.PATCH("/event/update-event", eventHandler.UpdateEvent)
+			organization.DELETE("/event/delete-event", eventHandler.DeleteEvent)
 			organization.GET("/event/list-questions", userHandler.GetQuestions)
 			organization.POST("/event/post-answer", userHandler.PostAnswer)
 			organization.POST("/create-event", eventHandler.CreateEventOrganization)
 			organization.POST("/admin/add-members", userHandler.AddMembers)
 			organization.PATCH("/admin/admit-member", userHandler.AdmitMember)
 			organization.GET("/join-requests", userHandler.ListJoinRequests)
-			organization.PATCH("/accept-application", eventHandler.AcceptApplication)
+			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)
 			organization.PATCH("/reject-application", eventHandler.RejectApplication)
-			organization.GET("/list-application", eventHandler.ListApplications)
+			organization.GET("/event/list-applications", eventHandler.ListApplications)
+			organization.GET("/event/promote", userHandler.Pay)
 
 		}
 

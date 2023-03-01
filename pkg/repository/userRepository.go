@@ -155,7 +155,7 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int, error) {
 	var id int
 
-	query := `INSERT INTO applications(user_name,
+	query := `INSERT INTO application_forms(user_name,
 		applied_at,
 		first_name,
 		last_name,
@@ -166,7 +166,7 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 		about,
 		email,
 		github,
-		linked_in)VALUES($1, $2, $3, $4, $5, $6,$7,$8,$9,$10,$11,$12)
+		linkedin)VALUES($1, $2, $3, $4, $5, $6,$7,$8,$9,$10,$11,$12)
 										RETURNING application_id;`
 
 	err := c.db.QueryRow(query,
@@ -182,16 +182,21 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 		applicationForm.Email,
 		applicationForm.Github,
 		applicationForm.Linkedin).Scan(&id)
+	if err != nil  {
+		return -1,err
+	}
 
-	query2 := `INSERT INTO application_status(pending,event_name)VALUES($1,$2);`
-	c.db.QueryRow(query2, applicationForm.UserName, applicationForm.Event_name)
-
+	query2 := `INSERT INTO appllication_statuses(pending,event_name)VALUES($1,$2);`
+	err = c.db.QueryRow(query2, applicationForm.UserName, applicationForm.Event_name).Err()
+	if err != nil {
+		return -1,err
+	}
 	fmt.Println("id", id)
 	return id, err
 }
 
 // FindApplication implements interfaces.UserRepository
-func (c *userRepository) FindApplication(username string) (domain.ApplicationFormResponse, error) {
+func (c *userRepository) FindApplication(username string,eventname string) (domain.ApplicationFormResponse, error) {
 	var application domain.ApplicationFormResponse
 
 	query := `SELECT user_name,
@@ -205,10 +210,10 @@ func (c *userRepository) FindApplication(username string) (domain.ApplicationFor
 	about,
 	email,
 	github,
-	linked_in FROM applications 
-					WHERE user_name = $1;`
+	linkedin FROM application_forms 
+					WHERE user_name = $1 AND event_name = $2;`
 
-	err := c.db.QueryRow(query, username).Scan(
+	err := c.db.QueryRow(query, username,eventname).Scan(
 		&application.UserName,
 		&application.AppliedAt,
 		&application.FirstName,

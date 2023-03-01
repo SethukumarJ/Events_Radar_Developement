@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 .PHONY: all build test deps deps-cleancache
 
+
 GOCMD=go
 BUILD_DIR=build
 BINARY_DIR=$(BUILD_DIR)/bin
@@ -37,11 +38,14 @@ deps-cleancache: ## Clear cache in Go module
 wire: ## Generate wire_gen.go
 	cd pkg/di && wire
 
-swag: ## Generate swagger docs
-	cd cmd/api && swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
+# swag: ## Generate swagger docs
+# 	cd cmd/api && swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
 
-swag2: ## Generate swagger docs
-	swag init -g pkg/api/handler/authHandler.go -o ./cmd/api/docs
+swag: ## Generate swagger docs
+	swag init -g cmd/api/main.go -o ./cmd/api/docs
+
+swagger: ##Insatall swagger
+	$(GOCMD) install github.com/swaggo/swag/cmd/swag@latest
 
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

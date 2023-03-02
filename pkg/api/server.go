@@ -109,6 +109,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.POST("/event/post-answer", userHandler.PostAnswer)
 			organization.POST("/create-event", eventHandler.CreateEventOrganization)
 			organization.POST("/admin/add-members", userHandler.AddMembers)
+			organization.GET("/admin/list-members")
 			organization.PATCH("/admin/admit-member", userHandler.AdmitMember)
 			organization.GET("/join-requests", userHandler.ListJoinRequests)
 			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)

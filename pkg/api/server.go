@@ -41,7 +41,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 
 	engine.GET("/payment-success", userHandler.PaymentSuccess)
 	engine.GET("/payment-faliure", userHandler.PaymentFaliure)
-
+	engine.GET("/organization/event/promote", userHandler.Pay)
 	user := engine.Group("user")
 	{
 		user.GET("/sso-google", authHandler.GoogleAuth)
@@ -115,7 +115,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)
 			organization.PATCH("/reject-application", eventHandler.RejectApplication)
 			organization.GET("/event/list-applications", eventHandler.ListApplications)
-			organization.GET("/event/promote", userHandler.Pay)
+			
 
 		}
 

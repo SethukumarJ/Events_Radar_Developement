@@ -41,7 +41,6 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 // @ID promote event
 // @Tags Organizaton-Admin Role
 // @Produce json
-// @Security BearerAuth
 // @Param eventName query string true "event name"
 // @param plan query string true "plan"
 // @param email query string true "email"
@@ -50,11 +49,11 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 // @Router /organization/event/promote [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
-	username := c.Writer.Header().Get("userName")
+	username := "sethukumarj.76@gmail.com"
 	fmt.Println("username ", username)
-	organizationName := c.Writer.Header().Get("organizationName")
+	organizationName := "organiztion1"
 	fmt.Println("organizationName ", organizationName)
-	role := c.Writer.Header().Get("role")
+	role := "1"
 	fmt.Println("role ", role)
 
 	if role > "1" {
@@ -66,13 +65,13 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	}
 
 	promotion  := domain.Promotion{}
-	promotion.PromotedBy = c.Writer.Header().Get("userName")
-	promotion.EventTitle = c.Query("eventName")
-	promotion.Amount = fmt.Sprint(packages[c.Query("plan")])
-	promotion.Plan = c.Query("plan")
+	promotion.PromotedBy = username
+	promotion.EventTitle = "event8"
+	promotion.Amount = "10000"
+	promotion.Plan = "basic"
 	page := &domain.PageVariables{}
 	page.Amount = promotion.Amount
-	page.Email = c.Query("email")
+	page.Email = "sethukumarj.76@gmail.com"
 	page.Name = promotion.PromotedBy
 	page.Contact = ""
 	//Create order_id from the server

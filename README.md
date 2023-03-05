@@ -51,14 +51,10 @@ swag                           Generate swagger docs
 help                           Display this help screen
 ```
 
+API DOCUMENTATION-SWAGGER
+### `https://eventsradar.online/swagger/index.html`
 
-### `DELETE /api/users/:id`
 
-For removing existing user
-
-### `PUT /api/users/:id`
-
-For updating existing user
 
 
 

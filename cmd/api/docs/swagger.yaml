@@ -969,8 +969,6 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
       summary: Promote
       tags:
       - Organizaton-Admin Role

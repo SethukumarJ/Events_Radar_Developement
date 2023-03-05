@@ -29,6 +29,9 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	// Enable CORS for all origins
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
+	config.AllowOrigins = []string{"https://eventsradar.online"}
+	config.AllowMethods = []string{"GET", "POST","PUT","PATCH","DELETE"}
+	config.AllowHeaders = []string{"Authorization"}
 	engine.Use(cors.New(config))
 	engine.HTMLRender = gintemplate.Default()
 	engine.GET("/r", func(c *gin.Context) {

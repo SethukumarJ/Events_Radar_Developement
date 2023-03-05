@@ -1152,11 +1152,6 @@ const docTemplate = `{
         },
         "/organization/event/promote": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],

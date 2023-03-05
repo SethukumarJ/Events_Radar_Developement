@@ -233,7 +233,7 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\"https://eventsradar.online/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 
@@ -451,7 +451,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\"https://eventsradar.online/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 

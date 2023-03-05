@@ -11,7 +11,6 @@ import (
 	handler "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
 	middleware "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
 	gintemplate "github.com/foolin/gin-template"
-	"github.com/gin-contrib/cors"
 )
 
 type ServerHTTP struct {
@@ -27,11 +26,11 @@ func NewServerHTTP(userHandler handler.UserHandler,
 
 	engine := gin.Default()
 	// Enable CORS for all origins
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"https://eventsradar.online"}
-	config.AllowMethods = []string{"GET", "POST","PUT","PATCH","DELETE"}
-	config.AllowHeaders = []string{"Authorization"}
-	engine.Use(cors.New(config))
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"https://eventsradar.online"}
+	// config.AllowMethods = []string{"GET", "POST","PUT","PATCH","DELETE"}
+	// config.AllowHeaders = []string{"Authorization"}
+	// engine.Use(cors.New(config))
 	engine.HTMLRender = gintemplate.Default()
 	engine.GET("/r", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{

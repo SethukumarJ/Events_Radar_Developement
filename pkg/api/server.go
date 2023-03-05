@@ -11,6 +11,7 @@ import (
 	handler "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/handler"
 	middleware "github.com/SethukumarJ/Events_Radar_Developement/pkg/api/middleware"
 	gintemplate "github.com/foolin/gin-template"
+	"github.com/gin-contrib/cors"
 )
 
 type ServerHTTP struct {
@@ -25,6 +26,10 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler.InitializeOAuthGoogle()
 
 	engine := gin.Default()
+	// Enable CORS for all origins
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	engine.Use(cors.New(config))
 	engine.HTMLRender = gintemplate.Default()
 	engine.GET("/r", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
@@ -66,7 +71,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/create-organization", userHandler.CreateOrganization)
 			user.POST("/create-event", eventHandler.CreateEventUser)
 			user.PATCH("/join-organization", userHandler.JoinOrganization)
-			
+
 		}
 
 	}
@@ -115,7 +120,6 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)
 			organization.PATCH("/reject-application", eventHandler.RejectApplication)
 			organization.GET("/event/list-applications", eventHandler.ListApplications)
-			
 
 		}
 

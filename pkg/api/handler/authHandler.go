@@ -263,7 +263,8 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 				return
 			}
 			newUser.RefreshToken = refreshtoken
-
+			c.Writer.Header().Set("AccessToken", newUser.AccessToken)
+			c.Writer.Header().Set("RefreshToken", newUser.RefreshToken)
 			Tokens := map[string]string{"AccessToken": newUser.AccessToken, "RefreshToken": newUser.RefreshToken}
 			response := response.SuccessResponse(true, "SUCCESSfully created the user and signed in", Tokens)
 			utils.ResponseJSON(*c, response)
@@ -351,6 +352,8 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 	}
 	user.RefreshToken = refreshtoken
 
+	c.Writer.Header().Set("AccessToken", user.AccessToken)
+	c.Writer.Header().Set("RefreshToken", user.RefreshToken)
 	Tokens := map[string]string{"AccessToken": user.AccessToken, "RefreshToken": user.RefreshToken}
 	response := response.SuccessResponse(true, "SUCCESS", Tokens)
 	utils.ResponseJSON(*c, response)
@@ -392,7 +395,8 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-
+	c.Writer.Header().Set("AccessToken", accesstoken)
+	
 	response := response.SuccessResponse(true, "SUCCESS", accesstoken)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -487,7 +491,8 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 		return
 	}
 	admin.RefreshToken = refreshtoken
-
+	c.Writer.Header().Set("AccessToken", admin.AccessToken)
+	c.Writer.Header().Set("RefreshToken", admin.RefreshToken)
 	Tokens := map[string]string{"AccessToken": admin.AccessToken, "RefreshToken": admin.RefreshToken}
 	response := response.SuccessResponse(true, "SUCCESS", Tokens)
 	utils.ResponseJSON(*c, response)
@@ -529,6 +534,7 @@ func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 		return
 	}
 
+	c.Writer.Header().Set("AccessToken", accesstoken)
 	response := response.SuccessResponse(true, "SUCCESS", accesstoken)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)

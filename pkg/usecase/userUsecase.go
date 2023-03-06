@@ -23,8 +23,26 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// DeleteMember implements interfaces.UserUseCase
+func (c *userUseCase) DeleteMember(userName string, organizationName string) error {
+
+	_, err := c.userRepo.FindRelation(userName, organizationName)
+
+	if err != nil {
+		return errors.New("relation does'nt exist with this credentials")
+
+	}
+	err = c.userRepo.DeleteMember(userName, organizationName)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ListMembers implements interfaces.UserUseCase
-func (c *userUseCase) ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse,error) {
+func (c *userUseCase) ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse, error) {
 	fmt.Println("get membets  from usecase called")
 	members, err := c.userRepo.ListMembers(memberRole, organizationName)
 	fmt.Println("members:", members)

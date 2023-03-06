@@ -617,6 +617,36 @@ paths:
       summary: Admit member
       tags:
       - Organizaton-Admin Role
+  /organization/admin/delete-member:
+    delete:
+      operationId: remvoe member
+      parameters:
+      - description: 'organizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Username :'
+        in: query
+        name: userName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: remove member
+      tags:
+      - Organizaton-Admin Role
   /organization/admin/list-members:
     get:
       operationId: List Members of the organization

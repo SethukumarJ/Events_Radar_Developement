@@ -34,5 +34,6 @@ type UserRepository interface {
 	Prmotion_Success(orderid string,paymentid string) error
 	Prmotion_Faliure(orderid string,paymentid string) error
 	ListMembers(memberRole string, organizationName string) ([]domain.UserOrganizationConnectionResponse,error)
+	DeleteMember(userNmae string, organizationName string) error
 	
 }

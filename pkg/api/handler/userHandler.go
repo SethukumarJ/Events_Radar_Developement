@@ -339,6 +339,45 @@ func (cr *UserHandler) ListMembers(c *gin.Context) {
 
 }
 
+
+// @Summary remove member
+// @ID remvoe member
+// @Tags Organizaton-Admin Role
+// @Produce json
+// @Security BearerAuth
+// @Param organizationName query string true "organizationName: "
+// @Param userName query string true "Username :"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/admin/delete-member [delete]
+func (cr *UserHandler) RemoveMember(c *gin.Context) {
+
+
+	role := c.Writer.Header().Get("role")
+	userName := c.Query("userName")
+	organizationName := c.Query("organizationName")
+	if role > "1" {
+		response :=response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	err := cr.userUseCase.DeleteMember(userName,organizationName)
+
+	if err != nil {
+		response := response.ErrorResponse("Could not remove member", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	response := response.SuccessResponse(true, "removed member successfully!", userName)
+	utils.ResponseJSON(*c, response)
+
+}
+
 // @Summary Accept invitation to join an organization
 // @ID Accept invitation to join organization
 // @Tags User-Organization Management

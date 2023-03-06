@@ -349,12 +349,14 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 
 }
 
+
+
 // @Summary Add Admins
 // @ID Add admins for the organizaition
 // @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
-// @Param addMembers body []string true "addMembers:"
+// @Param addMembers body []AddMembers{} true "addMembers:"
 // @Param  organizationName   query  string  true  "OrganizationName: "
 // @Param memberrole query string true "member role"
 // @Success 200 {object} response.Response{}
@@ -362,7 +364,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 // @Router /organization/admin/add-members [post]
 func (cr *UserHandler) AddMembers(c *gin.Context) {
 
-	var newMembers []string
+	var newMembers = []domain.AddMembers{}
 	username := c.Writer.Header().Get("userName")
 	fmt.Println("username ", username)
 	organizationName := c.Writer.Header().Get("organizationName")
@@ -636,20 +638,20 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 // @ID Send verifiation code via email
 // @Tags Verification mail
 // @Produce json
-// @Param  email   body  string  true  "Email: "
+// @Param  email   query  string  true  "Email: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/send-verification [post]
 func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 
 	var email string
-	err := c.Bind(&email)
-	if err != nil {
-		fmt.Println("error on binding the email")
-	}
+	email = c.Query("email")
+	// if err != nil {
+	// 	fmt.Println("error on binding the email")
+	// }
 	var code int
 	fmt.Println(code)
-	_, err = cr.userUseCase.FindUser(email)
+	_, err := cr.userUseCase.FindUser(email)
 	fmt.Println("email: ", email)
 	fmt.Println("err: ", err)
 

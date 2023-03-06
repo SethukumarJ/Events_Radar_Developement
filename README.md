@@ -17,7 +17,7 @@
 - [Viper](https://github.com/spf13/viper) is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats.
 - [swag](https://github.com/swaggo/swag) converts Go annotations to Swagger Documentation 2.0 with [gin-swagger](https://github.com/swaggo/gin-swagger) and [swaggo files](github.com/swaggo/files)
 
-## Using `go-gin-clean-arch` project
+## Using `go-gin-clean-architecture` project
 
 To use `go-gin-clean-arch` project, follow these steps:
 

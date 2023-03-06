@@ -484,20 +484,24 @@ func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
 }
 
 
+type SearchEvent struct {
+	Search string
+}
+
 // @Summary Search Event from user side
-// @ID search sdf with string by user
+// @ID search event with string by user
 // @Tags User-Event Management
 // @Produce json
 // @Security BearerAuth
-// @Param  search   body  string  true  "List event by approved non approved : "
+// @Param  search   body  SearchEvent{}  true  "List event by approved non approved : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/search-event [get]
 func (cr *EventHandler) SearchEventUser(c *gin.Context) {
-	var search string
+	var search = SearchEvent{}
 	c.Bind(&search)
 	
-	events, err := cr.eventUsecase.SearchEventUser(search)
+	events, err := cr.eventUsecase.SearchEventUser(search.Search)
 
 	fmt.Println("events:", events)
 

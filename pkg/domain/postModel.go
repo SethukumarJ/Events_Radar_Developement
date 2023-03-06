@@ -198,3 +198,8 @@ type Packages struct {
 	Standard   bool   `json:"standard" gorm:"default: false"`
 	Premium    bool   `json:"premium" gorm:"default: false"`
 }
+
+type AddMembers struct {
+
+	Members string
+}

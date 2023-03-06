@@ -165,7 +165,7 @@ func (c *userUseCase) AcceptJoinInvitation(username string, organizationName str
 }
 
 // AddMembers implements interfaces.UserUseCase
-func (c *userUseCase) AddMembers(newMembers []string, memberRole string, organizationName string) error {
+func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole string, organizationName string) error {
 	_, err := c.userRepo.FindOrganization(organizationName)
 	fmt.Println("found organization", err)
 
@@ -174,12 +174,12 @@ func (c *userUseCase) AddMembers(newMembers []string, memberRole string, organiz
 	}
 
 	for _, v := range newMembers {
-		user, err := c.userRepo.FindUser(v)
+		user, err := c.userRepo.FindUser(v.Members)
 
 		if err == nil {
 			c.SendInvitationMail(user.Email, organizationName, memberRole)
 		} else if err == sql.ErrNoRows {
-			c.SendInvitationMail(v, organizationName, memberRole)
+			c.SendInvitationMail(v.Members, organizationName, memberRole)
 		} else {
 			fmt.Println("coud'nt invite :", v)
 		}

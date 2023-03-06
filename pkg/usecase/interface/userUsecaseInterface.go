@@ -30,6 +30,7 @@ type UserUseCase interface {
 	FeaturizeEvent(orderid string) error
 	Prmotion_Success(orderid string,paymentid string) error
 	Prmotion_Faliure(orderid string,paymentid string) error
+	ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse, error)
 	// PaymentFaliure(orderid string) error
 
 

@@ -16,11 +16,57 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// ListMembers implements interfaces.UserRepository
+func (c *userRepository) ListMembers(memberRole string, organizationName string) ([]domain.UserOrganizationConnectionResponse, error) {
+
+	var members []domain.UserOrganizationConnectionResponse
+
+	query := `SELECT COUNT(*) OVER(),user_name, role FROM user_organization_connections WHERE organization_name = $1 AND role = $2;`
+
+	rows, err := c.db.Query(query, organizationName,memberRole)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("list memberscalled from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("list members called from repo")
+
+	for rows.Next() {
+		var member domain.UserOrganizationConnectionResponse
+		fmt.Println("member name :", member.UserName)
+		err = rows.Scan(
+			&totalRecords,
+			&member.UserName,
+			&member.Role,
+		)
+
+		fmt.Println("organizationName :", member.OrganizationName)
+
+		if err != nil {
+			return nil, err
+		}
+
+		members = append(members, member)
+	}
+	fmt.Println("Requests", members)
+	if err := rows.Err(); err != nil {
+		return members, err
+	}
+	log.Println(members)
+
+	return members, nil
+	
+}
+
 // Prmotion_Success implements interfaces.UserRepository
-func (c *userRepository) Prmotion_Success(orderid string,paymentid string) error {
-	fmt.Println(orderid, paymentid,"from repo///////////////")
-	updatePromotion :=  `UPDATE promotions SET status = true,payment_id = $1 WHERE order_id =$2;`
-	err := c.db.QueryRow(updatePromotion,paymentid,orderid).Err()
+func (c *userRepository) Prmotion_Success(orderid string, paymentid string) error {
+	fmt.Println(orderid, paymentid, "from repo///////////////")
+	updatePromotion := `UPDATE promotions SET status = true,payment_id = $1 WHERE order_id =$2;`
+	err := c.db.QueryRow(updatePromotion, paymentid, orderid).Err()
 	if err != nil {
 		return err
 	}
@@ -29,29 +75,29 @@ func (c *userRepository) Prmotion_Success(orderid string,paymentid string) error
 }
 
 // Prmotion_Success implements interfaces.UserRepository
-func (c *userRepository) Prmotion_Faliure(orderid string,paymentid string) error {
-	
-	fmt.Println(orderid, paymentid,"from repo hello///////////////")
-	updatePromotion :=  `UPDATE promotions SET status = false, payment_id = $1 WHERE order_id = $2;`
-	err := c.db.QueryRow(updatePromotion, paymentid,orderid).Err()
+func (c *userRepository) Prmotion_Faliure(orderid string, paymentid string) error {
+
+	fmt.Println(orderid, paymentid, "from repo hello///////////////")
+	updatePromotion := `UPDATE promotions SET status = false, payment_id = $1 WHERE order_id = $2;`
+	err := c.db.QueryRow(updatePromotion, paymentid, orderid).Err()
 	if err != nil {
 		return err
 	}
 	var event string
 	getEvent := `SELECT event_title FROM promotions WHERE order_id = $1;`
-	err = c.db.QueryRow(getEvent,orderid).Scan(&event)
+	err = c.db.QueryRow(getEvent, orderid).Scan(&event)
 	if err != nil {
 		return err
 	}
 
-	updatePackage :=  `UPDATE packages SET basic = false, standard = false , premium = false WHERE event_title = $1;`
-	err = c.db.QueryRow(updatePackage,event).Err()
+	updatePackage := `UPDATE packages SET basic = false, standard = false , premium = false WHERE event_title = $1;`
+	err = c.db.QueryRow(updatePackage, event).Err()
 	if err != nil {
 		return err
 	}
 
-	unfeature :=  `UPDATE events SET featured = false WHERE title = $1;`
-	err = c.db.QueryRow(unfeature,event).Err()
+	unfeature := `UPDATE events SET featured = false WHERE title = $1;`
+	err = c.db.QueryRow(unfeature, event).Err()
 	if err != nil {
 		return err
 	}
@@ -65,7 +111,7 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 
 	query := `SELECT event_title, plan FROM promotions WHERE order_id = $1;`
 
-	err := c.db.QueryRow(query, orderid).Scan(&event,&plan)
+	err := c.db.QueryRow(query, orderid).Scan(&event, &plan)
 	if err != nil {
 		fmt.Println("1////////////////////////////")
 		return err
@@ -182,21 +228,21 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 		applicationForm.Email,
 		applicationForm.Github,
 		applicationForm.Linkedin).Scan(&id)
-	if err != nil  {
-		return -1,err
+	if err != nil {
+		return -1, err
 	}
 
 	query2 := `INSERT INTO appllication_statuses(pending,event_name)VALUES($1,$2);`
 	err = c.db.QueryRow(query2, applicationForm.UserName, applicationForm.Event_name).Err()
 	if err != nil {
-		return -1,err
+		return -1, err
 	}
 	fmt.Println("id", id)
 	return id, err
 }
 
 // FindApplication implements interfaces.UserRepository
-func (c *userRepository) FindApplication(username string,eventname string) (domain.ApplicationFormResponse, error) {
+func (c *userRepository) FindApplication(username string, eventname string) (domain.ApplicationFormResponse, error) {
 	var application domain.ApplicationFormResponse
 
 	query := `SELECT user_name,
@@ -213,7 +259,7 @@ func (c *userRepository) FindApplication(username string,eventname string) (doma
 	linkedin FROM application_forms 
 					WHERE user_name = $1 AND event_name = $2;`
 
-	err := c.db.QueryRow(query, username,eventname).Scan(
+	err := c.db.QueryRow(query, username, eventname).Scan(
 		&application.UserName,
 		&application.AppliedAt,
 		&application.FirstName,

@@ -31,6 +31,8 @@ type UserUseCase interface {
 	Prmotion_Success(orderid string,paymentid string) error
 	Prmotion_Faliure(orderid string,paymentid string) error
 	ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse, error)
+	DeleteMember(userName string,organizationName string) error
+ 
 	// PaymentFaliure(orderid string) error
 
 

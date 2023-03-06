@@ -456,7 +456,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 // AdminLogin handles the user login
 func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 
-	var adminLogin domain.Admins
+	var adminLogin domain.Login
 
 	c.Bind(&adminLogin)
 	fmt.Println("adminLoginpassword", adminLogin.Password)

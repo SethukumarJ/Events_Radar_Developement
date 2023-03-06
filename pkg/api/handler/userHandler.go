@@ -297,8 +297,8 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 }
 
 
-// @Summary List Join Requests
-// @ID Join requests to organization
+// @Summary List Members
+// @ID List Members of the organization
 // @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
@@ -306,7 +306,7 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 // @Param memberRole query string true "Member role :"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organization/list-members [get]
+// @Router /organization/admin/list-members [get]
 func (cr *UserHandler) ListMembers(c *gin.Context) {
 
 	username := c.Writer.Header().Get("userName")
@@ -316,7 +316,7 @@ func (cr *UserHandler) ListMembers(c *gin.Context) {
 	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
 	memberRole := c.Query("memberRole")
-	if role > "2" {
+	if role > "1" {
 		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)

@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "eventsradar.online",
+    "host": "localhost:3000",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {
@@ -616,6 +616,53 @@
                         "type": "string",
                         "description": "member role",
                         "name": "role",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/organization/admin/list-members": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizaton-Admin Role"
+                ],
+                "summary": "List Members",
+                "operationId": "List Members of the organization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "OrganizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Member role :",
+                        "name": "memberRole",
                         "in": "query",
                         "required": true
                     }

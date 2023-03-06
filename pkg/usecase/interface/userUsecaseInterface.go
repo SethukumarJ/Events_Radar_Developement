@@ -32,6 +32,7 @@ type UserUseCase interface {
 	Prmotion_Faliure(orderid string,paymentid string) error
 	ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse, error)
 	DeleteMember(userName string,organizationName string) error
+	UpdateRole(userName string,organizationName string,updatedRole string) error
  
 	// PaymentFaliure(orderid string) error
 

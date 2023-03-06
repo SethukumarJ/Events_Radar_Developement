@@ -83,7 +83,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
 
-		admin.Use(middleware.AuthorizeJwt())
+		admin.Use(middleware.AuthorizeJwtAdmin())
 		{
 			admin.GET("/token-refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)

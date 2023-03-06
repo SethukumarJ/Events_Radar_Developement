@@ -15,6 +15,7 @@ import (
 
 type Middleware interface {
 	AuthorizeJwt() gin.HandlerFunc
+	AuthorizeJwtAdmin() gin.HandlerFunc
 	AuthorizeOrg() gin.HandlerFunc
 }
 

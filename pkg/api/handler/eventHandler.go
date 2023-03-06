@@ -493,15 +493,15 @@ type SearchEvent struct {
 // @Tags User-Event Management
 // @Produce json
 // @Security BearerAuth
-// @Param  search   body  SearchEvent{}  true  "List event by approved non approved : "
+// @Param  search   query  string  true  "List event by approved non approved : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/search-event [get]
 func (cr *EventHandler) SearchEventUser(c *gin.Context) {
-	var search = SearchEvent{}
-	c.Bind(&search)
+	var search = c.Query("search")
+
 	
-	events, err := cr.eventUsecase.SearchEventUser(search.Search)
+	events, err := cr.eventUsecase.SearchEventUser(search)
 
 	fmt.Println("events:", events)
 

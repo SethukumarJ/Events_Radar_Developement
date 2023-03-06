@@ -204,15 +204,15 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 // @ID search event with string
 // @Tags Admin-Event Management
 // @Produce json
-// @Param  search   body  SearchEvent{}  true  "search string: "
+// @Param  search   query  string  true  "search string: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/search-event [get]
 func (cr *AdminHandler) SearchEvent(c *gin.Context) {
-	var search = SearchEvent{}
-	c.Bind(&search)
+	var search = c.Query("search")
 	
-	events, err := cr.adminUsecase.SearchEvent(search.Search)
+	
+	events, err := cr.adminUsecase.SearchEvent(search)
 
 	fmt.Println("events:", events)
 

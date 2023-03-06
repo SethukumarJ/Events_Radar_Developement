@@ -642,6 +642,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/organization/admin/delete-member": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Organizaton-Admin Role"
+                ],
+                "summary": "remove member",
+                "operationId": "remvoe member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "organizationName: ",
+                        "name": "organizationName",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Username :",
+                        "name": "userName",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/organization/admin/list-members": {
             "get": {
                 "security": [

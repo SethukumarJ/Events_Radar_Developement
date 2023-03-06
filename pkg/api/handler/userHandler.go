@@ -373,7 +373,7 @@ func (cr *UserHandler) RemoveMember(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "removed member successfully!", title)
+	response := response.SuccessResponse(true, "removed member successfully!", userName)
 	utils.ResponseJSON(*c, response)
 
 }

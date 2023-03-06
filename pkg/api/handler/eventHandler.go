@@ -518,7 +518,7 @@ func (cr *EventHandler) SearchEventUser(c *gin.Context) {
 
 }
 // @Summary Search Event from user side
-// @ID search event with string by user
+// @ID Get posters Order by Event
 // @Tags Organization-Event-Poster Management
 // @Produce json
 // @Security BearerAuth

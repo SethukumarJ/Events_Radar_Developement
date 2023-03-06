@@ -356,7 +356,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 // @Tags Organizaton-Admin Role
 // @Produce json
 // @Security BearerAuth
-// @Param addMembers body []AddMembers{} true "addMembers:"
+// @Param addMembers body []domain.AddMembers{} true "addMembers:"
 // @Param  organizationName   query  string  true  "OrganizationName: "
 // @Param memberrole query string true "member role"
 // @Success 200 {object} response.Response{}

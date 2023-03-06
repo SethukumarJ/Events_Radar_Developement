@@ -394,7 +394,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.SearchEvent"
                         }
                     }
                 ],
@@ -555,7 +555,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/domain.AddMembers"
                             }
                         }
                     },
@@ -953,7 +953,7 @@ const docTemplate = `{
                     "Organization-Event-Poster Management"
                 ],
                 "summary": "Search Event from user side",
-                "operationId": "search event with string by user",
+                "operationId": "Get posters Order by Event",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1877,7 +1877,7 @@ const docTemplate = `{
                     "User-Event Management"
                 ],
                 "summary": "Search Event from user side",
-                "operationId": "search sdf with string by user",
+                "operationId": "search event with string by user",
                 "parameters": [
                     {
                         "description": "List event by approved non approved : ",
@@ -1885,7 +1885,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.SearchEvent"
                         }
                     }
                 ],
@@ -1917,13 +1917,11 @@ const docTemplate = `{
                 "operationId": "Send verifiation code via email",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "Email: ",
                         "name": "email",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2129,6 +2127,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.AddMembers": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Admins": {
             "type": "object",
             "required": [
@@ -2409,6 +2415,14 @@ const docTemplate = `{
                 },
                 "verification": {
                     "type": "boolean"
+                }
+            }
+        },
+        "handler.SearchEvent": {
+            "type": "object",
+            "properties": {
+                "search": {
+                    "type": "string"
                 }
             }
         },

@@ -388,7 +388,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.SearchEvent"
                         }
                     }
                 ],
@@ -549,7 +549,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "string"
+                                "$ref": "#/definitions/domain.AddMembers"
                             }
                         }
                     },
@@ -947,7 +947,7 @@
                     "Organization-Event-Poster Management"
                 ],
                 "summary": "Search Event from user side",
-                "operationId": "search event with string by user",
+                "operationId": "Get posters Order by Event",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1871,7 +1871,7 @@
                     "User-Event Management"
                 ],
                 "summary": "Search Event from user side",
-                "operationId": "search sdf with string by user",
+                "operationId": "search event with string by user",
                 "parameters": [
                     {
                         "description": "List event by approved non approved : ",
@@ -1879,7 +1879,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.SearchEvent"
                         }
                     }
                 ],
@@ -1911,13 +1911,11 @@
                 "operationId": "Send verifiation code via email",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "Email: ",
                         "name": "email",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2123,6 +2121,14 @@
         }
     },
     "definitions": {
+        "domain.AddMembers": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Admins": {
             "type": "object",
             "required": [
@@ -2403,6 +2409,14 @@
                 },
                 "verification": {
                     "type": "boolean"
+                }
+            }
+        },
+        "handler.SearchEvent": {
+            "type": "object",
+            "properties": {
+                "search": {
+                    "type": "string"
                 }
             }
         },

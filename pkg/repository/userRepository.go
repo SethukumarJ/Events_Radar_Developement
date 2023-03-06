@@ -16,6 +16,19 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// DeleteMember implements interfaces.UserRepository
+func (c *userRepository) DeleteMember(userNmae string, organizationName string) error {
+	
+	query := `DELETE FROM user_organization_connections WHERE user_name = $1 AND organization_name = $2;`
+
+	err := c.db.QueryRow(query, userNmae, organizationName).Err()
+	fmt.Println("id deleted:")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // ListMembers implements interfaces.UserRepository
 func (c *userRepository) ListMembers(memberRole string, organizationName string) ([]domain.UserOrganizationConnectionResponse, error) {
 
@@ -23,7 +36,7 @@ func (c *userRepository) ListMembers(memberRole string, organizationName string)
 
 	query := `SELECT COUNT(*) OVER(),user_name, role FROM user_organization_connections WHERE organization_name = $1 AND role = $2;`
 
-	rows, err := c.db.Query(query, organizationName,memberRole)
+	rows, err := c.db.Query(query, organizationName, memberRole)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -59,7 +72,7 @@ func (c *userRepository) ListMembers(memberRole string, organizationName string)
 	log.Println(members)
 
 	return members, nil
-	
+
 }
 
 // Prmotion_Success implements interfaces.UserRepository

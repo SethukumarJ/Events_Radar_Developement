@@ -99,6 +99,7 @@ func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetail
 	return false, claims
 }
 
+
 func NewJWTUsecase() usecase.JWTUsecase {
 	return &jwtUsecase{
 		UserSecretKey: os.Getenv("USER_KEY"),

@@ -213,7 +213,7 @@ definitions:
       status:
         type: boolean
     type: object
-host: eventsradar.online
+host: localhost:3000
 info:
   contact:
     email: sethukumarj.76@gmail.com

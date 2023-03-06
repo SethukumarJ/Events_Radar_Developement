@@ -23,6 +23,19 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// ListMembers implements interfaces.UserUseCase
+func (c *userUseCase) ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse,error) {
+	fmt.Println("get membets  from usecase called")
+	members, err := c.userRepo.ListMembers(memberRole, organizationName)
+	fmt.Println("members:", members)
+	if err != nil {
+		fmt.Println("error from list members usecase:", err)
+		return nil, err
+	}
+
+	return &members, nil
+}
+
 // Prmotion_Faliure implements interfaces.UserUseCase
 func (c *userUseCase) Prmotion_Faliure(orderid string, paymentid string) error {
 	err := c.userRepo.Prmotion_Faliure(orderid, paymentid)
@@ -82,7 +95,7 @@ func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.FindApplication(applicationForm.UserName,applicationForm.Event_name)
+	_, err := c.userRepo.FindApplication(applicationForm.UserName, applicationForm.Event_name)
 	fmt.Println("found applicationForm", err)
 
 	if err == nil {
@@ -101,8 +114,8 @@ func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 }
 
 // FindApplication implements interfaces.UserUseCase
-func (c *userUseCase) FindApplication(userName string,eventname string) (*domain.ApplicationFormResponse, error) {
-	Application, err := c.userRepo.FindApplication(userName,eventname)
+func (c *userUseCase) FindApplication(userName string, eventname string) (*domain.ApplicationFormResponse, error) {
+	Application, err := c.userRepo.FindApplication(userName, eventname)
 
 	if err != nil {
 		return nil, err

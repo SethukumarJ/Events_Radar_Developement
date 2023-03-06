@@ -96,7 +96,7 @@ type OrganizationsResponse struct {
 type UserOrganizationConnectionResponse struct {
 	OrganizationName string `json:"organizationname"`
 	UserName         string `json:"username"`
-	Role             string `json:"role" gorm:"not null"`
+	Role             string `json:"role"`
 }
 
 type Join_StatusResponse struct {
@@ -133,3 +133,4 @@ type PromotionResponse struct {
 	Amount      string `json:"amount"`
 	Plan        string `json:"plan"`
 }
+

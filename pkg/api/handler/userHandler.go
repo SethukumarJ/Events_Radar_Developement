@@ -168,6 +168,9 @@ func(cr *UserHandler) PaymentFaliure(c *gin.Context) {
 }
 
 
+
+
+
 // @Summary ApplyEvent
 // @ID Apply event
 // @Tags User-Event Management
@@ -293,6 +296,49 @@ func (cr *UserHandler) ListJoinRequests(c *gin.Context) {
 	utils.ResponseJSON(*c, response)
 }
 
+
+// @Summary List Members
+// @ID List Members of the organization
+// @Tags Organizaton-Admin Role
+// @Produce json
+// @Security BearerAuth
+// @Param  organizationName  query  string  true  "OrganizationName: "
+// @Param memberRole query string true "Member role :"
+// @Success 200 {object} response.Response{}
+// @Failure 422 {object} response.Response{}
+// @Router /organization/admin/list-members [get]
+func (cr *UserHandler) ListMembers(c *gin.Context) {
+
+	username := c.Writer.Header().Get("userName")
+	fmt.Println("username ", username)
+	organizationName := c.Writer.Header().Get("organizationName")
+	fmt.Println("organizationName ", organizationName)
+	role := c.Writer.Header().Get("role")
+	fmt.Println("role ", role)
+	memberRole := c.Query("memberRole")
+	if role > "1" {
+		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	members, err := cr.userUseCase.ListMembers(memberRole, organizationName)
+	if err != nil {
+		response := response.ErrorResponse("error while getting members from database", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	response := response.SuccessResponse(true, "Listed Members", members)
+	utils.ResponseJSON(*c, response)
+
+
+}
+
 // @Summary Accept invitation to join an organization
 // @ID Accept invitation to join organization
 // @Tags User-Organization Management
@@ -395,6 +441,8 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 	response := response.SuccessResponse(true, "Showing the newly added members", newMembers)
 	utils.ResponseJSON(*c, response)
 }
+
+
 
 // @Summary Get Organization
 // @ID Get Organizaition by name

@@ -2593,11 +2593,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Go + Gin Radar API",
-	Description:      "This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
+	Title:            "Events-Radar API",
+	Description:      "This is an Event Management project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

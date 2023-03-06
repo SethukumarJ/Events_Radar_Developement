@@ -208,18 +208,17 @@ definitions:
       status:
         type: boolean
     type: object
-host: localhost:3000
 info:
   contact:
     email: sethukumarj.76@gmail.com
     name: API Support
     url: sethukumarj.com
-  description: This is an Events Radar project. You can visit the GitHub repository
+  description: This is an Event Management project. You can visit the GitHub repository
     at https://github.com/SethukumarJ/Events_Radar_Developement
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  title: Go + Gin Radar API
+  title: Events-Radar API
   version: "1.0"
 paths:
   /admin/approve-event:

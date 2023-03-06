@@ -10,9 +10,9 @@ import (
 	di "github.com/SethukumarJ/Events_Radar_Developement/pkg/di"
 )
 
-// @title Go + Gin Radar API
+// @title Events-Radar API
 // @version 1.0
-// @description This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement
+// @description This is an Event Management project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement
 
 // @contact.name API Support
 // @contact.url sethukumarj.com
@@ -29,7 +29,7 @@ import (
 // @in header
 // @name Authorization
 
-// @host localhost:3000
+// @host 
 // @BasePath /
 // @query.collection.format multi
 func main() {

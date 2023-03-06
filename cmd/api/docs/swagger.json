@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is an Events Radar project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
-        "title": "Go + Gin Radar API",
+        "description": "This is an Event Management project. You can visit the GitHub repository at https://github.com/SethukumarJ/Events_Radar_Developement",
+        "title": "Events-Radar API",
         "contact": {
             "name": "API Support",
             "url": "sethukumarj.com",
@@ -14,7 +14,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:3000",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {

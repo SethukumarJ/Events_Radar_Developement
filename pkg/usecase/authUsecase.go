@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"errors"
+	"fmt"
 	"log"
 
 	repository "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository/interface"
@@ -26,8 +27,8 @@ func NewAuthUsecase(
 }
 
 // VerifyAccount implements interfaces.UserUseCase
-func (c *authUsecase) VerifyAccount(email string, code string) (error) {
-	err  := c.userRepo.VerifyAccount(email, code)
+func (c *authUsecase) VerifyAccount(email string, code string) error {
+	err := c.userRepo.VerifyAccount(email, code)
 
 	if err != nil {
 		return err
@@ -49,7 +50,7 @@ func (c *authUsecase) VerifyUser(email string, password string) error {
 		return errors.New("failed to login. check your credential")
 	}
 
-	if !user.Verification  {
+	if !user.Verification {
 		return errors.New("failed to login. user not verified")
 	}
 
@@ -61,6 +62,7 @@ func (c *authUsecase) VerifyAdmin(email string, password string) error {
 
 	admin, err := c.adminRepo.FindAdmin(email)
 
+	fmt.Println("admin.Password", admin.Password)
 	if err != nil {
 		return errors.New("failed to login. check your email")
 	}

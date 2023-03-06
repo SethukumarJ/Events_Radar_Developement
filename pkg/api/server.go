@@ -84,7 +84,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.POST("/login", authHandler.AdminLogin)
 
 		admin.Use(middleware.AuthorizeJwtAdmin())
-		{	
+		{
 			admin.GET("/token-refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)
 			admin.POST("/create-event", eventHandler.CreateEventAdmin)
@@ -106,8 +106,8 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
 		organization.GET("/event/get-posterbytitle", eventHandler.GetPosterByTitle)
 		organization.Use(middleware.AuthorizeOrg())
-		{	
-			
+		{
+
 			organization.POST("/event/create-poster", eventHandler.CreatePosterOrganization)
 			organization.DELETE("/event/delete-poster", eventHandler.DeletePoster)
 			organization.PATCH("/event/update-event", eventHandler.UpdateEvent)
@@ -116,8 +116,9 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.POST("/event/post-answer", userHandler.PostAnswer)
 			organization.POST("/create-event", eventHandler.CreateEventOrganization)
 			organization.POST("/admin/add-members", userHandler.AddMembers)
-			organization.GET("/admin/list-members",userHandler.ListMembers)
-			organization.DELETE("/admin/delete-member",userHandler.RemoveMember)
+			organization.GET("/admin/list-members", userHandler.ListMembers)
+			organization.DELETE("/admin/delete-member", userHandler.RemoveMember)
+			organization.PATCH("/admin/update-role", userHandler.UpdateRole)
 			organization.PATCH("/admin/admit-member", userHandler.AdmitMember)
 			organization.GET("/join-requests", userHandler.ListJoinRequests)
 			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)

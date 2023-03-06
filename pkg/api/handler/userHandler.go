@@ -388,7 +388,7 @@ func (cr *UserHandler) RemoveMember(c *gin.Context) {
 // @Param updatedRole query string true "Role to update :" 
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organization/admin/delete-member [delete]
+// @Router /organization/admin/update-role [patch]
 func (cr *UserHandler) UpdateRole(c *gin.Context) {
 
 

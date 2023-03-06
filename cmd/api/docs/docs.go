@@ -389,13 +389,11 @@ const docTemplate = `{
                 "operationId": "search event with string",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "search string: ",
                         "name": "search",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.SearchEvent"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1880,13 +1878,11 @@ const docTemplate = `{
                 "operationId": "search event with string by user",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "List event by approved non approved : ",
                         "name": "search",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.SearchEvent"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2418,14 +2414,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.SearchEvent": {
-            "type": "object",
-            "properties": {
-                "search": {
-                    "type": "string"
-                }
-            }
-        },
         "response.Response": {
             "type": "object",
             "properties": {
@@ -2457,7 +2445,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:3000",
+	Host:             "eventsradar.online",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Go + Gin Radar API",

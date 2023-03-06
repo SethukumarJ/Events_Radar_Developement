@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:3000",
+    "host": "eventsradar.online",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {
@@ -383,13 +383,11 @@
                 "operationId": "search event with string",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "search string: ",
                         "name": "search",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.SearchEvent"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1874,13 +1872,11 @@
                 "operationId": "search event with string by user",
                 "parameters": [
                     {
+                        "type": "string",
                         "description": "List event by approved non approved : ",
                         "name": "search",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.SearchEvent"
-                        }
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2409,14 +2405,6 @@
                 },
                 "verification": {
                     "type": "boolean"
-                }
-            }
-        },
-        "handler.SearchEvent": {
-            "type": "object",
-            "properties": {
-                "search": {
-                    "type": "string"
                 }
             }
         },

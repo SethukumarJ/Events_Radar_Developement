@@ -199,11 +199,6 @@ definitions:
     - lastname
     - username
     type: object
-  handler.SearchEvent:
-    properties:
-      search:
-        type: string
-    type: object
   response.Response:
     properties:
       data: {}
@@ -213,7 +208,7 @@ definitions:
       status:
         type: boolean
     type: object
-host: localhost:3000
+host: eventsradar.online
 info:
   contact:
     email: sethukumarj.76@gmail.com
@@ -457,11 +452,10 @@ paths:
       operationId: search event with string
       parameters:
       - description: 'search string: '
-        in: body
+        in: query
         name: search
         required: true
-        schema:
-          $ref: '#/definitions/handler.SearchEvent'
+        type: string
       produces:
       - application/json
       responses:
@@ -1413,11 +1407,10 @@ paths:
       operationId: search event with string by user
       parameters:
       - description: 'List event by approved non approved : '
-        in: body
+        in: query
         name: search
         required: true
-        schema:
-          $ref: '#/definitions/handler.SearchEvent'
+        type: string
       produces:
       - application/json
       responses:

@@ -677,6 +677,41 @@ paths:
       summary: List Members
       tags:
       - Organizaton-Admin Role
+  /organization/admin/update-role:
+    patch:
+      operationId: update  member role
+      parameters:
+      - description: 'organizationName: '
+        in: query
+        name: organizationName
+        required: true
+        type: string
+      - description: 'Username :'
+        in: query
+        name: userName
+        required: true
+        type: string
+      - description: 'Role to update :'
+        in: query
+        name: updatedRole
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
+      summary: Update member role
+      tags:
+      - Organizaton-Admin Role
   /organization/create-event:
     post:
       operationId: Create event from organization

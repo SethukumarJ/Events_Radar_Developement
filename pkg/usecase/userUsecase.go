@@ -23,6 +23,23 @@ type userUseCase struct {
 	config     config.Config
 }
 
+// UpdateRole implements interfaces.UserUseCase
+func (c *userUseCase) UpdateRole(userName string, organizationName string, updatedRole string) error {
+	_, err := c.userRepo.FindRelation(userName, organizationName)
+
+	if err != nil {
+		return errors.New("relation does'nt exist with this credentials")
+
+	}
+	err = c.userRepo.UpdateRole(userName, organizationName,updatedRole)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DeleteMember implements interfaces.UserUseCase
 func (c *userUseCase) DeleteMember(userName string, organizationName string) error {
 

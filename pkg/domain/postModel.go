@@ -13,7 +13,7 @@ type Users struct {
 	Password     string `json:"password"`
 	Verification bool   `json:"verification" gorm:"default:false"`
 	Vip          bool   `json:"vip" gorm:"default:false" swaggerignore:"true"`
-	PhoneNumber  string `json:"phonenumber" gorm:"unique"`
+	PhoneNumber  string `json:"phonenumber"`
 	Profile      string `json:"profile"`
 	EventId      uint   `json:"eventid" swaggerignore:"true"`
 }

@@ -122,7 +122,7 @@ var (
 	oauthConfGl = &oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
-		RedirectURL:  "http://localhost:3000/user/callback-gl",
+		RedirectURL:  "https://eventsradar.online/user/callback-gl",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
@@ -218,14 +218,13 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		}
 		var any data
 		json.Unmarshal(response1, &any)
-		
+
 		fmt.Printf("\n\ndata :%v\n\n", string(response1))
 		fmt.Printf("\n\ndata :%v\n\n", any)
-		fmt.Println("email",any.Email)
+		fmt.Println("email", any.Email)
 
 		newUser := domain.Users{}
-		newUser.UserName,newUser.Email,newUser.Profile = any.Email, any.Email,any.Picture
-	
+		newUser.UserName, newUser.Email, newUser.Profile = any.Email, any.Email, any.Picture
 
 		user, err := cr.userUsecase.FindUser(any.Email)
 		if err != nil {
@@ -234,7 +233,6 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		if user == nil {
 			err = cr.userUsecase.CreateUser(newUser)
 			log.Println(newUser)
-			
 
 			if err != nil {
 				response := response.ErrorResponse("Failed to create user", err.Error(), nil)
@@ -272,7 +270,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 
 			fmt.Println("google login function returned successfully")
 		} else {
-			
+
 			accesstoken, err := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
 			if err != nil {
 				response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
@@ -303,10 +301,6 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		return
 	}
 }
-
-
-
-
 
 // UserLogin handles the user login
 

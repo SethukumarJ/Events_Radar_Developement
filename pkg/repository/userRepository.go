@@ -16,9 +16,22 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// UpdateRole implements interfaces.UserRepository
+func (c *userRepository) UpdateRole(userName string, organizationName string, updatedRole string) error {
+	
+	query := `UPDATE user_organization_connections SET role = $1 WHERE user_name = $2 AND organization_name = $3;`
+
+	err := c.db.QueryRow(query, updatedRole,userName, organizationName).Err()
+	fmt.Println("id updted:")
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // DeleteMember implements interfaces.UserRepository
 func (c *userRepository) DeleteMember(userNmae string, organizationName string) error {
-	
+
 	query := `DELETE FROM user_organization_connections WHERE user_name = $1 AND organization_name = $2;`
 
 	err := c.db.QueryRow(query, userNmae, organizationName).Err()

@@ -111,6 +111,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 	}
 
 	user, _ := cr.userUsecase.FindUser(newUser.Email)
+	user.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", user)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -436,6 +437,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 	}
 
 	admin, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
+	admin.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", admin)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)

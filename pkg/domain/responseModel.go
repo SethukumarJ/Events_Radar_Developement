@@ -82,7 +82,7 @@ type QAResponse struct {
 
 type OrganizationsResponse struct {
 	OrganizationId   uint      `json:"organizationid"`
-	OrganizationName string    `json:"Oorganizationname"`
+	OrganizationName string    `json:"organizationname"`
 	CreatedBy        string    `json:"createdby"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`

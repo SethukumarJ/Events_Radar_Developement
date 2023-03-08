@@ -104,7 +104,7 @@ type Answers struct {
 
 type Organizations struct {
 	OrganizationId   uint      `json:"organizationid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
-	OrganizationName string    `json:"organizationname" gorm:"primary key;unique" validate:"required,min=2,max=50"`
+	OrganizationName string    `json:"organization_name" gorm:"primary key;unique" validate:"required,min=2,max=50"`
 	CreatedBy        string    `json:"createdby" swaggerignore:"true"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`

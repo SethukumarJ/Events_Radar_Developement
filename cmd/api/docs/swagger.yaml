@@ -149,14 +149,14 @@ definitions:
         type: string
       logo:
         type: string
-      organizationname:
+      organization_name:
         maxLength: 50
         minLength: 2
         type: string
       websitelink:
         type: string
     required:
-    - organizationname
+    - organization_name
     type: object
   domain.Posters:
     properties:
@@ -208,6 +208,7 @@ definitions:
       status:
         type: boolean
     type: object
+host: localhost:3000
 info:
   contact:
     email: sethukumarj.76@gmail.com

@@ -14,6 +14,7 @@
         },
         "version": "1.0"
     },
+    "host": "localhost:3000",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {
@@ -2472,7 +2473,7 @@
         "domain.Organizations": {
             "type": "object",
             "required": [
-                "organizationname"
+                "organization_name"
             ],
             "properties": {
                 "about": {
@@ -2487,7 +2488,7 @@
                 "logo": {
                     "type": "string"
                 },
-                "organizationname": {
+                "organization_name": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2

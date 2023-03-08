@@ -10,6 +10,7 @@ CODE_COVERAGE=code-coverage
 
 all: test build
 
+
 ${BINARY_DIR}:
 	mkdir -p $(BINARY_DIR)
 
@@ -43,6 +44,7 @@ wire: ## Generate wire_gen.go
 
 swag: ## Generate swagger docs
 	swag init -g cmd/api/main.go -o ./cmd/api/docs
+
 
 swagger: ##Insatall swagger
 	$(GOCMD) install github.com/swaggo/swag/cmd/swag@latest

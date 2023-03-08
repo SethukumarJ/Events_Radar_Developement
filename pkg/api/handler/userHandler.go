@@ -655,7 +655,7 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 	//fetching data
 	c.Bind(&newOrganization)
 
-	fmt.Println("organization", newOrganization)
+	fmt.Println("//////handler organization", newOrganization.OrganizationName)
 	newOrganization.CreatedBy = c.Writer.Header().Get("userName")
 	newOrganization.CreatedAt = time.Now()
 

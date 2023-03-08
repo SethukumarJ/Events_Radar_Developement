@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "eventsradar.online",
+    "host": "localhost:3000",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {

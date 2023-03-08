@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	_"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	config "github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/db"
 	di "github.com/SethukumarJ/Events_Radar_Developement/pkg/di"
+	_ "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 )
 
 // @title Events-Radar API
@@ -29,7 +29,7 @@ import (
 // @in header
 // @name Authorization
 
-// @host eventsradar.online
+// @host localhost:3000
 // @BasePath /
 // @query.collection.format multi
 func main() {
@@ -40,7 +40,7 @@ func main() {
 	// db.ConnectDB(config)
 	gorm, _ := db.ConnectGormDB(config)
 	fmt.Printf("\ngorm : %v\n\n", gorm)
-	trigger,_ := db.Triggers(config)
+	trigger, _ := db.Triggers(config)
 	fmt.Printf("\tTrigger : %v\n\n", trigger)
 
 	server, diErr := di.InitializeAPI(config)

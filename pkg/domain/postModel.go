@@ -5,17 +5,17 @@ import (
 )
 
 type Users struct {
-	UserId       uint   `json:"userid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
-	UserName     string `json:"username" gorm:"primary key;unique" validate:"required,min=2,max=50"`
-	FirstName    string `json:"firstname" validate:"required,min=2,max=50"`
-	LastName     string `json:"lastname" validate:"required,min=1,max=50"`
+	UserId       uint   `json:"user_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
+	UserName     string `json:"user_name" gorm:"unique" validate:"required,min=2,max=50"`
+	FirstName    string `json:"first_name" validate:"required,min=2,max=50"`
+	LastName     string `json:"last_name" validate:"required,min=1,max=50"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
-	Password     string `json:"password"`
+	Password     string `json:"password" validate:"required,min=,max=20"`
 	Verification bool   `json:"verification" gorm:"default:false"`
 	Vip          bool   `json:"vip" gorm:"default:false" swaggerignore:"true"`
-	PhoneNumber  string `json:"phonenumber"`
-	Profile      string `json:"profile"`
-	EventId      uint   `json:"eventid" swaggerignore:"true"`
+	PhoneNumber  string `json:"phone_number" validate:"required,min=,max=20"`
+	Profile      string `json:"profile" validate:"omitempty,max=255,url"`
+	EventId      uint   `json:"event_id" swaggerignore:"true"`
 }
 
 type Login struct {
@@ -24,16 +24,17 @@ type Login struct {
 }
 
 type Bios struct {
-	BioId         uint   `json:"bioid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
+	BioId         uint   `json:"bioid" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	UserName      string `json:"username" validate:"required,min=2,max=50"`
+	Users         Users  `gorm:"foreignKey:UserName;references:UserName"`
 	About         string `json:"about"`
-	Twitter       string `json:"twitterlink"`
-	Github        string `json:"githublink"`
-	LinkedIn      string `json:"linkedin"`
+	Twitter       string `json:"twitterlink" validate:"omitempty,max=255,url"`
+	Github        string `json:"githublink" validate:"omitempty,max=255,url"`
+	LinkedIn      string `json:"linkedin" validate:"omitempty,max=255,url"`
 	Skills        string `json:"skills"`
 	Qualification string `json:"qualification"`
-	DevFolio      string `json:"devfolio"`
-	WebsiteLink   string `json:"websitelink"`
+	DevFolio      string `json:"devfolio" validate:"omitempty,max=255,url"`
+	WebsiteLink   string `json:"websitelink" validate:"omitempty,max=255,url"`
 }
 
 type Verification struct {
@@ -157,19 +158,19 @@ type Notificaiton struct {
 }
 
 type ApplicationForm struct {
-	ApplicationId       uint      `json:"applicationid" gorm:"autoIncrement:true;unique" swaggerignore:"true" `
-	UserName            string    `json:"username" swaggerignore:"true"`
-	AppliedAt           time.Time `json:"appliedat" swaggerignore:"true"`
-	FirstName           string    `json:"firstname"`
-	LastName            string    `json:"lastname"`
-	Event_name          string    `json:"event_name" swaggerignore:"true"`
-	Proffession         string    `json:"proffession"`
-	College             string    `json:"college"`
-	Company             string    `json:"company"`
-	About               string    `json:"about"`
-	Email               string    `json:"email"`
-	Github              string    `json:"github"`
-	Linkedin            string    `json:"linkedin"`
+	ApplicationId uint      `json:"applicationid" gorm:"autoIncrement:true;unique" swaggerignore:"true" `
+	UserName      string    `json:"username" swaggerignore:"true"`
+	AppliedAt     time.Time `json:"appliedat" swaggerignore:"true"`
+	FirstName     string    `json:"firstname"`
+	LastName      string    `json:"lastname"`
+	Event_name    string    `json:"event_name" swaggerignore:"true"`
+	Proffession   string    `json:"proffession"`
+	College       string    `json:"college"`
+	Company       string    `json:"company"`
+	About         string    `json:"about"`
+	Email         string    `json:"email"`
+	Github        string    `json:"github"`
+	Linkedin      string    `json:"linkedin"`
 }
 
 type PageVariables struct {
@@ -200,6 +201,5 @@ type Packages struct {
 }
 
 type AddMembers struct {
-
 	Members string
 }

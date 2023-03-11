@@ -32,6 +32,8 @@ type EventResponse struct {
 	EventId                uint      `json:"eventid"`
 	Title                  string    `json:"title"`
 	OrganizationId         int       `json:"organization_id" `
+	User_id                int       `json:"user_id"`
+	CreatedBy              string    `json:"created_by"`
 	EventPic               string    `json:"event_pic" `
 	ShortDiscription       string    `json:"short_discription"`
 	LongDiscription        string    `json:"long_discription"`
@@ -83,7 +85,7 @@ type QAResponse struct {
 type OrganizationsResponse struct {
 	OrganizationId   uint      `json:"organization_id"`
 	OrganizationName string    `json:"organization_name"`
-	CreatedBy        string    `json:"created_by"`
+	CreatedBy        int       `json:"created_by"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
 	CreatedAt        time.Time `json:"created_at"`

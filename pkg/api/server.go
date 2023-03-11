@@ -59,7 +59,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		user.GET("/list-faqas", userHandler.GetPublicFaqas)
 		user.GET("/list-organizations", userHandler.ListOrganizations)
 		user.GET("/list-approved-events", eventHandler.ViewAllApprovedEvents)
-		user.GET("/geteventbytitle", eventHandler.GetEventByTitle)
+		user.GET("/geteventbyid", eventHandler.GetEventById)
 		user.PATCH("/update-password", userHandler.UpdatePassword)
 		user.GET("/search-event", eventHandler.SearchEventUser)
 		user.GET("/accept-invitation", userHandler.AcceptJoinInvitation)
@@ -104,7 +104,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		organization.GET("/get-organization", userHandler.GetOrganization)
 		organization.GET("/list-organizations", userHandler.ListOrganizations)
 		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
-		organization.GET("/event/get-posterbytitle", eventHandler.GetPosterByTitle)
+		organization.GET("/event/get-posterbyid", eventHandler.GetPosterById)
 		organization.Use(middleware.AuthorizeOrg())
 		{
 

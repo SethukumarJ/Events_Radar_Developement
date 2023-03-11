@@ -26,7 +26,8 @@ type Login struct {
 type Bios struct {
 	BioId         uint   `json:"bio_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	UserId        int    `json:"user_id" validate:"required,min=2,max=50"`
-	Users         Users  `gorm:"foreignKey:UserId;references:UserId"`
+	Users         Users  `gorm:"foreignKey:UserId;references:UserId"  swaggerignore:"true"`
+	UserName      string `json:"user_name"`
 	About         string `json:"about"`
 	Twitter       string `json:"twitter_link" validate:"omitempty,max=255,url"`
 	Github        string `json:"github_link" validate:"omitempty,max=255,url"`
@@ -54,9 +55,12 @@ type Admins struct {
 type Events struct {
 	EventId                uint          `json:"event_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	Title                  string        `json:"title" gorm:"unique" validate:"required,min=2,max=50"`
-	OrganizationId         int           `json:"organization_id" validate:"required"`
+	OrganizationId         int           `json:"organization_id"`
 	Organizations          Organizations `gorm:"foreignKey:OrganizationId;references:OrganizationId"`
-	EventPic               string        `json:"event_pic" validate:"required"`
+	User_id                int           `json:"user_id"`
+	Users                  Users         `gorm:"foreignKey:UserId;references:UserId"  swaggerignore:"true"`
+	CreatedBy              string        `json:"created_by`
+	EventPic               string        `json:"event_pic" validate:"required,url"`
 	ShortDiscription       string        `json:"short_discription"`
 	LongDiscription        string        `json:"long_discription"`
 	EventDate              string        `json:"event_date" validate:"required"`
@@ -112,7 +116,7 @@ type Answers struct {
 type Organizations struct {
 	OrganizationId   uint      `json:"organization_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	OrganizationName string    `json:"organization_name" gorm:"unique" validate:"required,min=2,max=50"`
-	CreatedBy        string    `json:"created_by" swaggerignore:"true"`
+	CreatedBy        int       `json:"created_by" swaggerignore:"true"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
 	CreatedAt        time.Time `json:"created_at"`

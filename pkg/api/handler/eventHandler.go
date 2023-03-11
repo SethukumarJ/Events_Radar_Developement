@@ -30,10 +30,10 @@ func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param eventname query string true "event Name: "
+// @Param Event_id query int true "Event_id: "
 // @Param  page   query  int  true  "Page number: "
 // @Param  pagesize   query  int  true  "Page capacity : "
-// @Param organizationName query string true "organizationName: "
+// @Param Organization_id query int true "Organization_id: "
 // @Param  applicationStatus   query  string  true  "List application based on status: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -44,7 +44,7 @@ func (cr *EventHandler) ListApplications(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	
 	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
-	eventname := c.Query("eventname")
+	Event_id,_ := strconv.Atoi(c.Query("Event_id"))
 	applicationStatus:= c.Query("applicationStatus")
 	fmt.Println("applicationStatus",applicationStatus)
 
@@ -60,7 +60,7 @@ func (cr *EventHandler) ListApplications(c *gin.Context) {
 
 	fmt.Println("pagenation", pagenation)
 
-	applications, metadata, err := cr.eventUsecase.ListApplications(pagenation, applicationStatus,eventname)
+	applications, metadata, err := cr.eventUsecase.ListApplications(pagenation, applicationStatus,Event_id)
 
 	fmt.Println("applications:", applications)
 
@@ -93,7 +93,8 @@ func (cr *EventHandler) ListApplications(c *gin.Context) {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param organizationName query string true "organizationName: "
+// @Param Organization_id query int true "Organization_id: "
+// @Param Event_id query int true "Event_id: "
 // @Param  applicationstsid   query  int  true  "orgStatus id : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -101,8 +102,8 @@ func (cr *EventHandler) ListApplications(c *gin.Context) {
 func (cr *EventHandler) AcceptApplication(c *gin.Context)  {
 	
 	applicationstsid,_ := strconv.Atoi(c.Query("applicationstsid"))
-	eventname := c.Query("eventname")
-	err := cr.eventUsecase.AcceptApplication(applicationstsid,eventname)
+	Event_id,_ :=  strconv.Atoi(c.Query("Event_id"))
+	err := cr.eventUsecase.AcceptApplication(applicationstsid,Event_id)
 
 	if err != nil {
 		response := response.ErrorResponse("accepting request failed!", err.Error(), nil)
@@ -120,7 +121,8 @@ func (cr *EventHandler) AcceptApplication(c *gin.Context)  {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param organizationName query string true "organizationName: "
+// @Param Organization_id query int true "Organization_id: "
+// @Param Event_id query int true "Event_id: "
 // @Param  applicationstsid   query  int  true  "applicationstsid  : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -128,8 +130,8 @@ func (cr *EventHandler) AcceptApplication(c *gin.Context)  {
 func (cr *EventHandler) RejectApplication(c *gin.Context)  {
 	
 	applicationstsid,_ := strconv.Atoi(c.Query("applicationstsid"))
-	eventname := c.Query("eventname")
-	err := cr.eventUsecase.RejectApplication(applicationstsid,eventname)
+	Event_id,_ :=  strconv.Atoi(c.Query("Event_id"))
+	err := cr.eventUsecase.RejectApplication(applicationstsid,Event_id)
 
 	if err != nil {
 		response := response.ErrorResponse("Rjecting applicaiton failed!", err.Error(), nil)
@@ -148,8 +150,8 @@ func (cr *EventHandler) RejectApplication(c *gin.Context)  {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param  title   query  string  true  "Title: "
-// @Param organizationName query string true "organizationName: "
+// @Param  Event_id   query  int  true  "Event_id: "
+// @Param Organizatiion_id query int true "Organizatiion_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/event/delete-event [delete]
@@ -166,9 +168,9 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 		return
 	}
 
-	title := c.Query("title")
+	Event_id,_ :=  strconv.Atoi(c.Query("Event_id"))
 
-	err := cr.eventUsecase.DeleteEvent(title)
+	err := cr.eventUsecase.DeleteEvent(Event_id)
 
 	if err != nil {
 		response := response.ErrorResponse("Could not delete event", err.Error(), nil)
@@ -177,7 +179,7 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Deleted event successfully!", title)
+	response := response.SuccessResponse(true, "Deleted event successfully!", Event_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -187,8 +189,8 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @param title query string true "event title"
-// @Param organizationName query string true "organizationName: "
+// @Param  Event_id   query  int  true  "Event_id: "
+// @Param Organizatiion_id query int true "Organizatiion_id: "
 // @param UpdateEvent body domain.Events{} true "update Event with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -213,11 +215,11 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 	err:=c.Bind(&updatedEvent)
 
 	fmt.Println("event ////////////", updatedEvent, "errror",err)
-	title := c.Query("title")
+	Event_id,_ :=  strconv.Atoi(c.Query("Event_id"))
 
 	//check event exit or not
 
-	err = cr.eventUsecase.UpdateEvent(updatedEvent, title)
+	err = cr.eventUsecase.UpdateEvent(updatedEvent, Event_id)
 
 	log.Println(updatedEvent)
 
@@ -229,7 +231,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	event, _ := cr.eventUsecase.FindEvent(updatedEvent.Title)
+	event, _ := cr.eventUsecase.FindEvent(updatedEvent.Event_id)
 	response := response.SuccessResponse(true, "SUCCESS", event)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -257,9 +259,10 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
 
 	fmt.Println("event", newEvent)
-	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+	newEvent.CreatedBy = "user"
+	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
 	newEvent.CreatedAt = time.Now()
-	vip,err:= cr.eventUsecase.FindUser(newEvent.OrganizerName)
+	vip,err:= cr.eventUsecase.FindUser(newEvent.User_id)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -308,12 +311,13 @@ func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 	fmt.Println("Creating event")
 	//fetching data
 	c.Bind(&newEvent)
-	newEvent.OrganizerName = c.Writer.Header().Get("userName")
+	newEvent.CreatedBy = "admin"
+	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
 	newEvent.CreatedAt = time.Now()
 	newEvent.Approved = true
 	
 
-	fmt.Println(newEvent.OrganizerName,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
+	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
 
 	//check event exit or not
 
@@ -343,7 +347,7 @@ func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 // @Tags Organization
 // @Produce json
 // @Security BearerAuth
-// @Param organizationName query string true "organizationName"
+// @Param Organization_id query int true "Organization_id"
 // @param CreateEvent body domain.Events{} true "Create event"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -366,13 +370,13 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 	fmt.Println("event", newEvent)
 	fmt.Println("Creating event",newEvent.EventDate)
 	//fetching data
-	
-	newEvent.OrganizerName = c.Writer.Header().Get("organizationName")
+	newEvent.CreatedBy = "organization"
+	newEvent.OrganizationId,_ = strconv.Atoi(c.Writer.Header().Get("Organization_id"))
 	newEvent.CreatedAt = time.Now()
 	newEvent.Approved = true
 	
 
-	fmt.Println(newEvent.OrganizerName,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
+	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
 
 	//check event exit or not
 
@@ -400,11 +404,11 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 // @ID Get event by title
 // @Tags User-Event Management
 // @Produce json
-// @Param  title   query  string  true  "Title: "
+// @Param  Event_id   query  int  true  "Evnet_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /user/geteventbytitle [get]
-func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
+// @Router /user/geteventbyid [get]
+func (cr *EventHandler) GetEventById(c *gin.Context) {
 
 	title := c.Query("title")
 
@@ -433,7 +437,7 @@ func (cr *EventHandler) GetEventByTitle(c *gin.Context) {
 // @Security BearerAuth
 // @Param EventId query int true "Event id"
 // @param CreatePoster body domain.Posters{} true "Create poster"
-// @Param organizationName query string true "organizationName: "
+// @Param Organization_id query string true "Organization_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/event/create-poster [post]
@@ -493,7 +497,7 @@ type SearchEvent struct {
 // @Tags User-Event Management
 // @Produce json
 // @Security BearerAuth
-// @Param  search   query  string  true  "List event by approved non approved : "
+// @Param  search   query  string  true  "Search Eventt: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /user/search-event [get]
@@ -554,9 +558,9 @@ func (cr *EventHandler) PostersByEvent(c *gin.Context) {
 // @Tags Organization-Event-Poster Management
 // @Produce json
 // @Security BearerAuth
-// @Param  title   query  string  true  "Title: "
-// @Param  eventid   query  int  true  "Title: "
-// @Param organizationName query string true "organizationName: "
+// @Param  Poster_id   query  int  true  "Poster_id: "
+// @Param  event_id   query  int  true  "Event_id: "
+// @Param Organization_id query string true "Organization_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/event/delete-poster [delete]
@@ -573,9 +577,9 @@ func (cr *EventHandler) DeletePoster(c *gin.Context) {
 		return
 	}
 
-	title := c.Query("title")
-	eventId,_ := strconv.Atoi(c.Query("eventid"))
-	err := cr.eventUsecase.DeletePoster(title,eventId)
+	Poster_id,_ :=strconv.Atoi(c.Query("Poster_id"))
+	event_id,_ := strconv.Atoi(c.Query("event_id"))
+	err := cr.eventUsecase.DeletePoster(Poster_id,event_id)
 
 	if err != nil {
 		response := response.ErrorResponse("Could not delete event", err.Error(), nil)
@@ -584,7 +588,7 @@ func (cr *EventHandler) DeletePoster(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Deleted poster successfully!", title)
+	response := response.SuccessResponse(true, "Deleted poster successfully!", Poster_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -593,16 +597,16 @@ func (cr *EventHandler) DeletePoster(c *gin.Context) {
 // @ID Get event by id
 // @Tags Organization-Event-Poster Management
 // @Produce json
-// @Param  title   query  string  true  "Title: "
+// @Param  Poster_id   query  int  true  "Poster_id: "
 // @Param  eventid   query  int  true  "event id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
-// @Router /organization/event/get-posterbytitle [get]
-func (cr *EventHandler) GetPosterByTitle(c *gin.Context) {
+// @Router /organization/event/get-posterbyid [get]
+func (cr *EventHandler) GetPosterById(c *gin.Context) {
 
-	title := c.Query("title")
+	Poster_id,_ :=strconv.Atoi(c.Query("Poster_id"))
 	eventId,_ := strconv.Atoi(c.Query("eventid"))
-	poster, err := cr.eventUsecase.FindPoster(title,int(eventId))
+	poster, err := cr.eventUsecase.FindPoster(int(Poster_id),int(eventId))
 
 	fmt.Println("event:", poster)
 

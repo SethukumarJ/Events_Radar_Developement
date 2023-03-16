@@ -1,0 +1,37 @@
+version: '3'
+services:
+
+  myapp-postgres:
+    image: postgres:alpine
+    container_name: ecom_postgres
+    environment:
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST} 
+    ports:
+      - '5433:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - myapp
+
+  ecom_api:
+    container_name: ecom_api
+    image: my-go-app  # replace with your image name and tag
+    ports: 
+      - 3000:3000
+    restart: on-failure
+    depends_on:
+      - myapp-postgres       
+    networks:
+      - myapp
+  
+volumes:
+  api:
+  database_postgres:                  
+
+# Networks to be created to facilitate communication between containers
+networks:
+  myapp:
+    driver: bridge

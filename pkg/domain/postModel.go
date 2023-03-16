@@ -103,6 +103,7 @@ type Faqas struct {
 	CreatedAt      time.Time     `json:"createdat" swaggerignore:"true"`
 	UserId         int           `json:"user_id" validate:"required,min=2,max=50" swaggerignore:"true"`
 	Users          Users         `gorm:"foreignKey:UserId;references:UserId" swaggerignore:"true"`
+	UserName       string        `gorm:"user_name"`
 	OrganizationId int           `json:"organization_id" validate:"required" swaggerignore:"true"`
 	Organizations  Organizations `gorm:"foreignKey:OrganizationId;references:OrganizationId" swaggerignore:"true"`
 	Public         bool          `json:"public" gorm:"default:false" swaggerignore:"true"`
@@ -145,9 +146,9 @@ type Appllication_Statuses struct {
 	ApplicationStatusId uint   `json:"application_status_id" gorm:"primary key;autoIncrement:true;unique"`
 	Events              Events `gorm:"foreignKey:EventId;references:EventId" swaggerignore:"true"`
 	EventId             int    `json:"event_id" swaggerignore:"true" `
-	Accepted            string `json:"accepted"`
-	Pending             string `json:"pending"`
-	Rejected            string `json:"rejected"`
+	Accepted            int    `json:"accepted"`
+	Pending             int    `json:"pending"`
+	Rejected            int    `json:"rejected"`
 }
 
 type User_Organization_Connections struct {

@@ -169,7 +169,7 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "User made into vip", username)
+	response := response.SuccessResponse(true, "User made into vip", User_id)
 	utils.ResponseJSON(*c, response)
 
 }

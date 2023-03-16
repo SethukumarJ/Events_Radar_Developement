@@ -65,8 +65,8 @@ func (c *adminUsecase) RejectOrganization(orgstatusId int) error {
 }
 
 // ApproveEvent implements interfaces.AdminUsecase
-func (c *adminUsecase) ApproveEvent(title string) error {
-	err := c.adminRepo.ApproveEvent(title)
+func (c *adminUsecase) ApproveEvent(event_id int) error {
+	err := c.adminRepo.ApproveEvent(event_id)
 
 	if err != nil {
 		return err
@@ -88,8 +88,8 @@ func (c *adminUsecase) AllEvents(pagenation utils.Filter, approved string) (*[]d
 }
 
 // Vip implements interfaces.AdminUsecase
-func (c *adminUsecase) VipUser(username string) error {
-	err := c.adminRepo.VipUser(username)
+func (c *adminUsecase) VipUser(user_id int) error {
+	err := c.adminRepo.VipUser(user_id)
 
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (c *adminUsecase) AllUsers(pagenation utils.Filter) (*[]domain.UserResponse
 // CreateUser implements interfaces.UserUseCase
 func (c *adminUsecase) CreateAdmin(admin domain.Admins) error {
 	fmt.Println("create admin from usecase")
-	_, err := c.adminRepo.FindAdmin(admin.Email)
+	_, err := c.adminRepo.FindAdminByName(admin.Email)
 	fmt.Println("found admin", err)
 
 	if err == nil {
@@ -135,8 +135,8 @@ func (c *adminUsecase) CreateAdmin(admin domain.Admins) error {
 }
 
 // FindUser implements interfaces.UserUseCase
-func (c *adminUsecase) FindAdmin(email string) (*domain.AdminResponse, error) {
-	user, err := c.adminRepo.FindAdmin(email)
+func (c *adminUsecase) FindAdminByName(email string) (*domain.AdminResponse, error) {
+	user, err := c.adminRepo.FindAdminByName(email)
 
 	if err != nil {
 		return nil, err
@@ -144,6 +144,18 @@ func (c *adminUsecase) FindAdmin(email string) (*domain.AdminResponse, error) {
 
 	return &user, nil
 }
+// FindUser implements interfaces.UserUseCase
+func (c *adminUsecase) FindAdminById(admin_id int) (*domain.AdminResponse, error) {
+	user, err := c.adminRepo.FindAdminById(admin_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+
 func NewAdminUsecase(
 	adminRepo interfaces.AdminRepository,
 	mailConfig config.MailConfig,

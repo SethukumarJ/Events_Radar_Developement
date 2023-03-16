@@ -24,14 +24,14 @@ type userUseCase struct {
 }
 
 // UpdateRole implements interfaces.UserUseCase
-func (c *userUseCase) UpdateRole(userName string, organizationName string, updatedRole string) error {
-	_, err := c.userRepo.FindRelation(userName, organizationName)
+func (c *userUseCase) UpdateRole(user_id int, organization_id int, updatedRole string) error {
+	_, err := c.userRepo.FindRelation(user_id, organization_id)
 
 	if err != nil {
 		return errors.New("relation does'nt exist with this credentials")
 
 	}
-	err = c.userRepo.UpdateRole(userName, organizationName,updatedRole)
+	err = c.userRepo.UpdateRole(user_id, organization_id,updatedRole)
 
 	if err != nil {
 		return err
@@ -41,15 +41,15 @@ func (c *userUseCase) UpdateRole(userName string, organizationName string, updat
 }
 
 // DeleteMember implements interfaces.UserUseCase
-func (c *userUseCase) DeleteMember(userName string, organizationName string) error {
+func (c *userUseCase) DeleteMember(user_id int, organization_id int) error {
 
-	_, err := c.userRepo.FindRelation(userName, organizationName)
+	_, err := c.userRepo.FindRelation(user_id, organization_id)
 
 	if err != nil {
 		return errors.New("relation does'nt exist with this credentials")
 
 	}
-	err = c.userRepo.DeleteMember(userName, organizationName)
+	err = c.userRepo.DeleteMember(user_id, organization_id)
 
 	if err != nil {
 		return err
@@ -59,9 +59,9 @@ func (c *userUseCase) DeleteMember(userName string, organizationName string) err
 }
 
 // ListMembers implements interfaces.UserUseCase
-func (c *userUseCase) ListMembers(memberRole string, organizationName string) (*[]domain.UserOrganizationConnectionResponse, error) {
+func (c *userUseCase) ListMembers(memberRole string, organization_id int) (*[]domain.UserOrganizationConnectionResponse, error) {
 	fmt.Println("get membets  from usecase called")
-	members, err := c.userRepo.ListMembers(memberRole, organizationName)
+	members, err := c.userRepo.ListMembers(memberRole, organization_id)
 	fmt.Println("members:", members)
 	if err != nil {
 		fmt.Println("error from list members usecase:", err)
@@ -130,7 +130,7 @@ func (c *userUseCase) PromoteEvent(promotion domain.Promotion) error {
 // ApplyEvent implements interfaces.UserUseCase
 func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.FindApplication(applicationForm.UserName, applicationForm.Event_name)
+	_, err := c.userRepo.FindApplication(applicationForm.UserId, applicationForm.EventId)
 	fmt.Println("found applicationForm", err)
 
 	if err == nil {
@@ -149,8 +149,8 @@ func (c *userUseCase) ApplyEvent(applicationForm domain.ApplicationForm) error {
 }
 
 // FindApplication implements interfaces.UserUseCase
-func (c *userUseCase) FindApplication(userName string, eventname string) (*domain.ApplicationFormResponse, error) {
-	Application, err := c.userRepo.FindApplication(userName, eventname)
+func (c *userUseCase) FindApplication(user_id int, event_id int) (*domain.ApplicationFormResponse, error) {
+	Application, err := c.userRepo.FindApplication(user_id, event_id)
 
 	if err != nil {
 		return nil, err
@@ -162,15 +162,15 @@ func (c *userUseCase) FindApplication(userName string, eventname string) (*domai
 // AdmitMember implements interfaces.UserUseCase
 func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
 
-	userName, organizationName, err := c.userRepo.FindJoinStatus(JoinStatusId)
+	user_id, organization_id, err := c.userRepo.FindJoinStatus(JoinStatusId)
 	if err != nil {
 		return errors.New("no join statuses found")
 	}
 
-	_, err = c.userRepo.FindRelation(userName, organizationName)
+	_, err = c.userRepo.FindRelation(user_id, organization_id)
 
 	if err == nil {
-		return errors.New("relation allready exist with this credentials")
+		return errors.New("relation already exist with this credentials")
 
 	}
 
@@ -183,9 +183,9 @@ func (c *userUseCase) AdmitMember(JoinStatusId int, memberRole string) error {
 }
 
 // ListJoinRequests implements interfaces.UserUseCase
-func (c *userUseCase) ListJoinRequests(username string, organizationName string) (*[]domain.Join_StatusResponse, error) {
+func (c *userUseCase) ListJoinRequests(user_id int, organizaiton_id int) (*[]domain.Join_StatusResponse, error) {
 	fmt.Println("get requests  from usecase called")
-	requests, err := c.userRepo.ListJoinRequests(username, organizationName)
+	requests, err := c.userRepo.ListJoinRequests(user_id, organizaiton_id)
 	fmt.Println("requests:", requests)
 	if err != nil {
 		fmt.Println("error from listjoinRequests usecase:", err)
@@ -196,16 +196,16 @@ func (c *userUseCase) ListJoinRequests(username string, organizationName string)
 }
 
 // AcceptJoinInvitation implements interfaces.UserUseCase
-func (c *userUseCase) AcceptJoinInvitation(username string, organizationName string, role string) error {
+func (c *userUseCase) AcceptJoinInvitation(user_id int, organizaiton_id int, role string) error {
 
-	_, err := c.userRepo.FindRelation(username, organizationName)
+	_, err := c.userRepo.FindRelation(user_id, organizaiton_id)
 
 	if err == nil {
 		return errors.New("relation allready exist with this credentials")
 
 	}
 
-	_, err = c.userRepo.AcceptJoinInvitation(username, organizationName, role)
+	_, err = c.userRepo.AcceptJoinInvitation(user_id, organizaiton_id, role)
 	if err != nil {
 		return err
 	}
@@ -213,8 +213,8 @@ func (c *userUseCase) AcceptJoinInvitation(username string, organizationName str
 }
 
 // AddMembers implements interfaces.UserUseCase
-func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole string, organizationName string) error {
-	_, err := c.userRepo.FindOrganization(organizationName)
+func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole string, organizaiton_id int) error {
+	organizaition, err := c.userRepo.FindOrganizationById(organizaiton_id)
 	fmt.Println("found organization", err)
 
 	if err != nil {
@@ -222,12 +222,12 @@ func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole stri
 	}
 
 	for _, v := range newMembers {
-		user, err := c.userRepo.FindUser(v.Members)
+		user, err := c.userRepo.FindUserByName(v.Members)
 
 		if err == nil {
-			c.SendInvitationMail(user.Email, organizationName, memberRole)
+			c.SendInvitationMail(user.Email, organizaiton_id,organizaition.OrganizationName, memberRole)
 		} else if err == sql.ErrNoRows {
-			c.SendInvitationMail(v.Members, organizationName, memberRole)
+			c.SendInvitationMail(v.Members, organizaiton_id,organizaition.OrganizationName, memberRole)
 		} else {
 			fmt.Println("coud'nt invite :", v)
 		}
@@ -236,11 +236,12 @@ func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole stri
 	return nil
 }
 
-func (c *userUseCase) SendInvitationMail(email string, organizationName string, memberRole string) error {
+func (c *userUseCase) SendInvitationMail(email string, organization_id int,organizationName string, memberRole string) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":         email,
 		"organizationName": organizationName,
+		"organizationId"  : organization_id,
 		"memberRole":       memberRole,
 		"exp":              time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
@@ -300,9 +301,9 @@ func (c *userUseCase) SendInvitationMail(email string, organizationName string, 
 	return nil
 }
 
-func (c *userUseCase) VerifyRole(username string, organizationName string) (string, error) {
+func (c *userUseCase) VerifyRole(user_id int, organization_id int) (string, error) {
 
-	role, err := c.userRepo.FindRole(username, organizationName)
+	role, err := c.userRepo.FindRole(user_id, organization_id)
 
 	if err != nil {
 		return "", err
@@ -312,8 +313,8 @@ func (c *userUseCase) VerifyRole(username string, organizationName string) (stri
 }
 
 // JoinOrganization implements interfaces.UserUseCase
-func (c *userUseCase) JoinOrganization(organizationName string, userName string) error {
-	_, err := c.userRepo.JoinOrganization(organizationName, userName)
+func (c *userUseCase) JoinOrganization(organization_id int, user_id int) error {
+	_, err := c.userRepo.JoinOrganization(organization_id, user_id)
 
 	if err != nil {
 		return err
@@ -335,8 +336,19 @@ func (c *userUseCase) ListOrganizations(pagenation utils.Filter) (*[]domain.Orga
 }
 
 // FindOrganization implements interfaces.UserUseCase
-func (c *userUseCase) FindOrganization(organizationName string) (*domain.OrganizationsResponse, error) {
-	organization, err := c.userRepo.FindOrganization(organizationName)
+func (c *userUseCase) FindOrganizationByName(organizationName string) (*domain.OrganizationsResponse, error) {
+	organization, err := c.userRepo.FindOrganizationByName(organizationName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
+// FindOrganization implements interfaces.UserUseCase
+func (c *userUseCase) FindOrganizationById(organization_id int) (*domain.OrganizationsResponse, error) {
+	organization, err := c.userRepo.FindOrganizationById(organization_id)
 
 	if err != nil {
 		return nil, err
@@ -348,7 +360,7 @@ func (c *userUseCase) FindOrganization(organizationName string) (*domain.Organiz
 // CreateOrganization implements interfaces.UserUseCase
 func (c *userUseCase) CreateOrganization(organization domain.Organizations) error {
 	fmt.Println("create organization from service")
-	_, err := c.userRepo.FindOrganization(organization.OrganizationName)
+	_, err := c.userRepo.FindOrganizationByName(organization.OrganizationName)
 	fmt.Println("found organization", err)
 
 	if err == nil {
@@ -367,9 +379,9 @@ func (c *userUseCase) CreateOrganization(organization domain.Organizations) erro
 }
 
 // GetQuestions implements interfaces.UserUseCase
-func (c *userUseCase) GetQuestions(title string) (*[]domain.FaqaResponse, error) {
+func (c *userUseCase) GetQuestions(event_id int) (*[]domain.FaqaResponse, error) {
 	fmt.Println("get questions  from usecase called")
-	qustions, err := c.userRepo.GetQuestions(title)
+	qustions, err := c.userRepo.GetQuestions(event_id)
 	fmt.Println("questioins:", qustions)
 	if err != nil {
 		fmt.Println("error from getpublicfaqas usecase:", err)
@@ -389,9 +401,9 @@ func (c *userUseCase) PostAnswer(answer domain.Answers, question int) error {
 }
 
 // GetPublicFaqas implements interfaces.UserUseCase
-func (c *userUseCase) GetPublicFaqas(title string) (*[]domain.QAResponse, error) {
+func (c *userUseCase) GetPublicFaqas(event_id int) (*[]domain.QAResponse, error) {
 	fmt.Println("get faqas  from usecase called")
-	faqas, err := c.userRepo.GetPublicFaqas(title)
+	faqas, err := c.userRepo.GetPublicFaqas(event_id)
 	fmt.Println("faqas:", faqas)
 	if err != nil {
 		fmt.Println("error from getpublicfaqas usecase:", err)
@@ -412,8 +424,8 @@ func (c *userUseCase) PostQuestion(question domain.Faqas) error {
 }
 
 // UpdatePassword implements interfaces.UserUseCase
-func (c *userUseCase) UpdatePassword(user string, email string) error {
-	_, err := c.userRepo.UpdatePassword(user, email)
+func (c *userUseCase) UpdatePassword(password string, email string) error {
+	_, err := c.userRepo.UpdatePassword(password, email)
 	if err != nil {
 		return err
 	}
@@ -421,10 +433,10 @@ func (c *userUseCase) UpdatePassword(user string, email string) error {
 }
 
 // UpdateProfile implements interfaces.UserUseCase
-func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
+func (c *userUseCase) UpdateProfile(user domain.Bios, user_id int) error {
 	fmt.Println("update user from service")
 
-	_, err := c.userRepo.UpdateProfile(user, username)
+	_, err := c.userRepo.UpdateProfile(user, user_id)
 	if err != nil {
 		return err
 	}
@@ -434,7 +446,7 @@ func (c *userUseCase) UpdateProfile(user domain.Bios, username string) error {
 // CreateUser implements interfaces.UserUseCase
 func (c *userUseCase) CreateUser(user domain.Users) error {
 	fmt.Println("create user from service")
-	_, err := c.userRepo.FindUser(user.Email)
+	_, err := c.userRepo.FindUserByName(user.Email)
 	fmt.Println("found user", err)
 
 	if err == nil {
@@ -456,8 +468,19 @@ func (c *userUseCase) CreateUser(user domain.Users) error {
 }
 
 // FindUser implements interfaces.UserUseCase
-func (c *userUseCase) FindUser(email string) (*domain.UserResponse, error) {
-	user, err := c.userRepo.FindUser(email)
+func (c *userUseCase) FindUserByName(email string) (*domain.UserResponse, error) {
+	user, err := c.userRepo.FindUserByName(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// FindUser implements interfaces.UserUseCase
+func (c *userUseCase) FindUserById(user_id int) (*domain.UserResponse, error) {
+	user, err := c.userRepo.FindUserById(user_id)
 
 	if err != nil {
 		return nil, err

@@ -111,11 +111,11 @@ type Join_StatusResponse struct {
 
 type ApplicationFormResponse struct {
 	ApplicationId       uint      `json:"applicationid"`
-	User_id             string    `json:"user_id"`
-	AppliedAt           time.Time `json:"appliedat"`
-	FirstName           string    `json:"firstname"`
-	LastName            string    `json:"lastname"`
-	Event_id            int       `json:"event_id"`
+	UserId              string    `json:"user_id"`
+	AppliedAt           time.Time `json:"applied_at"`
+	FirstName           string    `json:"first_name"`
+	LastName            string    `json:"last_name"`
+	EventId             int       `json:"event_id"`
 	Proffession         string    `json:"proffession"`
 	College             string    `json:"college"`
 	Company             string    `json:"company"`
@@ -128,8 +128,8 @@ type ApplicationFormResponse struct {
 
 type PromotionResponse struct {
 	PromotionId uint   `json:"promotion_id"`
-	Event_id    int    `json:"event_id"`
-	OrderId     string `json:"orderid"`
+	EventId    int    `json:"event_id"`
+	OrderId     string `json:"order_id"`
 	PromotedBy  int    `json:"Organization_id"`
 	PaymentId   string `json:"payment_id"`
 	Amount      string `json:"amount"`

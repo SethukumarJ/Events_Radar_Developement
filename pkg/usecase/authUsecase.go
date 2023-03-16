@@ -39,7 +39,7 @@ func (c *authUsecase) VerifyAccount(email string, code string) error {
 // VerifyUser verifies the user credentials
 func (c *authUsecase) VerifyUser(email string, password string) error {
 
-	user, err := c.userRepo.FindUser(email)
+	user, err := c.userRepo.FindUserByName(email)
 
 	if err != nil {
 		return errors.New("failed to login. check your email")
@@ -60,7 +60,7 @@ func (c *authUsecase) VerifyUser(email string, password string) error {
 // VerifyUser verifies the user credentials
 func (c *authUsecase) VerifyAdmin(email string, password string) error {
 
-	admin, err := c.adminRepo.FindAdmin(email)
+	admin, err := c.adminRepo.FindAdminByName(email)
 
 	fmt.Println("admin.Password", admin.Password)
 	if err != nil {

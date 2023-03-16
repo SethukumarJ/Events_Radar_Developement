@@ -7,17 +7,19 @@ import (
 
 type EventUsecase interface {
 	CreateEvent(event domain.Events) error
-	DeleteEvent(title string) error
-	FindEvent(title string) (*domain.EventResponse, error)
+	DeleteEvent(event_id int) error
+	FindEventById(event_id int) (*domain.EventResponse, error)
+	FindEventByTitle(title string) (*domain.EventResponse, error)
 	AllApprovedEvents(pagenation utils.Filter , filter utils.FilterEvent) (*[]domain.EventResponse, *utils.Metadata, error)
 	CreatePoster(event domain.Posters) error
-	DeletePoster(name string,eventid int) error
-	FindPoster(title string, eventid int) (*domain.PosterResponse, error)
-	PostersByEvent(eventid int) (*[]domain.PosterResponse, error)
+	DeletePoster(poster_id int,event_id int) error
+	FindPosterByName(name string,event_id int) (*domain.PosterResponse, error)
+	FindPosterById(poster_id int,event_id int) (*domain.PosterResponse, error)
+	PostersByEvent(event_id int) (*[]domain.PosterResponse, error)
 	FindUser(username string) (bool,error)
-	UpdateEvent(event domain.Events, title string) error
+	UpdateEvent(event domain.Events, event_id int) error
 	SearchEventUser(search string) (*[]domain.EventResponse, error)
-	ListApplications(pagenation utils.Filter, applicationStatus string,eventname string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error)
-	AcceptApplication(applicationStatusId int,eventname string) error
-	RejectApplication(applicationStatusId int,eventname string) error
+	ListApplications(pagenation utils.Filter, applicationStatus string,event_id int) (*[]domain.ApplicationFormResponse, *utils.Metadata, error)
+	AcceptApplication(applicationStatusId int,event_id int) error
+	RejectApplication(applicationStatusId int,event_id int) error
 }

@@ -64,66 +64,66 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 		return
 	}
 
-	// promotion  := domain.Promotion{}
-	// promotion.PromotedBy = username
-	// promotion.EventTitle = "event8"
-	// promotion.Amount = "10000"
-	// promotion.Plan = "basic"
-	// page := &domain.PageVariables{}
-	// page.Amount = promotion.Amount
-	// page.Email = "sethukumarj.76@gmail.com"
-	// page.Name = promotion.PromotedBy
-	// page.Contact = ""
-	// //Create order_id from the server
-	// client := razorpay.NewClient("rzp_test_kEtg65WKqGTpKd", "gPURxG4gzTmeNJKqqz61YCHV")
+	promotion  := domain.Promotion{}
+	promotion.PromotedBy = 8
+	promotion.EventId = 8
+	promotion.Amount = "10000"
+	promotion.Plan = "basic"
+	page := &domain.PageVariables{}
+	page.Amount = promotion.Amount
+	page.Email = "sethukumarj.76@gmail.com"
+	page.Name = ""
+	page.Contact = ""
+	//Create order_id from the server
+	client := razorpay.NewClient("rzp_test_kEtg65WKqGTpKd", "gPURxG4gzTmeNJKqqz61YCHV")
 
-	// data := map[string]interface{}{
-	// 	"amount":   promotion.Amount,
-	// 	"currency": "INR",
-	// 	"receipt":  "some_receipt_id",
-	// }
-	// body, err := client.Order.Create(data, nil)
-	// fmt.Println("////////////////reciept", body)
-	// if err != nil {
-	// 	fmt.Println("Problem getting the repository information", err)
-	// 	os.Exit(1)
-	// }
+	data := map[string]interface{}{
+		"amount":   promotion.Amount,
+		"currency": "INR",
+		"receipt":  "some_receipt_id",
+	}
+	body, err := client.Order.Create(data, nil)
+	fmt.Println("////////////////reciept", body)
+	if err != nil {
+		fmt.Println("Problem getting the repository information", err)
+		os.Exit(1)
+	}
 
-	// value := body["id"]
+	value := body["id"]
 
-	// str := value.(string)
-	// promotion.OrderId = str
-	// fmt.Println("str////////////////", str)
-	// HomePageVars := domain.PageVariables{ //store the order_id in a struct
-	// 	OrderId: str,
-	// 	Amount:  page.Amount,
-	// 	Email:   page.Email,
-	// 	Name:    page.Name,
-	// 	Contact: page.Contact,
-	// }
+	str := value.(string)
+	promotion.OrderId = str
+	fmt.Println("str////////////////", str)
+	HomePageVars := domain.PageVariables{ //store the order_id in a struct
+		OrderId: str,
+		Amount:  page.Amount,
+		Email:   page.Email,
+		Name:    page.Name,
+		Contact: page.Contact,
+	}
 
-	// err = cr.userUseCase.PromoteEvent(promotion)
-	// if err != nil {
-	// 	response := response.ErrorResponse("Failed promote event event", err.Error(), nil)
-	// 	c.Writer.Header().Add("Content-Type", "application/json")
-	// 	c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-	// 	utils.ResponseJSON(*c, response)
-	// 	return
-	// }
-	// err = cr.userUseCase.FeaturizeEvent(str)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// if err != nil {
-	// 	response := response.ErrorResponse("Failed featurizing event", err.Error(), nil)
-	// 	c.Writer.Header().Add("Content-Type", "application/json")
-	// 	c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-	// 	utils.ResponseJSON(*c, response)
-	// 	return
-	// }
+	err = cr.userUseCase.PromoteEvent(promotion)
+	if err != nil {
+		response := response.ErrorResponse("Failed promote event event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+	err = cr.userUseCase.FeaturizeEvent(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err != nil {
+		response := response.ErrorResponse("Failed featurizing event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
 	
-	// c.HTML(http.StatusOK, "index.html", HomePageVars)
+	c.HTML(http.StatusOK, "index.html", HomePageVars)
 
 }
 
@@ -192,7 +192,7 @@ func (cr *UserHandler) ApplyEvent(c *gin.Context) {
 
 	fmt.Println("organization", newApplication)
 	newApplication.UserId,_ = strconv.Atoi(c.Writer.Header().Get("user_id"))
-	newApplication.EventId,_ = strconv.Atoi(c.Query("eventName"))
+	newApplication.EventId,_ = strconv.Atoi(c.Query("Event_id"))
 	newApplication.AppliedAt = time.Now()
 
 	err := cr.userUseCase.ApplyEvent(newApplication)
@@ -374,7 +374,7 @@ func (cr *UserHandler) RemoveMember(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "removed member successfully!", userName)
+	response := response.SuccessResponse(true, "removed member successfully!", user_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -394,8 +394,8 @@ func (cr *UserHandler) UpdateRole(c *gin.Context) {
 
 
 	role := c.Writer.Header().Get("role")
-	userName := c.Query("userName")
-	organizationName := c.Query("organizationName")
+	user_id,_ := strconv.Atoi(c.Query("user_id"))
+	Organization_id,_ := strconv.Atoi(c.Query("organization_id"))
 	updatedRole := c.Query("updatedRole")
 	if role > "1" {
 		response :=response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
@@ -405,7 +405,7 @@ func (cr *UserHandler) UpdateRole(c *gin.Context) {
 		return
 	}
 
-	err := cr.userUseCase.UpdateRole(userName,organizationName,updatedRole)
+	err := cr.userUseCase.UpdateRole(user_id,Organization_id,updatedRole)
 
 	if err != nil {
 		response := response.ErrorResponse("Could not updae role of the member member", err.Error(), nil)
@@ -414,7 +414,7 @@ func (cr *UserHandler) UpdateRole(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Role updated successfully successfully!", userName)
+	response := response.SuccessResponse(true, "Role updated successfully successfully!", user_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -452,7 +452,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 		return
 	}
 
-	user, err := cr.userUseCase.FindUser(email)
+	user, err := cr.userUseCase.FindUserByName(email)
 	if err != nil {
 		response := response.ErrorResponse("Joining failed, User is not signed up. signup to join the organization!", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -461,7 +461,7 @@ func (cr *UserHandler) AcceptJoinInvitation(c *gin.Context) {
 		return
 	}
 
-	err = cr.userUseCase.AcceptJoinInvitation(user.UserId, organization_id, role)
+	err = cr.userUseCase.AcceptJoinInvitation(int(user.UserId), organization_id, role)
 
 	if err != nil {
 		response := response.ErrorResponse("Verification failed, Jwt is not valid", err.Error(), nil)
@@ -530,17 +530,15 @@ func (cr *UserHandler) AddMembers(c *gin.Context) {
 // @ID Get Organizaition by name
 // @Tags User-Organization Management
 // @Produce json
-// @Security BearerAuth
 // @Param  Organization_id   query  string  true  "Organization_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/get-organization [get]
 func (cr *UserHandler) GetOrganization(c *gin.Context) {
-	username := c.Writer.Header().Get("userName")
-	fmt.Println("username ", username)
+	
 	Organization_id,_ := strconv.Atoi(c.Writer.Header().Get("Organization_id"))
 	fmt.Println("Organization Id ", Organization_id)
-	organization, err := cr.userUseCase.FindOrganization(Organization_id)
+	organization, err := cr.userUseCase.FindOrganizationById(Organization_id)
 
 	fmt.Println("organization:", organization)
 
@@ -554,7 +552,6 @@ func (cr *UserHandler) GetOrganization(c *gin.Context) {
 
 	response := response.SuccessResponse(true, "Showing the event", organization)
 	utils.ResponseJSON(*c, response)
-
 }
 
 // @Summary Joining organization
@@ -572,7 +569,7 @@ func (cr *UserHandler) JoinOrganization(c *gin.Context) {
 	fmt.Println("user_id ", user_id)
 	Organization_id,_ := strconv.Atoi(c.Writer.Header().Get("Organization_id"))
 	fmt.Println("Organization Id ", Organization_id)
-	err := cr.userUseCase.JoinOrganization(organization_id, user_id)
+	err := cr.userUseCase.JoinOrganization(Organization_id, user_id)
 
 	if err != nil {
 		response := response.ErrorResponse("Joining organization failed!", err.Error(), nil)
@@ -581,7 +578,7 @@ func (cr *UserHandler) JoinOrganization(c *gin.Context) {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "Requested to join organization ", organization_id)
+	response := response.SuccessResponse(true, "Requested to join organization ", Organization_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -672,7 +669,7 @@ func (cr *UserHandler) CreateOrganization(c *gin.Context) {
 		return
 	}
 
-	organization, _ := cr.userUseCase.FindOrganization(newOrganization.OrganizationName)
+	organization, _ := cr.userUseCase.FindOrganizationByName(newOrganization.OrganizationName)
 	response := response.SuccessResponse(true, "SUCCESS", organization)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -713,7 +710,7 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 		return
 	}
 
-	user, _ := cr.userUseCase.FindUser(updatedProfile.UserName)
+	user, _ := cr.userUseCase.FindUserById(user_id)
 	response := response.SuccessResponse(true, "SUCCESS", user)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -756,7 +753,7 @@ func (cr *UserHandler) UpdatePassword(c *gin.Context) {
 		return
 	}
 
-	user, _ := cr.userUseCase.FindUser(email)
+	user, _ := cr.userUseCase.FindUserByName(email)
 	response := response.SuccessResponse(true, "SUCCESS", user)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -783,7 +780,7 @@ func (cr *UserHandler) SendVerificationMail(c *gin.Context) {
 	// }
 	var code int
 	fmt.Println(code)
-	_, err := cr.userUseCase.FindUser(email)
+	_, err := cr.userUseCase.FindUserByName(email)
 	fmt.Println("email: ", email)
 	fmt.Println("err: ", err)
 
@@ -854,7 +851,7 @@ func (cr *UserHandler) GetQuestions(c *gin.Context) {
 		return
 	}
 
-	Event_id,_ := strconv.Atoi(c.Query("title"))
+	Event_id,_ := strconv.Atoi(c.Query("Event_id"))
 	questions, err := (cr.userUseCase.GetQuestions(Event_id))
 	fmt.Println("Questions from handler", questions)
 	if err != nil {
@@ -889,12 +886,14 @@ func (cr *UserHandler) PostQuestion(c *gin.Context) {
 	Event_id,_ := strconv.Atoi(c.Query("Event_id"))
 	Organization_id,_ := strconv.Atoi(c.Query("Organization_id"))
 	user_id,_ := strconv.Atoi(c.Writer.Header().Get("user_id"))
+	user,_ := cr.userUseCase.FindUserById(user_id)
+	
 	c.Bind(&question)
 
 	question.EventId = Event_id
 	question.UserId = user_id
 	question.OrganizationId = Organization_id
-
+	question.UserName = user.UserName
 	err := cr.userUseCase.PostQuestion(question)
 
 	log.Println(question)
@@ -930,8 +929,8 @@ func (cr *UserHandler) PostAnswer(c *gin.Context) {
 
 	var answer domain.Answers
 	question_id, _ := strconv.Atoi(c.Query("faqaid"))
-	username := c.Writer.Header().Get("userName")
-	fmt.Println("username ", username)
+	user_id,_ := strconv.Atoi(c.Writer.Header().Get("user_id"))
+	fmt.Println("user_id ", user_id)
 	Organization_id,_ := strconv.Atoi(c.Query("Organization_id"))
 	fmt.Println("Organization_id ", Organization_id)
 	role := c.Writer.Header().Get("role")

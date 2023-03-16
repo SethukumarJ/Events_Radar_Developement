@@ -110,7 +110,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 		return
 	}
 
-	user, _ := cr.userUsecase.FindUser(newUser.Email)
+	user, _ := cr.userUsecase.FindUserByName(newUser.Email)
 	user.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", user)
 	c.Writer.Header().Add("Content-Type", "application/json")
@@ -227,7 +227,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		newUser := domain.Users{}
 		newUser.UserName, newUser.Email, newUser.Profile = any.Email, any.Email, any.Picture
 
-		user, err := cr.userUsecase.FindUser(any.Email)
+		user, err := cr.userUsecase.FindUserByName(any.Email)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -242,7 +242,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 				utils.ResponseJSON(*c, response)
 				return
 			}
-			newUser, err := cr.userUsecase.FindUser(any.Email)
+			newUser, err := cr.userUsecase.FindUserByName(any.Email)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -333,7 +333,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 	}
 
 	//fetching user details
-	user, _ := cr.userUsecase.FindUser(userLogin.Email)
+	user, _ := cr.userUsecase.FindUserByName(userLogin.Email)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
 	if err != nil {
 		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
@@ -436,7 +436,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 		return
 	}
 
-	admin, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
+	admin, _ := cr.adminUsecase.FindAdminByName(newAdmin.Email)
 	admin.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", admin)
 	c.Writer.Header().Add("Content-Type", "application/json")
@@ -474,7 +474,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 	}
 
 	//fetching user details
-	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
+	admin, _ := cr.adminUsecase.FindAdminByName(adminLogin.Email)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.AdminName, "admin")
 	if err != nil {
 		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)

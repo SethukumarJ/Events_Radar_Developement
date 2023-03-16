@@ -231,7 +231,7 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	event, _ := cr.eventUsecase.FindEvent(updatedEvent.Event_id)
+	event, _ := cr.eventUsecase.FindEventById(Event_id)
 	response := response.SuccessResponse(true, "SUCCESS", event)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -249,50 +249,50 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @Failure 422 {object} response.Response{}
 // @Router /user/create-event [post]
 // Create events
-func (cr *EventHandler) CreateEventUser(c *gin.Context) {
+// func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
-	var newEvent domain.Events
+// 	var newEvent domain.Events
 
-	fmt.Println("Creating event")
-	//fetching data
-	c.Bind(&newEvent)
-
-
-	fmt.Println("event", newEvent)
-	newEvent.CreatedBy = "user"
-	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
-	newEvent.CreatedAt = time.Now()
-	vip,err:= cr.eventUsecase.FindUser(newEvent.User_id)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	if vip {
-		newEvent.Approved = true
-	}
+// 	fmt.Println("Creating event")
+// 	//fetching data
+// 	c.Bind(&newEvent)
 
 
-	//check event exit or not
+// 	fmt.Println("event", newEvent)
+// 	newEvent.CreatedBy = "user"
+// 	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
+// 	newEvent.CreatedAt = time.Now()
+// 	vip,err:= cr.eventUsecase.FindUserById(newEvent.User_id)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	err = cr.eventUsecase.CreateEvent(newEvent)
+// 	if vip {
+// 		newEvent.Approved = true
+// 	}
 
-	log.Println(newEvent)
 
-	if err != nil {
-		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-		utils.ResponseJSON(*c, response)
-		return
-	}
+// 	//check event exit or not
 
-	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
-	response := response.SuccessResponse(true, "SUCCESS", event)
-	c.Writer.Header().Add("Content-Type", "application/json")
-	c.Writer.WriteHeader(http.StatusOK)
-	utils.ResponseJSON(*c, response)
+// 	err = cr.eventUsecase.CreateEvent(newEvent)
 
-}
+// 	log.Println(newEvent)
+
+// 	if err != nil {
+// 		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+// 		c.Writer.Header().Add("Content-Type", "application/json")
+// 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+// 		utils.ResponseJSON(*c, response)
+// 		return
+// 	}
+
+// 	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
+// 	response := response.SuccessResponse(true, "SUCCESS", event)
+// 	c.Writer.Header().Add("Content-Type", "application/json")
+// 	c.Writer.WriteHeader(http.StatusOK)
+// 	utils.ResponseJSON(*c, response)
+
+// }
 
 // @Summary Create event
 // @ID Create event from admin
@@ -304,42 +304,42 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 // @Failure 422 {object} response.Response{}
 // @Router /admin/create-event [post]
 // Create events
-func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
+// func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 
-	var newEvent domain.Events
-	fmt.Println("event", newEvent)
-	fmt.Println("Creating event")
-	//fetching data
-	c.Bind(&newEvent)
-	newEvent.CreatedBy = "admin"
-	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
-	newEvent.CreatedAt = time.Now()
-	newEvent.Approved = true
+// 	var newEvent domain.Events
+// 	fmt.Println("event", newEvent)
+// 	fmt.Println("Creating event")
+// 	//fetching data
+// 	c.Bind(&newEvent)
+// 	newEvent.CreatedBy = "admin"
+// 	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
+// 	newEvent.CreatedAt = time.Now()
+// 	newEvent.Approved = true
 	
 
-	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
+// 	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
 
-	//check event exit or not
+// 	//check event exit or not
 
-	err := cr.eventUsecase.CreateEvent(newEvent)
+// 	err := cr.eventUsecase.CreateEvent(newEvent)
 
-	log.Println(newEvent)
+// 	log.Println(newEvent)
 
-	if err != nil {
-		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-		utils.ResponseJSON(*c, response)
-		return
-	}
+// 	if err != nil {
+// 		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+// 		c.Writer.Header().Add("Content-Type", "application/json")
+// 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+// 		utils.ResponseJSON(*c, response)
+// 		return
+// 	}
 
-	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
-	response := response.SuccessResponse(true, "SUCCESS", event)
-	c.Writer.Header().Add("Content-Type", "application/json")
-	c.Writer.WriteHeader(http.StatusOK)
-	utils.ResponseJSON(*c, response)
+// 	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
+// 	response := response.SuccessResponse(true, "SUCCESS", event)
+// 	c.Writer.Header().Add("Content-Type", "application/json")
+// 	c.Writer.WriteHeader(http.StatusOK)
+// 	utils.ResponseJSON(*c, response)
 
-}
+// }
 
  
 // @Summary Create event by organization
@@ -392,7 +392,7 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 		return
 	}
 
-	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
+	event, _ := cr.eventUsecase.FindEventByTitle(newEvent.Title)
 	response := response.SuccessResponse(true, "SUCCESS", event)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -410,9 +410,9 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 // @Router /user/geteventbyid [get]
 func (cr *EventHandler) GetEventById(c *gin.Context) {
 
-	title := c.Query("title")
+	event_id,_ := strconv.Atoi(c.Query("Event_id"))
 
-	event, err := cr.eventUsecase.FindEvent(title)
+	event, err := cr.eventUsecase.FindEventById(event_id)
 
 	fmt.Println("event:", event)
 
@@ -479,7 +479,7 @@ func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
 		return
 	}
 
-	poster, _ := cr.eventUsecase.FindPoster(newPoster.Name,int(newPoster.EventId))
+	poster, _ := cr.eventUsecase.FindPosterByName(newPoster.Name,int(newPoster.EventId))
 	response := response.SuccessResponse(true, "SUCCESS", poster)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -606,7 +606,7 @@ func (cr *EventHandler) GetPosterById(c *gin.Context) {
 
 	Poster_id,_ :=strconv.Atoi(c.Query("Poster_id"))
 	eventId,_ := strconv.Atoi(c.Query("eventid"))
-	poster, err := cr.eventUsecase.FindPoster(int(Poster_id),int(eventId))
+	poster, err := cr.eventUsecase.FindPosterById(int(Poster_id),int(eventId))
 
 	fmt.Println("event:", poster)
 

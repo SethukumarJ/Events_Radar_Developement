@@ -16,9 +16,20 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// FindOrganizationById implements interfaces.EventUsecase
+func (c *eventUsecase) FindOrganizationById(organization_id int) (*domain.OrganizationsResponse, error) {
+	organization, err := c.eventRepo.FindOrganizationById(organization_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
 // AcceptApplication implements interfaces.EventUsecase
-func (c *eventUsecase) AcceptApplication(applicationStatusId int,event_id int) error {
-	err := c.eventRepo.AcceptApplication(applicationStatusId,event_id)
+func (c *eventUsecase) AcceptApplication(applicationStatusId int, event_id int) error {
+	err := c.eventRepo.AcceptApplication(applicationStatusId, event_id)
 
 	if err != nil {
 		return err
@@ -27,9 +38,9 @@ func (c *eventUsecase) AcceptApplication(applicationStatusId int,event_id int) e
 }
 
 // ListApplications implements interfaces.EventUsecase
-func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string,event_id int) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
+func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string, event_id int) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
 	fmt.Println("List applilcation from usecase called")
-	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus,event_id)
+	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus, event_id)
 	fmt.Println("applicaition:", applicaition)
 	if err != nil {
 		fmt.Println("error from list applicaition from usecase:", err)
@@ -40,8 +51,8 @@ func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStat
 }
 
 // RejectApplication implements interfaces.EventUsecase
-func (c *eventUsecase) RejectApplication(applicationStatusId int,event_id int) error {
-	err := c.eventRepo.RejectApplication(applicationStatusId,event_id)
+func (c *eventUsecase) RejectApplication(applicationStatusId int, event_id int) error {
+	err := c.eventRepo.RejectApplication(applicationStatusId, event_id)
 
 	if err != nil {
 		return err
@@ -83,7 +94,7 @@ func (c *eventUsecase) DeletePoster(poster_id int, eventid int) error {
 
 // FindPoster implements interfaces.EventUsecase
 func (c *eventUsecase) FindPosterById(poster_id int, eventid int) (*domain.PosterResponse, error) {
-	poster, err := c.eventRepo.FindPosterId(poster_id, eventid)
+	poster, err := c.eventRepo.FindPosterById(poster_id, eventid)
 
 	if err != nil {
 		return nil, err
@@ -91,6 +102,7 @@ func (c *eventUsecase) FindPosterById(poster_id int, eventid int) (*domain.Poste
 
 	return &poster, nil
 }
+
 // FindPoster implements interfaces.EventUsecase
 func (c *eventUsecase) FindPosterByName(name string, eventid int) (*domain.PosterResponse, error) {
 	poster, err := c.eventRepo.FindPosterByName(name, eventid)
@@ -128,7 +140,6 @@ func (c *eventUsecase) FindUser(username string) (bool, error) {
 	return true, nil
 
 }
-
 
 // DeleteEvent implements interfaces.EventUsecase
 func (c *eventUsecase) DeleteEvent(event_id int) error {
@@ -219,6 +230,7 @@ func (c *eventUsecase) FindEventByTitle(title string) (*domain.EventResponse, er
 
 	return &event, nil
 }
+
 // FindUser implements interfaces.UserUseCase
 func (c *eventUsecase) FindEventById(event_id int) (*domain.EventResponse, error) {
 	event, err := c.eventRepo.FindEventById(event_id)

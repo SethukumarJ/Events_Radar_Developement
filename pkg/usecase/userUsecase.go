@@ -205,7 +205,7 @@ func (c *userUseCase) AcceptJoinInvitation(user_id int, organizaiton_id int, rol
 
 	}
 
-	_, err = c.userRepo.AcceptJoinInvitation(user_id, organizaiton_id, role)
+	_, err = c.userRepo.AcceptJoinInvitation(user_id,  organizaiton_id,role)
 	if err != nil {
 		return err
 	}

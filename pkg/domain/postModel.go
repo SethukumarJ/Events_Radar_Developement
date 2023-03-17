@@ -56,10 +56,9 @@ type Events struct {
 	EventId                uint          `json:"event_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	Title                  string        `json:"title" gorm:"unique" validate:"required,min=2,max=50"`
 	OrganizationId         int           `json:"organization_id"`
-	Organizations          Organizations `gorm:"foreignKey:OrganizationId;references:OrganizationId"`
 	User_id                int           `json:"user_id"`
 	Users                  Users         `gorm:"foreignKey:UserId;references:UserId"  swaggerignore:"true"`
-	CreatedBy              string        `json:"created_by`
+	CreatedBy              string        `json:"created_by"`
 	EventPic               string        `json:"event_pic" validate:"required,url"`
 	ShortDiscription       string        `json:"short_discription"`
 	LongDiscription        string        `json:"long_discription"`

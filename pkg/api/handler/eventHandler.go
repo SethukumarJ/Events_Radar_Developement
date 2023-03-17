@@ -1,26 +1,33 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
 	usecase "github.com/SethukumarJ/Events_Radar_Developement/pkg/usecase/interface"
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/utils"
+	"github.com/gin-gonic/gin"
 )
 
 type EventHandler struct {
 	eventUsecase usecase.EventUsecase
+	adminUsecase usecase.AdminUsecase
+	userUsecase  usecase.UserUseCase
 }
 
-func NewEventHandler(usecase usecase.EventUsecase) EventHandler {
+func NewEventHandler(adminUsecase usecase.AdminUsecase,
+	userUsecase usecase.UserUseCase,
+	eventUsecase usecase.EventUsecase,) EventHandler {
 	return EventHandler{
-		eventUsecase: usecase,
+		adminUsecase: adminUsecase,
+		userUsecase:  userUsecase,
+		eventUsecase: eventUsecase,
 	}
 }
 
@@ -249,50 +256,60 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @Failure 422 {object} response.Response{}
 // @Router /user/create-event [post]
 // Create events
-// func (cr *EventHandler) CreateEventUser(c *gin.Context) {
+func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 
-// 	var newEvent domain.Events
+	var newEvent domain.Events
 
-// 	fmt.Println("Creating event")
-// 	//fetching data
-// 	c.Bind(&newEvent)
-
-
-// 	fmt.Println("event", newEvent)
-// 	newEvent.CreatedBy = "user"
-// 	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
-// 	newEvent.CreatedAt = time.Now()
-// 	vip,err:= cr.eventUsecase.FindUserById(newEvent.User_id)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	if vip {
-// 		newEvent.Approved = true
-// 	}
+	fmt.Println("Creating event")
+	//fetching data
+	c.Bind(&newEvent)
 
 
-// 	//check event exit or not
+	fmt.Println("event", newEvent)
+	newEvent.CreatedBy = "user"
+	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
+	newEvent.CreatedAt = time.Now()
+	user, err := cr.userUsecase.FindUserById(newEvent.User_id)
+	if err != nil {
+		err = errors.New("error while getting user")
+		response := response.ErrorResponse("FAIL", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+		
+	}
+	vip,err:= cr.eventUsecase.FindUser(user.UserName)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-// 	err = cr.eventUsecase.CreateEvent(newEvent)
+	if vip {
+		newEvent.Approved = true
+	}
 
-// 	log.Println(newEvent)
 
-// 	if err != nil {
-// 		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
-// 		c.Writer.Header().Add("Content-Type", "application/json")
-// 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-// 		utils.ResponseJSON(*c, response)
-// 		return
-// 	}
+	//check event exit or not
 
-// 	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
-// 	response := response.SuccessResponse(true, "SUCCESS", event)
-// 	c.Writer.Header().Add("Content-Type", "application/json")
-// 	c.Writer.WriteHeader(http.StatusOK)
-// 	utils.ResponseJSON(*c, response)
+	err = cr.eventUsecase.CreateEvent(newEvent)
 
-// }
+	log.Println(newEvent)
+
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
+
+	event, _ := cr.eventUsecase.FindEventByTitle(newEvent.Title)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
+
+}
 
 // @Summary Create event
 // @ID Create event from admin
@@ -304,42 +321,43 @@ func (cr *EventHandler) UpdateEvent(c *gin.Context) {
 // @Failure 422 {object} response.Response{}
 // @Router /admin/create-event [post]
 // Create events
-// func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
+func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 
-// 	var newEvent domain.Events
-// 	fmt.Println("event", newEvent)
-// 	fmt.Println("Creating event")
-// 	//fetching data
-// 	c.Bind(&newEvent)
-// 	newEvent.CreatedBy = "admin"
-// 	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
-// 	newEvent.CreatedAt = time.Now()
-// 	newEvent.Approved = true
+	var newEvent domain.Events
+	fmt.Println("event", newEvent)
+	fmt.Println("Creating event")
+	//fetching data
+	c.Bind(&newEvent)
+	
+	newEvent.CreatedBy = "admin"
+	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
+	newEvent.CreatedAt = time.Now()
+	newEvent.Approved = true
 	
 
-// 	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
+	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
 
-// 	//check event exit or not
+	//check event exit or not
 
-// 	err := cr.eventUsecase.CreateEvent(newEvent)
+	err := cr.eventUsecase.CreateEvent(newEvent)
 
-// 	log.Println(newEvent)
+	log.Println(newEvent)
 
-// 	if err != nil {
-// 		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
-// 		c.Writer.Header().Add("Content-Type", "application/json")
-// 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
-// 		utils.ResponseJSON(*c, response)
-// 		return
-// 	}
+	if err != nil {
+		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 
-// 	event, _ := cr.eventUsecase.FindEvent(newEvent.Title)
-// 	response := response.SuccessResponse(true, "SUCCESS", event)
-// 	c.Writer.Header().Add("Content-Type", "application/json")
-// 	c.Writer.WriteHeader(http.StatusOK)
-// 	utils.ResponseJSON(*c, response)
+	event, _ := cr.eventUsecase.FindEventByTitle(newEvent.Title)
+	response := response.SuccessResponse(true, "SUCCESS", event)
+	c.Writer.Header().Add("Content-Type", "application/json")
+	c.Writer.WriteHeader(http.StatusOK)
+	utils.ResponseJSON(*c, response)
 
-// }
+}
 
  
 // @Summary Create event by organization
@@ -366,6 +384,16 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 	}
 	var newEvent domain.Events
 	c.Bind(&newEvent)
+
+	_,err :=cr.eventUsecase.FindOrganizationById(newEvent.OrganizationId)
+
+	if err != nil {
+		response := response.ErrorResponse("No Organization found", "no value", nil)
+		c.Writer.Header().Add("Content-Type", "application/json")
+		c.Writer.WriteHeader(http.StatusBadRequest)
+		utils.ResponseJSON(*c, response)
+		return
+	}
 	
 	fmt.Println("event", newEvent)
 	fmt.Println("Creating event",newEvent.EventDate)
@@ -380,7 +408,7 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 
 	//check event exit or not
 
-	err := cr.eventUsecase.CreateEvent(newEvent)
+	err = cr.eventUsecase.CreateEvent(newEvent)
 
 	log.Println(newEvent)
 

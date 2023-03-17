@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -20,15 +19,15 @@ const (
 	listPendingOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.pending LIMIT $1 OFFSET $2;`
+	ON org.organization_id = status.pending LIMIT $1 OFFSET $2;`
 	listregisteredOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
+	ON org.organization_id = status.registered LIMIT $1 OFFSET $2;`
 	listRejectedOrganizations = `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.rejected LIMIT $1 OFFSET $2;`
+	ON org.organization_id = status.rejected LIMIT $1 OFFSET $2;`
 )
 
 // SearchEvent implements interfaces.AdminRepository
@@ -44,12 +43,15 @@ func (c *adminRepository) SearchEvent(search string) ([]domain.EventResponse, er
 			COUNT(*) OVER(),
 			event_id,
 			title,
-			organizer_name,
+			organization_id,
+			user_id,
+			created_by,
 			event_pic,
 			short_discription,
 			long_discription,
 			event_date,
 			location,
+			created_at,
 			approved,
 			paid,
 			sex,
@@ -64,9 +66,8 @@ func (c *adminRepository) SearchEvent(search string) ([]domain.EventResponse, er
 			FROM events WHERE event_date > $1 
 			AND concat(event_id::text, title, organizer_name, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
 			ORDER BY event_date DESC;`
-			
 
-	rows, err := c.db.Query(query, dateString,search)
+	rows, err := c.db.Query(query, dateString, search)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -86,7 +87,9 @@ func (c *adminRepository) SearchEvent(search string) ([]domain.EventResponse, er
 			&totalRecords,
 			&event.EventId,
 			&event.Title,
-			&event.OrganizerName,
+			&event.OrganizationId,
+			&event.User_id,
+			&event.CreatedBy,
 			&event.EventPic,
 			&event.ShortDiscription,
 			&event.LongDiscription,
@@ -131,82 +134,80 @@ func (c *adminRepository) ListOrgRequests(pagenation utils.Filter, applicationSt
 	var err error
 	if applicationStatus == "pending" {
 		rows, err = c.db.Query(listPendingOrganizations, pagenation.Limit(), pagenation.Offset())
-	} else if applicationStatus == "registered"{
+	} else if applicationStatus == "registered" {
 		rows, err = c.db.Query(listregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
-	} else if applicationStatus == "rejected"{
+	} else if applicationStatus == "rejected" {
 		rows, err = c.db.Query(listRejectedOrganizations, pagenation.Limit(), pagenation.Offset())
 	}
-		fmt.Println("rows", rows)
+	fmt.Println("rows", rows)
+	if err != nil {
+		return nil, utils.Metadata{}, err
+	}
+
+	fmt.Println("List organizations called from repo")
+
+	var totalRecords int
+
+	defer rows.Close()
+	fmt.Println("allevents called from repo")
+
+	for rows.Next() {
+		var organization domain.OrganizationsResponse
+		fmt.Println("username :", organization.OrganizationName)
+		err = rows.Scan(
+			&totalRecords,
+			&organization.OrganizationId,
+			&organization.OrganizationName,
+			&organization.CreatedBy,
+			&organization.Logo,
+			&organization.About,
+			&organization.CreatedAt,
+			&organization.LinkedIn,
+			&organization.WebsiteLink,
+			&organization.Verified,
+			&organization.OrgStatusId,
+		)
+
+		fmt.Println("organization", organization.OrganizationName)
+
 		if err != nil {
-			return nil, utils.Metadata{}, err
-		}
-
-		fmt.Println("List organizations called from repo")
-
-		var totalRecords int
-
-		defer rows.Close()
-		fmt.Println("allevents called from repo")
-
-		for rows.Next() {
-			var organization domain.OrganizationsResponse
-			fmt.Println("username :", organization.OrganizationName)
-			err = rows.Scan(
-				&totalRecords,
-				&organization.OrganizationId,
-				&organization.OrganizationName,
-				&organization.CreatedBy,
-				&organization.Logo,
-				&organization.About,
-				&organization.CreatedAt,
-				&organization.LinkedIn,
-				&organization.WebsiteLink,
-				&organization.Verified,
-				&organization.OrgStatusId,
-			)
-
-			fmt.Println("organization", organization.OrganizationName)
-
-			if err != nil {
-				return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
-			}
-			organizations = append(organizations, organization)
-		}
-
-		if err := rows.Err(); err != nil {
 			return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
 		}
-		log.Println(organizations)
-		log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
-		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
+		organizations = append(organizations, organization)
+	}
 
-	} 
+	if err := rows.Err(); err != nil {
+		return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), err
+	}
+	log.Println(organizations)
+	log.Println(utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize))
+	return organizations, utils.ComputeMetaData(totalRecords, pagenation.Page, pagenation.PageSize), nil
 
-
+}
 
 // RegisterOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
-	var organizationName string
-	var userName string
+	var organization_id int
+	var user_id int
 
 	query := `SELECT org.created_by,status.pending
 				FROM organizations AS org INNER JOIN org_statuses AS status 
-				ON org.organization_name = status.pending WHERE status.org_status_id = $1;`
-	err := c.db.QueryRow(query, orgStatudId).Scan(&userName, &organizationName)
+				ON org.organization_id = status.pending WHERE status.org_status_id = $1;`
+	err := c.db.QueryRow(query, orgStatudId).Scan(&user_id, &organization_id)
 	if err != nil {
 		return err
 	}
 
 	query2 := `UPDATE org_statuses SET pending = null, registered = $1 WHERE org_status_id = $2;`
-	err = c.db.QueryRow(query2, organizationName, orgStatudId).Scan(&organizationName)
+	err = c.db.QueryRow(query2, organization_id, orgStatudId).Scan(&organization_id)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
 
 	}
-	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role)
+	query3 := `INSERT INTO user_organization_connections(organization_id,user_id,role)
 	VALUES($1,$2,$3);`
-	err = c.db.QueryRow(query3, organizationName, userName, "1").Scan(&organizationName)
+	err = c.db.QueryRow(query3, organization_id, user_id, "1").Scan(&organization_id)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
@@ -218,15 +219,15 @@ func (c *adminRepository) RegisterOrganization(orgStatudId int) error {
 
 // RejectOrganization implements interfaces.AdminRepository
 func (c *adminRepository) RejectOrganization(orgStatudId int) error {
-	var organizationName string
+	var organization_id int
 	query := `SELECT pending FROM org_statuses WHERE org_status_id = $1;`
-	err := c.db.QueryRow(query, orgStatudId).Scan(&organizationName)
+	err := c.db.QueryRow(query, orgStatudId).Scan(&organization_id)
 	if err != nil {
 		return err
 	}
 
 	query2 := `UPDATE org_statuses SET pending = null, rejected = $1;`
-	err = c.db.QueryRow(query2, organizationName).Scan(&organizationName)
+	err = c.db.QueryRow(query2, organization_id).Scan(&organization_id)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
@@ -237,27 +238,13 @@ func (c *adminRepository) RejectOrganization(orgStatudId int) error {
 }
 
 // ApproveEvent implements interfaces.AdminRepository
-func (c *adminRepository) ApproveEvent(title string) error {
-	var event_name string
+func (c *adminRepository) ApproveEvent(evnet_id int) error {
 
-	query := `SELECT title FROM 
-				events WHERE 
-				title = $1;`
-	err := c.db.QueryRow(query, title).Scan(&event_name)
-
-	if err == sql.ErrNoRows {
-		return errors.New("invalid title")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	query = `UPDATE events SET
+	query := `UPDATE events SET
 				approved = $1
 				WHERE
-				title = $2 ;`
-	err = c.db.QueryRow(query, true, title).Err()
+				evnet_id = $2 ;`
+	err := c.db.QueryRow(query, true, evnet_id).Err()
 	log.Println("approved the event successfully", err)
 	if err != nil {
 		return err
@@ -276,27 +263,29 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 	fmt.Println("currentdate:", dateString)
 
 	query := `SELECT 
-					COUNT(*) OVER(),
-					event_id,
-					title,
-					organizer_name,
-					event_pic,
-					short_discription,
-					long_discription,
-					event_date,
-					location,
-					created_at,
-					approved,
-					paid,
-					sex,
-					cusat_only,
-					archived,
-					sub_events,
-					online,
-					max_applications,
-					application_closing_date,
-					application_link,
-					website_link FROM events WHERE event_date > $1 AND approved = $2
+			COUNT(*) OVER(),
+			event_id,
+			title,
+			organization_id,
+			user_id,
+			created_by,
+			event_pic,
+			short_discription,
+			long_discription,
+			event_date,
+			location,
+			created_at,
+			approved,
+			paid,
+			sex,
+			cusat_only,
+			archived,
+			sub_events,
+			online,
+			max_applications,
+			application_closing_date,
+			application_link,
+			website_link  FROM events WHERE event_date > $1 AND approved = $2
 					LIMIT $3 OFFSET $4;`
 
 	rows, err := c.db.Query(query, dateString, approved, pagenation.Limit(), pagenation.Offset())
@@ -319,7 +308,9 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 			&totalRecords,
 			&event.EventId,
 			&event.Title,
-			&event.OrganizerName,
+			&event.OrganizationId,
+			&event.User_id,
+			&event.CreatedBy,
 			&event.EventPic,
 			&event.ShortDiscription,
 			&event.LongDiscription,
@@ -356,27 +347,13 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 }
 
 // VipUser implements interfaces.AdminRepository
-func (c *adminRepository) VipUser(username string) error {
-	var user_name string
+func (c *adminRepository) VipUser(user_id int) error {
 
-	query := `SELECT user_name FROM 
-				users WHERE 
-				user_name = $1;`
-	err := c.db.QueryRow(query, username).Scan(&user_name)
-
-	if err == sql.ErrNoRows {
-		return errors.New("invalid title")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	query = `UPDATE users SET
+	query := `UPDATE users SET
 				vip = $1
 				WHERE
-				user_name = $2 ;`
-	err = c.db.QueryRow(query, true, username).Err()
+				user_id = $2 ;`
+	err := c.db.QueryRow(query, true, user_id).Err()
 	log.Println("Updating vip status to true ", err)
 	if err != nil {
 		return err
@@ -452,15 +429,35 @@ func (c *adminRepository) AllUsers(pagenation utils.Filter) ([]domain.UserRespon
 }
 
 // FindUser implements interfaces.UserRepository
-func (c *adminRepository) FindAdmin(email string) (domain.AdminResponse, error) {
+func (c *adminRepository) FindAdminByName(email string) (domain.AdminResponse, error) {
 
 	var admin domain.AdminResponse
 
 	query := `SELECT admin_id,admin_name,email,password,
 					phone_number FROM admins 
-					WHERE email = $1;`
+					WHERE email = $1 OR admin_name = $2;`
 
-	err := c.db.QueryRow(query, email).Scan(&admin.AdminId,
+	err := c.db.QueryRow(query, email, email).Scan(&admin.AdminId,
+		&admin.AdminName,
+		&admin.Email,
+		&admin.Password,
+		&admin.PhoneNumber,
+	)
+
+	fmt.Println("admin from find admin :", admin)
+	return admin, err
+}
+
+// FindUser implements interfaces.UserRepository
+func (c *adminRepository) FindAdminById(admin_id int) (domain.AdminResponse, error) {
+
+	var admin domain.AdminResponse
+
+	query := `SELECT admin_id,admin_name,email,password,
+					phone_number FROM admins 
+					WHERE admin_id = $1;`
+
+	err := c.db.QueryRow(query, admin_id).Scan(&admin.AdminId,
 		&admin.AdminName,
 		&admin.Email,
 		&admin.Password,

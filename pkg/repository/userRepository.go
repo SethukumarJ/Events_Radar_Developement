@@ -17,11 +17,11 @@ type userRepository struct {
 }
 
 // UpdateRole implements interfaces.UserRepository
-func (c *userRepository) UpdateRole(userName string, organizationName string, updatedRole string) error {
+func (c *userRepository) UpdateRole(user_id int, organization_id int, updatedRole string) error {
 	
-	query := `UPDATE user_organization_connections SET role = $1 WHERE user_name = $2 AND organization_name = $3;`
+	query := `UPDATE user_organization_connections SET role = $1 WHERE user_id = $2 AND organization_id = $3;`
 
-	err := c.db.QueryRow(query, updatedRole,userName, organizationName).Err()
+	err := c.db.QueryRow(query, updatedRole,user_id, organization_id).Err()
 	fmt.Println("id updted:")
 	if err != nil {
 		return err
@@ -30,11 +30,11 @@ func (c *userRepository) UpdateRole(userName string, organizationName string, up
 }
 
 // DeleteMember implements interfaces.UserRepository
-func (c *userRepository) DeleteMember(userNmae string, organizationName string) error {
+func (c *userRepository) DeleteMember(user_id int, organization_id int) error {
 
-	query := `DELETE FROM user_organization_connections WHERE user_name = $1 AND organization_name = $2;`
+	query := `DELETE FROM user_organization_connections WHERE user_id = $1 AND organization_id = $2;`
 
-	err := c.db.QueryRow(query, userNmae, organizationName).Err()
+	err := c.db.QueryRow(query, user_id, organization_id).Err()
 	fmt.Println("id deleted:")
 	if err != nil {
 		return err
@@ -43,13 +43,13 @@ func (c *userRepository) DeleteMember(userNmae string, organizationName string) 
 }
 
 // ListMembers implements interfaces.UserRepository
-func (c *userRepository) ListMembers(memberRole string, organizationName string) ([]domain.UserOrganizationConnectionResponse, error) {
+func (c *userRepository) ListMembers(memberRole string, organizaition_id int) ([]domain.UserOrganizationConnectionResponse, error) {
 
 	var members []domain.UserOrganizationConnectionResponse
 
-	query := `SELECT COUNT(*) OVER(),user_name, role FROM user_organization_connections WHERE organization_name = $1 AND role = $2;`
+	query := `SELECT COUNT(*) OVER(),user_id, role FROM user_organization_connections WHERE organizaition_id = $1 AND role = $2;`
 
-	rows, err := c.db.Query(query, organizationName, memberRole)
+	rows, err := c.db.Query(query, organizaition_id, memberRole)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -63,14 +63,14 @@ func (c *userRepository) ListMembers(memberRole string, organizationName string)
 
 	for rows.Next() {
 		var member domain.UserOrganizationConnectionResponse
-		fmt.Println("member name :", member.UserName)
+		fmt.Println("member name :", member.UserId)
 		err = rows.Scan(
 			&totalRecords,
-			&member.UserName,
+			&member.UserId,
 			&member.Role,
 		)
 
-		fmt.Println("organizationName :", member.OrganizationName)
+		fmt.Println("organizationName :", member.OrganizationId)
 
 		if err != nil {
 			return nil, err
@@ -109,20 +109,20 @@ func (c *userRepository) Prmotion_Faliure(orderid string, paymentid string) erro
 	if err != nil {
 		return err
 	}
-	var event string
-	getEvent := `SELECT event_title FROM promotions WHERE order_id = $1;`
+	var event int
+	getEvent := `SELECT event_id FROM promotions WHERE order_id = $1;`
 	err = c.db.QueryRow(getEvent, orderid).Scan(&event)
 	if err != nil {
 		return err
 	}
 
-	updatePackage := `UPDATE packages SET basic = false, standard = false , premium = false WHERE event_title = $1;`
+	updatePackage := `UPDATE packages SET basic = false, standard = false , premium = false WHERE event_id = $1;`
 	err = c.db.QueryRow(updatePackage, event).Err()
 	if err != nil {
 		return err
 	}
 
-	unfeature := `UPDATE events SET featured = false WHERE title = $1;`
+	unfeature := `UPDATE events SET featured = false WHERE event_id = $1;`
 	err = c.db.QueryRow(unfeature, event).Err()
 	if err != nil {
 		return err
@@ -133,34 +133,35 @@ func (c *userRepository) Prmotion_Faliure(orderid string, paymentid string) erro
 // FeaturizeEvent implements interfaces.UserRepository
 func (c *userRepository) FeaturizeEvent(orderid string) error {
 
-	var event, plan, insertPackage string
+	var  plan, insertPackage string
+	var event_id int
 
-	query := `SELECT event_title, plan FROM promotions WHERE order_id = $1;`
+	query := `SELECT event_id, plan FROM promotions WHERE order_id = $1;`
 
-	err := c.db.QueryRow(query, orderid).Scan(&event, &plan)
+	err := c.db.QueryRow(query, orderid).Scan(&event_id, &plan)
 	if err != nil {
 		fmt.Println("1////////////////////////////")
 		return err
 	}
 
-	feature := `UPDATE events SET featured = true  WHERE title = $1`
+	feature := `UPDATE events SET featured = true  WHERE event_id = $1`
 
-	err = c.db.QueryRow(feature, event).Err()
+	err = c.db.QueryRow(feature, event_id).Err()
 	if err != nil {
 		fmt.Println("2////////////////////////////")
 		return err
 	}
-	packages := `INSERT INTO packages(event_title)VALUES($1)`
+	packages := `INSERT INTO packages(event_id)VALUES($1)`
 
-	err = c.db.QueryRow(packages, event).Err()
+	err = c.db.QueryRow(packages, event_id).Err()
 	if err != nil {
 		fmt.Println("3////////////////////////////")
 		return err
 	}
 
-	basic := `UPDATE packages SET basic = true WHERE event_title = $1`
-	standard := `UPDATE packages SET standard = true WHERE event_title = $1`
-	premium := `UPDATE packages SET premium = true WHERE event_title = $1`
+	basic := `UPDATE packages SET basic = true WHERE event_id = $1`
+	standard := `UPDATE packages SET standard = true WHERE event_id = $1`
+	premium := `UPDATE packages SET premium = true WHERE event_id = $1`
 
 	if plan == "basic" {
 		insertPackage = basic
@@ -170,7 +171,7 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 		insertPackage = premium
 	}
 
-	err = c.db.QueryRow(insertPackage, event).Err()
+	err = c.db.QueryRow(insertPackage, event_id).Err()
 	if err != nil {
 		fmt.Println("4////////////////////////////")
 		return err
@@ -184,11 +185,11 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {
 	var id int
 
-	query := `INSERT INTO promotions(order_id,event_title,promoted_by,amount,plan)VALUES($1, $2, $3, $4, $5)RETURNING promotion_id;`
+	query := `INSERT INTO promotions(order_id,event_id,promoted_by,amount,plan)VALUES($1, $2, $3, $4, $5)RETURNING promotion_id;`
 
 	err := c.db.QueryRow(query,
 		promotion.OrderId,
-		promotion.EventTitle,
+		promotion.EventId,
 		promotion.PromotedBy,
 		promotion.Amount,
 		promotion.Plan).Scan(&id)
@@ -227,11 +228,11 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int, error) {
 	var id int
 
-	query := `INSERT INTO application_forms(user_name,
+	query := `INSERT INTO application_forms(user_id,
 		applied_at,
 		first_name,
 		last_name,
-		event_name,
+		event_id,
 		proffession,
 		college,
 		company,
@@ -242,11 +243,11 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 										RETURNING application_id;`
 
 	err := c.db.QueryRow(query,
-		applicationForm.UserName,
+		applicationForm.UserId,
 		applicationForm.AppliedAt,
 		applicationForm.FirstName,
 		applicationForm.LastName,
-		applicationForm.Event_name,
+		applicationForm.EventId,
 		applicationForm.Proffession,
 		applicationForm.College,
 		applicationForm.Company,
@@ -258,8 +259,8 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 		return -1, err
 	}
 
-	query2 := `INSERT INTO appllication_statuses(pending,event_name)VALUES($1,$2);`
-	err = c.db.QueryRow(query2, applicationForm.UserName, applicationForm.Event_name).Err()
+	query2 := `INSERT INTO appllication_statuses(pending,event_id)VALUES($1,$2);`
+	err = c.db.QueryRow(query2, applicationForm.UserId, applicationForm.EventId).Err()
 	if err != nil {
 		return -1, err
 	}
@@ -268,14 +269,14 @@ func (c *userRepository) ApplyEvent(applicationForm domain.ApplicationForm) (int
 }
 
 // FindApplication implements interfaces.UserRepository
-func (c *userRepository) FindApplication(username string, eventname string) (domain.ApplicationFormResponse, error) {
+func (c *userRepository) FindApplication(user_id int, event_id int) (domain.ApplicationFormResponse, error) {
 	var application domain.ApplicationFormResponse
 
-	query := `SELECT user_name,
+	query := `SELECT user_id,
 	applied_at,
 	first_name,
 	last_name,
-	event_name,
+	event_id,
 	proffession,
 	college,
 	company,
@@ -285,12 +286,12 @@ func (c *userRepository) FindApplication(username string, eventname string) (dom
 	linkedin FROM application_forms 
 					WHERE user_name = $1 AND event_name = $2;`
 
-	err := c.db.QueryRow(query, username, eventname).Scan(
-		&application.UserName,
+	err := c.db.QueryRow(query, user_id, event_id).Scan(
+		&application.UserId,
 		&application.AppliedAt,
 		&application.FirstName,
 		&application.LastName,
-		&application.Event_name,
+		&application.EventId,
 		&application.Proffession,
 		&application.College,
 		&application.Company,
@@ -306,26 +307,26 @@ func (c *userRepository) FindApplication(username string, eventname string) (dom
 
 // AdmitMember implements interfaces.UserRepository
 func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error {
-	var organizationName string
-	var userName string
+	var organizationId int
+	var userId int
 
-	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1;`
-	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName, &organizationName)
+	query := `SELECT pending, organization_id FROM join_statuses WHERE join_status_id = $1;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&userId, &organizationId)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
-	query3 := `INSERT INTO user_organization_connections(organization_name,user_name,role, joined_at)
+	query3 := `INSERT INTO user_organization_connections(organization_id,user_id,role, joined_at)
 	VALUES($1,$2,$3,$4);`
 	joined_at := time.Now()
-	err = c.db.QueryRow(query3, organizationName, userName, memberRole, joined_at).Scan(&organizationName)
+	err = c.db.QueryRow(query3, organizationId, userId, memberRole, joined_at).Scan(&organizationId)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
 
 	}
 	query2 := `UPDATE join_statuses SET pending = null, joined = $1 WHERE join_status_id = $2;`
-	err = c.db.QueryRow(query2, userName, JoinStatusId).Scan(&organizationName)
+	err = c.db.QueryRow(query2, userId, JoinStatusId).Scan(&organizationId)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err
@@ -335,25 +336,25 @@ func (c *userRepository) AdmitMember(JoinStatusId int, memberRole string) error 
 	return nil
 }
 
-func (c *userRepository) FindJoinStatus(JoinStatusId int) (string, string, error) {
-	var organizationName string
-	var userName string
+func (c *userRepository) FindJoinStatus(JoinStatusId int) (int, int, error) {
+	var organization_id int
+	var user_id int
 
-	query := `SELECT pending, organization_name FROM join_statuses WHERE join_status_id = $1 AND pending IS NOT NULL;`
-	err := c.db.QueryRow(query, JoinStatusId).Scan(&userName, &organizationName)
+	query := `SELECT pending, organization_id FROM join_statuses WHERE join_status_id = $1 AND pending IS NOT NULL;`
+	err := c.db.QueryRow(query, JoinStatusId).Scan(&user_id, &organization_id)
 	if err != nil && err != sql.ErrNoRows {
-		return "", "", err
+		return -1, -1, err
 	}
-	return userName, organizationName, nil
+	return user_id, organization_id, nil
 }
 
 // ListJoinRequests implements interfaces.UserRepository
-func (c *userRepository) ListJoinRequests(username string, organizationName string) ([]domain.Join_StatusResponse, error) {
+func (c *userRepository) ListJoinRequests(user_id int, organization_id int) ([]domain.Join_StatusResponse, error) {
 	var Requests []domain.Join_StatusResponse
 
-	query := `SELECT COUNT(*) OVER(),join_status_id, pending, organization_name FROM join_statuses WHERE organization_name = $1 AND pending IS NOT NULL;`
+	query := `SELECT COUNT(*) OVER(),join_status_id, pending, organization_id FROM join_statuses WHERE organization_id = $1 AND pending IS NOT NULL;`
 
-	rows, err := c.db.Query(query, organizationName)
+	rows, err := c.db.Query(query, organization_id)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -367,15 +368,15 @@ func (c *userRepository) ListJoinRequests(username string, organizationName stri
 
 	for rows.Next() {
 		var joinStatuses domain.Join_StatusResponse
-		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationId)
 		err = rows.Scan(
 			&totalRecords,
 			&joinStatuses.JoinStatusId,
 			&joinStatuses.Pending,
-			&joinStatuses.OrganizationName,
+			&joinStatuses.OrganizationId,
 		)
 
-		fmt.Println("organizatioinName :", joinStatuses.OrganizationName)
+		fmt.Println("organizatioinName :", joinStatuses.OrganizationId)
 
 		if err != nil {
 			return nil, err
@@ -393,23 +394,23 @@ func (c *userRepository) ListJoinRequests(username string, organizationName stri
 }
 
 // FindRelation implements interfaces.UserRepository
-func (c *userRepository) FindRelation(username string, organizationName string) (string, error) {
+func (c *userRepository) FindRelation(user_id int, organizaition_id int) (string, error) {
 	var role string
-	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
+	findRole := `SELECT role FROM user_organization_connections WHERE organizaition_id = $1 AND user_id = $2;`
 
-	err := c.db.QueryRow(findRole, organizationName, username).Scan(&role)
+	err := c.db.QueryRow(findRole, organizaition_id, user_id).Scan(&role)
 	fmt.Println("role,", role)
 
 	return role, err
 }
 
 // AddMembers implements interfaces.UserRepository
-func (c *userRepository) AcceptJoinInvitation(newMember string, organizationName string, memberRole string) (int, error) {
+func (c *userRepository) AcceptJoinInvitation(user_id int, organization_id int, memberRole string) (int, error) {
 	var id int
 	var err error
-	query := `INSERT INTO user_organization_connections(user_name,organization_name,role)VALUES($1,$2,$3);`
+	query := `INSERT INTO user_organization_connections(user_id,organization_id,role)VALUES($1,$2,$3);`
 
-	err = c.db.QueryRow(query, newMember, organizationName, memberRole).Err()
+	err = c.db.QueryRow(query, user_id, organization_id, memberRole).Err()
 	fmt.Println("err", err)
 
 	fmt.Println("id", id)
@@ -417,23 +418,23 @@ func (c *userRepository) AcceptJoinInvitation(newMember string, organizationName
 }
 
 // FindRole implements interfaces.UserRepository
-func (c *userRepository) FindRole(username string, organizationName string) (string, error) {
+func (c *userRepository) FindRole(user_id int, organization_id int) (string, error) {
 
 	var role string
-	findRole := `SELECT role FROM user_organization_connections WHERE organization_name = $1 AND user_name = $2;`
+	findRole := `SELECT role FROM user_organization_connections WHERE organization_id = $1 AND user_id = $2;`
 
-	err := c.db.QueryRow(findRole, organizationName, username).Scan(&role)
+	err := c.db.QueryRow(findRole, organization_id, user_id).Scan(&role)
 	fmt.Println("role,", role)
 
 	return role, err
 }
 
 // JoinOrganization implements interfaces.UserRepository
-func (c *userRepository) JoinOrganization(organizatinName string, username string) (int, error) {
+func (c *userRepository) JoinOrganization(organizaition_id int, user_id int) (int, error) {
 	var id int
 
-	query := `INSERT INTO join_statuses(pending,organization_name)VALUES($1,$2);`
-	err := c.db.QueryRow(query, username, organizatinName).Err()
+	query := `INSERT INTO join_statuses(pending,organizaition_id)VALUES($1,$2);`
+	err := c.db.QueryRow(query, user_id, organizaition_id).Err()
 
 	fmt.Println("id", id)
 	return id, err
@@ -448,7 +449,7 @@ func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.Or
 	ListregisteredOrganizations := `SELECT COUNT(*) OVER() AS total_records,org.organization_id,org.organization_name,
 	org.created_by,org.logo,org.about,org.created_at,org.linked_in,org.website_link,org.verified ,status.org_status_id 
 	FROM organizations AS org INNER JOIN org_statuses AS status 
-	ON org.organization_name = status.registered LIMIT $1 OFFSET $2;`
+	ON org.organization_id = status.registered LIMIT $1 OFFSET $2;`
 
 	rows, err := c.db.Query(ListregisteredOrganizations, pagenation.Limit(), pagenation.Offset())
 	fmt.Println("rows", rows)
@@ -497,7 +498,7 @@ func (c *userRepository) ListOrganizations(pagenation utils.Filter) ([]domain.Or
 }
 
 // FindOrganization implements interfaces.UserRepository
-func (c *userRepository) FindOrganization(organizationName string) (domain.OrganizationsResponse, error) {
+func (c *userRepository) FindOrganizationByName(organizationName string) (domain.OrganizationsResponse, error) {
 	var organization domain.OrganizationsResponse
 
 	query := `SELECT organization_id,
@@ -512,6 +513,37 @@ func (c *userRepository) FindOrganization(organizationName string) (domain.Organ
 					WHERE organization_name = $1;`
 
 	err := c.db.QueryRow(query, organizationName).Scan(
+		&organization.OrganizationId,
+		&organization.OrganizationName,
+		&organization.CreatedBy,
+		&organization.Logo,
+		&organization.About,
+		&organization.CreatedAt,
+		&organization.LinkedIn,
+		&organization.WebsiteLink,
+		&organization.Verified,
+	)
+
+	fmt.Println("organization from find orgnanization :", organization)
+	return organization, err
+}
+
+// FindOrganization implements interfaces.UserRepository
+func (c *userRepository) FindOrganizationById(organization_id int) (domain.OrganizationsResponse, error) {
+	var organization domain.OrganizationsResponse
+
+	query := `SELECT organization_id,
+					organization_name,
+					created_by,
+					logo,
+					about,
+					created_at,
+					linked_in,
+					website_link,
+					verified FROM organizations 
+					WHERE organization_id = $1;`
+
+	err := c.db.QueryRow(query, organization_id).Scan(
 		&organization.OrganizationId,
 		&organization.OrganizationName,
 		&organization.CreatedBy,
@@ -550,7 +582,7 @@ func (c *userRepository) CreateOrganization(organization domain.Organizations) (
 		organization.WebsiteLink).Scan(&id)
 
 	query2 := `INSERT INTO org_statuses(pending)VALUES($1);`
-	c.db.QueryRow(query2, organization.OrganizationName)
+	c.db.QueryRow(query2, id)
 
 	fmt.Println("id", id)
 	return id, err
@@ -558,13 +590,13 @@ func (c *userRepository) CreateOrganization(organization domain.Organizations) (
 }
 
 // GetQuestions implements interfaces.UserRepository
-func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, error) {
+func (c *userRepository) GetQuestions(event_id int) ([]domain.FaqaResponse, error) {
 
 	var questions []domain.FaqaResponse
 
-	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE title = $1 AND answer_id = '0';`
+	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE event_id = $1 AND answer_id = '0';`
 
-	rows, err := c.db.Query(query, title)
+	rows, err := c.db.Query(query, event_id)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -578,7 +610,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 
 	for rows.Next() {
 		var faqas domain.FaqaResponse
-		fmt.Println("title :", faqas.Title)
+		fmt.Println("title :", faqas.EventId)
 		err = rows.Scan(
 			&totalRecords,
 			&faqas.Question,
@@ -586,7 +618,7 @@ func (c *userRepository) GetQuestions(title string) ([]domain.FaqaResponse, erro
 			&faqas.UserName,
 		)
 
-		fmt.Println("title", faqas.Title)
+		fmt.Println("title", faqas.EventId)
 
 		if err != nil {
 			return nil, err
@@ -625,17 +657,17 @@ func (c *userRepository) PostAnswer(answer domain.Answers, question int) (int, e
 }
 
 // GetPublicFaqas implements interfaces.UserRepository
-func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse, error) {
+func (c *userRepository) GetPublicFaqas(event_id int) ([]domain.QAResponse, error) {
 	fmt.Println("faqas called from repo")
 
 	var qa []domain.QAResponse
 
 	query := `SELECT COUNT(*) OVER() AS total_records,que.faqa_id,que.question,que.answer_id,
-	que.title,que.created_at,que.user_name,que.organizer_name ,ans.answer 
+	que.event_id,que.created_at,que.user_name,que.organization_id ,ans.answer 
 	FROM faqas AS que INNER JOIN answers AS ans 
-	ON que.answer_id = ans.answer_id WHERE que.public = $1 AND title = $2;`
+	ON que.answer_id = ans.answer_id WHERE que.public = $1 AND event_id = $2;`
 
-	rows, err := c.db.Query(query, true, title)
+	rows, err := c.db.Query(query, true, event_id)
 	fmt.Println("rows", rows)
 	if err != nil {
 		return nil, err
@@ -650,19 +682,19 @@ func (c *userRepository) GetPublicFaqas(title string) ([]domain.QAResponse, erro
 
 	for rows.Next() {
 		var faqas domain.QAResponse
-		fmt.Println("username :", faqas.Title)
+		fmt.Println("username :", faqas.EventId)
 		err = rows.Scan(
 			&totalRecords,
 			&faqas.FaqaId,
 			&faqas.Question,
 			&faqas.AnswerId,
-			&faqas.Title,
+			&faqas.EventId,
 			&faqas.CreatedAt,
-			&faqas.OrganizerName,
-			&faqas.OrganizerName,
+			&faqas.UserName,
+			&faqas.OrganizaitionId,
 			&faqas.Answer)
 
-		fmt.Println("title", faqas.Title)
+		fmt.Println("title", faqas.EventId)
 
 		if err != nil {
 			return nil, err
@@ -684,18 +716,18 @@ func (c *userRepository) PostQuestion(question domain.Faqas) (int, error) {
 	var id int
 
 	query := `INSERT INTO faqas(question,
-		title,
+		event_id,
 		created_at,
 		user_name,
-		organizer_name
+		organization_id
 		)VALUES($1, $2, $3, $4,$5)RETURNING faqa_id;`
 
 	err := c.db.QueryRow(query,
 		question.Question,
-		question.Title,
+		question.EventId,
 		question.CreatedAt,
 		question.UserName,
-		question.OrganizerName).Scan(&id)
+		question.OrganizationId).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err
@@ -716,7 +748,7 @@ func (c *userRepository) UpdatePassword(password string, email string) (int, err
 }
 
 // UpdateProfile implements interfaces.UserRepository
-func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (int, error) {
+func (c *userRepository) UpdateProfile(profile domain.Bios, user_id int) (int, error) {
 	var id int
 	query := `UPDATE bios SET 
 							about=$1,
@@ -726,7 +758,7 @@ func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (in
 							skills =$5,
 							qualification=$6,
 							dev_folio=$7,
-							website_link=$8 WHERE user_name = $9;`
+							website_link=$8 WHERE user_id = $9;`
 	err := c.db.QueryRow(query, profile.About,
 		profile.Twitter,
 		profile.Github,
@@ -734,7 +766,7 @@ func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (in
 		profile.Skills,
 		profile.Qualification,
 		profile.DevFolio,
-		profile.WebsiteLink, username).Scan(&id)
+		profile.WebsiteLink, user_id).Scan(&id)
 
 	fmt.Println("id", id)
 	return id, err
@@ -742,7 +774,7 @@ func (c *userRepository) UpdateProfile(profile domain.Bios, username string) (in
 }
 
 // FindUser implements interfaces.UserRepository
-func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
+func (c *userRepository) FindUserByName(email string) (domain.UserResponse, error) {
 
 	var user domain.UserResponse
 
@@ -752,6 +784,31 @@ func (c *userRepository) FindUser(email string) (domain.UserResponse, error) {
 					WHERE email = $1 OR user_name = $2;`
 
 	err := c.db.QueryRow(query, email, email).Scan(&user.UserId,
+		&user.UserName,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&user.PhoneNumber,
+		&user.Profile,
+		&user.Verification,
+	)
+
+	fmt.Println("user from find user :", user)
+	return user, err
+}
+
+// FindUser implements interfaces.UserRepository
+func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) {
+
+	var user domain.UserResponse
+
+	query := `SELECT user_id,user_name,first_name,
+			  		last_name,email,password,
+					phone_number,profile,verification FROM users 
+					WHERE user_id = $1;`
+
+	err := c.db.QueryRow(query, user_id).Scan(&user.UserId,
 		&user.UserName,
 		&user.FirstName,
 		&user.LastName,

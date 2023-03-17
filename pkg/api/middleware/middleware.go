@@ -95,8 +95,8 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		c.Writer.Header().Set("userName", userName)
-		c.Writer.Header().Set("userId", string(userId))
-		c.Writer.Header().Set("organizationId", string(organization_id))
+		c.Writer.Header().Set("user_id", string(userId))
+		c.Writer.Header().Set("organization_id", string(organization_id))
 		c.Writer.Header().Set("role", role)
 		c.Next()
 
@@ -160,7 +160,9 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 		} else {
 
 			userName := fmt.Sprint(claims.UserName)
+			userId := fmt.Sprint(claims.UserId)
 			c.Writer.Header().Set("userName", userName)
+			c.Writer.Header().Set("user_id",userId)
 			c.Next()
 
 		}
@@ -225,7 +227,9 @@ func (cr *middleware) AuthorizeJwtAdmin() gin.HandlerFunc {
 		} else {
 
 			userName := fmt.Sprint(claims.UserName)
+			user_id := fmt.Sprint(claims.UserId)
 			c.Writer.Header().Set("userName", userName)
+			c.Writer.Header().Set("user_id", user_id)
 			c.Next()
 
 		}

@@ -65,7 +65,7 @@ type FaqaResponse struct {
 	FaqaId          uint      `json:"faqa_id"`
 	Question        string    `json:"question"`
 	AnswerId        int       `json:"answer_id"`
-	Title           string    `json:"title"`
+	EventId         int       `json:"event_id"`
 	CreatedAt       time.Time `json:"created_at"`
 	UserName        string    `json:"user_name"`
 	OrganizaitionId int       `json:"organization_id"`
@@ -75,7 +75,7 @@ type QAResponse struct {
 	FaqaId          uint      `json:"faqa_id"`
 	Question        string    `json:"question"`
 	AnswerId        int       `json:"answer_id"`
-	Title           string    `json:"title"`
+	EventId         int       `json:"event_id"`
 	CreatedAt       time.Time `json:"created_at"`
 	UserName        string    `json:"user_name"`
 	OrganizaitionId int       `json:"organization_id"`
@@ -128,7 +128,7 @@ type ApplicationFormResponse struct {
 
 type PromotionResponse struct {
 	PromotionId uint   `json:"promotion_id"`
-	EventId    int    `json:"event_id"`
+	EventId     int    `json:"event_id"`
 	OrderId     string `json:"order_id"`
 	PromotedBy  int    `json:"Organization_id"`
 	PaymentId   string `json:"payment_id"`

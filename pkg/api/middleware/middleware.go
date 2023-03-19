@@ -39,7 +39,7 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 
 		//getting from header
 		autheader := c.Request.Header["Authorization"]
-		organization_id, _ := strconv.Atoi(c.Query("organization_id"))
+		organization_id, _ := strconv.Atoi(c.Query("Organization_id"))
 		fmt.Println("organization id from middleware", organization_id)
 
 		auth := strings.Join(autheader, " ")
@@ -81,7 +81,7 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 
 		userName := fmt.Sprint(claims.UserName)
 		userId := claims.UserId
-		fmt.Println("username", userName)
+		fmt.Println("username", userName,"user_id",userId,"organization_id",organization_id)
 		role, err := cr.userUsecase.VerifyRole(int(userId), int(organization_id))
 		fmt.Println(role, "///////////", err, "role and pathrole")
 		if err != nil {
@@ -95,8 +95,8 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		c.Writer.Header().Set("userName", userName)
-		c.Writer.Header().Set("user_id", string(userId))
-		c.Writer.Header().Set("organization_id", string(organization_id))
+		c.Writer.Header().Set("user_id", fmt.Sprint(userId))
+		c.Writer.Header().Set("organization_id", fmt.Sprint(organization_id))
 		c.Writer.Header().Set("role", role)
 		c.Next()
 

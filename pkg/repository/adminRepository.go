@@ -40,31 +40,31 @@ func (c *adminRepository) SearchEvent(search string) ([]domain.EventResponse, er
 	fmt.Println("currentdate:", dateString)
 
 	query := `SELECT 
-			COUNT(*) OVER(),
-			event_id,
-			title,
-			organization_id,
-			user_id,
-			created_by,
-			event_pic,
-			short_discription,
-			long_discription,
-			event_date,
-			location,
-			created_at,
-			approved,
-			paid,
-			sex,
-			cusat_only,
-			archived,
-			sub_events,
-			online,
-			max_applications,
-			application_closing_date,
-			application_link,
-			website_link 
-			FROM events WHERE event_date > $1 
-			AND concat(event_id::text, title, organizer_name, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
+	COUNT(*) OVER(),
+	event_id,
+	title,
+	organization_id,
+	user_id,
+	created_by,
+	event_pic,
+	short_discription,
+	long_discription,
+	event_date,
+	location,
+	created_at,
+	approved,
+	paid,
+	sex,
+	cusat_only,
+	archived,
+	sub_events,
+	online,
+	max_applications,
+	application_closing_date,
+	application_link,
+	website_link 
+		FROM events WHERE event_date > $1 
+			AND concat(event_id::text, title, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
 			ORDER BY event_date DESC;`
 
 	rows, err := c.db.Query(query, dateString, search)
@@ -243,7 +243,7 @@ func (c *adminRepository) ApproveEvent(evnet_id int) error {
 	query := `UPDATE events SET
 				approved = $1
 				WHERE
-				evnet_id = $2 ;`
+				event_id = $2 ;`
 	err := c.db.QueryRow(query, true, evnet_id).Err()
 	log.Println("approved the event successfully", err)
 	if err != nil {

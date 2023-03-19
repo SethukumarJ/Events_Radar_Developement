@@ -223,7 +223,7 @@ func (c *eventUsecase) CreateEvent(event domain.Events) error {
 // FindUser implements interfaces.UserUseCase
 func (c *eventUsecase) FindEventByTitle(title string) (*domain.EventResponse, error) {
 	event, err := c.eventRepo.FindEventByTitle(title)
-
+	fmt.Println("event from usecase",event)
 	if err != nil {
 		return nil, err
 	}

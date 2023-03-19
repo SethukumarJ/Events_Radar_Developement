@@ -31,7 +31,7 @@ func (c *userUseCase) UpdateRole(user_id int, organization_id int, updatedRole s
 		return errors.New("relation does'nt exist with this credentials")
 
 	}
-	err = c.userRepo.UpdateRole(user_id, organization_id,updatedRole)
+	err = c.userRepo.UpdateRole(user_id, organization_id, updatedRole)
 
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func (c *userUseCase) AcceptJoinInvitation(user_id int, organizaiton_id int, rol
 
 	}
 
-	_, err = c.userRepo.AcceptJoinInvitation(user_id,  organizaiton_id,role)
+	_, err = c.userRepo.AcceptJoinInvitation(user_id, organizaiton_id, role)
 	if err != nil {
 		return err
 	}
@@ -225,9 +225,9 @@ func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole stri
 		user, err := c.userRepo.FindUserByName(v.Members)
 
 		if err == nil {
-			c.SendInvitationMail(user.Email, organizaiton_id,organizaition.OrganizationName, memberRole)
+			c.SendInvitationMail(user.Email, organizaiton_id, organizaition.OrganizationName, memberRole)
 		} else if err == sql.ErrNoRows {
-			c.SendInvitationMail(v.Members, organizaiton_id,organizaition.OrganizationName, memberRole)
+			c.SendInvitationMail(v.Members, organizaiton_id, organizaition.OrganizationName, memberRole)
 		} else {
 			fmt.Println("coud'nt invite :", v)
 		}
@@ -236,12 +236,12 @@ func (c *userUseCase) AddMembers(newMembers []domain.AddMembers, memberRole stri
 	return nil
 }
 
-func (c *userUseCase) SendInvitationMail(email string, organization_id int,organizationName string, memberRole string) error {
+func (c *userUseCase) SendInvitationMail(email string, organization_id int, organizationName string, memberRole string) error {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":         email,
 		"organizationName": organizationName,
-		"organizationId"  : organization_id,
+		"organizationId":   organization_id,
 		"memberRole":       memberRole,
 		"exp":              time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
@@ -522,7 +522,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"https://eventsradar.online/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 

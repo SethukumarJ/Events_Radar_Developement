@@ -68,7 +68,7 @@ func (c *eventRepository) FindOrganizationById(organizaiton_id int) (domain.Orga
 }
 // AcceptApplication implements interfaces.EventRepository
 func (c *eventRepository) AcceptApplication(applicationStatusId int, event_id int) error {
-	var eventId string
+	var eventId int
 	var userId int
 
 	query := `SELECT app.event_id,status.pending
@@ -89,7 +89,7 @@ func (c *eventRepository) AcceptApplication(applicationStatusId int, event_id in
 
 	}
 	query3 := `UPDATE events SET application_left = application_left - 1 WHERE event_id = $1;`
-	err = c.db.QueryRow(query3, eventId).Err()
+	err = c.db.QueryRow(query3, event_id).Err()
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		fmt.Println("3//////////////////////////////")
@@ -355,6 +355,7 @@ func (c *eventRepository) SearchEventUser(search string) ([]domain.EventResponse
 		title,
 		organization_id,
 		user_id,
+		created_by,
 		event_pic,
 		short_discription,
 		long_discription,
@@ -373,7 +374,7 @@ func (c *eventRepository) SearchEventUser(search string) ([]domain.EventResponse
 		application_link,
 		website_link 
 			FROM events WHERE event_date > $1 AND approved = true
-			AND concat(event_id::text, title, organizer_name, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
+			AND concat(event_id::text, title, short_discription, long_discription, location) LIKE '%' || $2 || '%' 
 			ORDER BY event_date DESC;`
 
 	rows, err := c.db.Query(query, dateString, search)
@@ -517,52 +518,58 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter, filter util
 	query := `SELECT 
 			COUNT(*) OVER(),
 			event_id,
-			title,
-			organization_id,
-			user_id,
-			event_pic,
-			short_discription,
-			long_discription,
-			event_date,
-			location,
-			created_at,
-			approved,
-			paid,
-			sex,
-			cusat_only,
-			archived,
-			sub_events,
-			online,
-			max_applications,
-			application_closing_date,
-			application_link,
-			website_link  FROM events 
+	title,
+	organization_id,
+	user_id,
+	created_by,
+	event_pic,
+	short_discription,
+	long_discription,
+	event_date,
+	location,
+	created_at,
+	approved,
+	paid,
+	amount,
+	sex,
+	cusat_only,
+	archived,
+	sub_events,
+	online,
+	max_applications,
+	application_left,
+	application_closing_date,
+	application_link,
+	website_link  FROM events 
 					WHERE event_date > $1 AND approved = true 
 					AND cusat_only = $2 AND sex = $3 AND online = $4 ORDER BY event_date DESC  
 					LIMIT $5 OFFSET $6;`
 	query2 := `SELECT 
 			COUNT(*) OVER(),
 			event_id,
-			title,
-			organization_id,
-			user_id,
-			event_pic,
-			short_discription,
-			long_discription,
-			event_date,
-			location,
-			created_at,
-			approved,
-			paid,
-			sex,
-			cusat_only,
-			archived,
-			sub_events,
-			online,
-			max_applications,
-			application_closing_date,
-			application_link,
-			website_link  FROM events 
+	title,
+	organization_id,
+	user_id,
+	created_by,
+	event_pic,
+	short_discription,
+	long_discription,
+	event_date,
+	location,
+	created_at,
+	approved,
+	paid,
+	amount,
+	sex,
+	cusat_only,
+	archived,
+	sub_events,
+	online,
+	max_applications,
+	application_left,
+	application_closing_date,
+	application_link,
+	website_link   FROM events 
 					WHERE event_date > $1 AND approved = true 
 					AND cusat_only = $2 AND online = $3 ORDER BY event_date DESC  
 					LIMIT $4 OFFSET $5;`
@@ -593,28 +600,30 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter, filter util
 		fmt.Println("username :", event.Title)
 		err = rows.Scan(
 			&totalRecords,
-			&event.EventId,
-			&event.Title,
-			&event.OrganizationId,
-			&event.User_id,
-			&event.CreatedBy,
-			&event.EventPic,
-			&event.ShortDiscription,
-			&event.LongDiscription,
-			&event.EventDate,
-			&event.Location,
-			&event.CreatedAt,
-			&event.Approved,
-			&event.Paid,
-			&event.Sex,
-			&event.CusatOnly,
-			&event.Archived,
-			&event.SubEvents,
-			&event.Online,
-			&event.MaxApplications,
-			&event.ApplicationClosingDate,
-			&event.ApplicationLink,
-			&event.WebsiteLink,
+		&event.EventId,
+		&event.Title,
+		&event.OrganizationId,
+		&event.User_id,
+		&event.CreatedBy,
+		&event.EventPic,
+		&event.ShortDiscription,
+		&event.LongDiscription,
+		&event.EventDate,
+		&event.Location,
+		&event.CreatedAt,
+		&event.Approved,
+		&event.Paid,
+		&event.Amount,
+		&event.Sex,
+		&event.CusatOnly,
+		&event.Archived,
+		&event.SubEvents,
+		&event.Online,
+		&event.MaxApplications,
+		&event.ApplicationLeft,
+		&event.ApplicationClosingDate,
+		&event.ApplicationLink,
+		&event.WebsiteLink,
 		)
 
 		fmt.Println("title", event.Title)
@@ -636,13 +645,14 @@ func (c *eventRepository) AllApprovedEvents(pagenation utils.Filter, filter util
 // FindUser implements interfaces.UserRepository
 func (c *eventRepository) FindEventByTitle(title string) (domain.EventResponse, error) {
 	var event domain.EventResponse
-
+	var totalRecords int
 	query := `SELECT 
 	COUNT(*) OVER(),
 	event_id,
 	title,
 	organization_id,
 	user_id,
+	created_by,
 	event_pic,
 	short_discription,
 	long_discription,
@@ -651,18 +661,21 @@ func (c *eventRepository) FindEventByTitle(title string) (domain.EventResponse, 
 	created_at,
 	approved,
 	paid,
+	amount,
 	sex,
 	cusat_only,
 	archived,
 	sub_events,
 	online,
 	max_applications,
+	application_left,
 	application_closing_date,
 	application_link,
 	website_link  FROM events 
 	WHERE title = $1;`
 
 	err := c.db.QueryRow(query, title).Scan(
+		&totalRecords,
 		&event.EventId,
 		&event.Title,
 		&event.OrganizationId,
@@ -676,12 +689,14 @@ func (c *eventRepository) FindEventByTitle(title string) (domain.EventResponse, 
 		&event.CreatedAt,
 		&event.Approved,
 		&event.Paid,
+		&event.Amount,
 		&event.Sex,
 		&event.CusatOnly,
 		&event.Archived,
 		&event.SubEvents,
 		&event.Online,
 		&event.MaxApplications,
+		&event.ApplicationLeft,
 		&event.ApplicationClosingDate,
 		&event.ApplicationLink,
 		&event.WebsiteLink,
@@ -694,13 +709,14 @@ func (c *eventRepository) FindEventByTitle(title string) (domain.EventResponse, 
 // FindUser implements interfaces.UserRepository
 func (c *eventRepository) FindEventById(event_id int) (domain.EventResponse, error) {
 	var event domain.EventResponse
-
+	var totalRecords int
 	query := `SELECT 
 	COUNT(*) OVER(),
 	event_id,
 	title,
 	organization_id,
 	user_id,
+	created_by,
 	event_pic,
 	short_discription,
 	long_discription,
@@ -709,18 +725,21 @@ func (c *eventRepository) FindEventById(event_id int) (domain.EventResponse, err
 	created_at,
 	approved,
 	paid,
+	amount,
 	sex,
 	cusat_only,
 	archived,
 	sub_events,
 	online,
 	max_applications,
+	application_left,
 	application_closing_date,
 	application_link,
-	website_link  FROM events 
+	website_link FROM events 
 	WHERE event_id = $1;`
 
 	err := c.db.QueryRow(query, event_id).Scan(
+		&totalRecords,
 		&event.EventId,
 		&event.Title,
 		&event.OrganizationId,
@@ -734,12 +753,14 @@ func (c *eventRepository) FindEventById(event_id int) (domain.EventResponse, err
 		&event.CreatedAt,
 		&event.Approved,
 		&event.Paid,
+		&event.Amount,
 		&event.Sex,
 		&event.CusatOnly,
 		&event.Archived,
 		&event.SubEvents,
 		&event.Online,
 		&event.MaxApplications,
+		&event.ApplicationLeft,
 		&event.ApplicationClosingDate,
 		&event.ApplicationLink,
 		&event.WebsiteLink,
@@ -752,7 +773,7 @@ func (c *eventRepository) FindEventById(event_id int) (domain.EventResponse, err
 // InsertUser implements interfaces.UserRepository
 func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
-
+	event.ApplicationLeft = event.MaxApplications
 	query := `INSERT INTO events(title,
 								organization_id,
 								user_id,

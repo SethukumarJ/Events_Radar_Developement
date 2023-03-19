@@ -42,12 +42,14 @@ type EventResponse struct {
 	CreatedAt              time.Time `json:"created_at"`
 	Approved               bool      `json:"approved"`
 	Paid                   bool      `json:"paid" `
+	Amount                 string    `json:"amount"`
 	Sex                    string    `json:"sex" `
 	CusatOnly              bool      `json:"cusat_only"`
 	Archived               bool      `json:"archived"`
 	SubEvents              string    `json:"subevents"`
 	Online                 bool      `json:"online"`
 	MaxApplications        int       `json:"max_applications"`
+	ApplicationLeft        int       `json:"application_left"`
 	ApplicationClosingDate string    `json:"application_closing_date"`
 	ApplicationLink        string    `json:"application_link"`
 	WebsiteLink            string    `json:"website_link"`

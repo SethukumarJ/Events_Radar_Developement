@@ -158,7 +158,7 @@ func (cr *EventHandler) RejectApplication(c *gin.Context)  {
 // @Produce json
 // @Security BearerAuth
 // @Param  Event_id   query  int  true  "Event_id: "
-// @Param Organizatiion_id query int true "Organizatiion_id: "
+// @Param Organization_id query int true "Organizatiion_id: "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /organization/event/delete-event [delete]
@@ -197,7 +197,7 @@ func (cr *EventHandler) DeleteEvent(c *gin.Context) {
 // @Produce json
 // @Security BearerAuth
 // @Param  Event_id   query  int  true  "Event_id: "
-// @Param Organizatiion_id query int true "Organizatiion_id: "
+// @Param Organization_id query int true "Organizatiion_id: "
 // @param UpdateEvent body domain.Events{} true "update Event with new body"
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
@@ -374,7 +374,10 @@ func (cr *EventHandler) CreateEventAdmin(c *gin.Context) {
 func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 
 	role := c.Writer.Header().Get("role")
-
+	organization_id,_ := strconv.Atoi(c.Writer.Header().Get("organization_id"))
+	fmt.Println("organization_id",organization_id)
+	user_id,_ := strconv.Atoi(c.Writer.Header().Get("user_id"))
+	fmt.Println("user_id",user_id)
 	if role > "2" {
 		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -385,10 +388,10 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 	var newEvent domain.Events
 	c.Bind(&newEvent)
 
-	_,err :=cr.eventUsecase.FindOrganizationById(newEvent.OrganizationId)
+	_,err :=cr.userUsecase.FindOrganizationById(organization_id)
 
 	if err != nil {
-		response := response.ErrorResponse("No Organization found", "no value", nil)
+		response := response.ErrorResponse("No Organization found", "no value", err)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		utils.ResponseJSON(*c, response)
@@ -399,13 +402,14 @@ func (cr *EventHandler) CreateEventOrganization(c *gin.Context) {
 	fmt.Println("Creating event",newEvent.EventDate)
 	//fetching data
 	newEvent.CreatedBy = "organization"
+	newEvent.User_id = user_id
 	newEvent.OrganizationId,_ = strconv.Atoi(c.Writer.Header().Get("Organization_id"))
 	newEvent.CreatedAt = time.Now()
 	newEvent.Approved = true
 	
 
-	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title)
-
+	fmt.Println(newEvent.CreatedBy,newEvent.CreatedAt,newEvent.Approved,newEvent.Title, newEvent.ApplicationClosingDate)
+	newEvent.ApplicationLeft= newEvent.MaxApplications
 	//check event exit or not
 
 	err = cr.eventUsecase.CreateEvent(newEvent)
@@ -500,7 +504,7 @@ func (cr *EventHandler) CreatePosterOrganization(c *gin.Context) {
 	log.Println(newPoster)
 
 	if err != nil {
-		response := response.ErrorResponse("Failed to create Event", err.Error(), nil)
+		response := response.ErrorResponse("Failed to create Posterr", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusUnprocessableEntity)
 		utils.ResponseJSON(*c, response)

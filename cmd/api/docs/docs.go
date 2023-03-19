@@ -41,8 +41,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Event Name : ",
-                        "name": "title",
+                        "description": "Event Id : ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     }
@@ -506,9 +506,9 @@ const docTemplate = `{
                 "operationId": "make vip user",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User Name : ",
-                        "name": "username",
+                        "type": "integer",
+                        "description": "User Id : ",
+                        "name": "User_id",
                         "in": "query",
                         "required": true
                     }
@@ -559,8 +559,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -612,9 +612,9 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Organization Name :",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -659,16 +659,16 @@ const docTemplate = `{
                 "operationId": "remvoe member",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id : ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Username :",
-                        "name": "userName",
+                        "type": "integer",
+                        "description": "user_id to remove :",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
@@ -706,9 +706,9 @@ const docTemplate = `{
                 "operationId": "List Members of the organization",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -753,16 +753,16 @@ const docTemplate = `{
                 "operationId": "update  member role",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id : ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Username :",
-                        "name": "userName",
+                        "type": "integer",
+                        "description": "user_id to update :",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     },
@@ -807,9 +807,9 @@ const docTemplate = `{
                 "operationId": "Create event from organization",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -856,9 +856,16 @@ const docTemplate = `{
                 "operationId": "Accept application",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -920,8 +927,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -959,16 +966,16 @@ const docTemplate = `{
                 "operationId": "Delete event",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organizatiion_id: ",
+                        "name": "Organizatiion_id",
                         "in": "query",
                         "required": true
                     }
@@ -1006,23 +1013,23 @@ const docTemplate = `{
                 "operationId": "Delete poster",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Poster_id: ",
+                        "name": "Poster_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "Title: ",
-                        "name": "eventid",
+                        "description": "Event_id: ",
+                        "name": "event_id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -1043,7 +1050,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/organization/event/get-posterbytitle": {
+        "/organization/event/get-posterbyid": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1055,9 +1062,9 @@ const docTemplate = `{
                 "operationId": "Get event by id",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Poster_id: ",
+                        "name": "Poster_id",
                         "in": "query",
                         "required": true
                     },
@@ -1142,9 +1149,9 @@ const docTemplate = `{
                 "operationId": "list all application with status",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "event Name: ",
-                        "name": "eventname",
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -1163,9 +1170,9 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -1210,16 +1217,16 @@ const docTemplate = `{
                 "operationId": "list all asked questions",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Event title: ",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     }
@@ -1257,14 +1264,14 @@ const docTemplate = `{
                 "operationId": "User Post Answer",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Getting the id of the question",
                         "name": "faqaid",
                         "in": "query",
@@ -1309,8 +1316,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "event name",
-                        "name": "eventName",
+                        "description": "Event_id :",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -1362,16 +1369,16 @@ const docTemplate = `{
                 "operationId": "Update event",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "event title",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organizatiion_id: ",
+                        "name": "Organizatiion_id",
                         "in": "query",
                         "required": true
                     },
@@ -1403,11 +1410,6 @@ const docTemplate = `{
         },
         "/organization/get-organization": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1419,8 +1421,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -1458,9 +1460,9 @@ const docTemplate = `{
                 "operationId": "Join requests to organization",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "OrganizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -1498,9 +1500,16 @@ const docTemplate = `{
                 "operationId": "Reject application",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "organizationName: ",
-                        "name": "organizationName",
+                        "type": "integer",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -1585,9 +1594,9 @@ const docTemplate = `{
                 "operationId": "Apply event",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "event name",
-                        "name": "eventName",
+                        "type": "integer",
+                        "description": "Event_id",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -1718,16 +1727,16 @@ const docTemplate = `{
                 "operationId": "User Post Question",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Getting the title of the event",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "Getting the title of the event",
-                        "name": "organizername",
+                        "type": "integer",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     },
@@ -1757,7 +1766,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/geteventbytitle": {
+        "/user/geteventbyid": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1769,9 +1778,9 @@ const docTemplate = `{
                 "operationId": "Get event by title",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Title: ",
-                        "name": "title",
+                        "type": "integer",
+                        "description": "Evnet_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     }
@@ -1810,8 +1819,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "organization name: ",
-                        "name": "organizationName",
+                        "description": "Organization_id: ",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -1908,8 +1917,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Event title: ",
-                        "name": "title",
+                        "description": "Event_id: ",
+                        "name": "Event_id",
                         "in": "query",
                         "required": true
                     }
@@ -2027,7 +2036,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "List event by approved non approved : ",
+                        "description": "Search Eventt: ",
                         "name": "search",
                         "in": "query",
                         "required": true
@@ -2207,7 +2216,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/handler.UpdatePassword"
                         }
                     }
                 ],
@@ -2282,15 +2291,16 @@ const docTemplate = `{
         "domain.Admins": {
             "type": "object",
             "required": [
-                "adminname",
+                "admin_name",
                 "email",
-                "password"
+                "password",
+                "phone_number"
             ],
             "properties": {
-                "adminid": {
+                "admin_id": {
                     "type": "integer"
                 },
-                "adminname": {
+                "admin_name": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
@@ -2301,21 +2311,31 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "phonenumber": {
-                    "type": "string"
+                "phone_number": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 10
                 }
             }
         },
         "domain.Answers": {
             "type": "object",
+            "required": [
+                "answer"
+            ],
             "properties": {
                 "answer": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 2
                 }
             }
         },
         "domain.ApplicationForm": {
             "type": "object",
+            "required": [
+                "email"
+            ],
             "properties": {
                 "about": {
                     "type": "string"
@@ -2333,13 +2353,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "github": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "lastname": {
                     "type": "string"
                 },
                 "linkedin": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "proffession": {
                     "type": "string"
@@ -2349,20 +2371,23 @@ const docTemplate = `{
         "domain.Bios": {
             "type": "object",
             "required": [
-                "username"
+                "user_id"
             ],
             "properties": {
                 "about": {
                     "type": "string"
                 },
                 "devfolio": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
-                "githublink": {
-                    "type": "string"
+                "github_link": {
+                    "type": "string",
+                    "maxLength": 255
                 },
-                "linkedin": {
-                    "type": "string"
+                "linked_in": {
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "qualification": {
                     "type": "string"
@@ -2370,60 +2395,71 @@ const docTemplate = `{
                 "skills": {
                     "type": "string"
                 },
-                "twitterlink": {
-                    "type": "string"
-                },
-                "username": {
+                "twitter_link": {
                     "type": "string",
-                    "maxLength": 50,
-                    "minLength": 2
+                    "maxLength": 255
                 },
-                "websitelink": {
+                "user_id": {
+                    "type": "integer",
+                    "maximum": 50,
+                    "minimum": 2
+                },
+                "user_name": {
                     "type": "string"
+                },
+                "website_link": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
         "domain.Events": {
             "type": "object",
             "required": [
-                "eventdate",
-                "eventpic",
-                "organizername",
+                "event_date",
+                "event_pic",
                 "title"
             ],
             "properties": {
-                "applicationclosingdate": {
+                "amount": {
                     "type": "string"
                 },
-                "applicationleft": {
+                "application_closing_date": {
+                    "type": "string"
+                },
+                "application_left": {
                     "type": "integer"
                 },
-                "applicationlink": {
+                "application_link": {
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "created_by": {
                     "type": "string"
                 },
-                "cusatonly": {
+                "cusat_only": {
                     "type": "boolean"
                 },
-                "eventdate": {
+                "event_date": {
                     "type": "string"
                 },
-                "eventpic": {
+                "event_pic": {
                     "type": "string"
                 },
                 "location": {
                     "type": "string"
                 },
-                "longdiscription": {
+                "long_discription": {
                     "type": "string"
                 },
-                "maxapplications": {
+                "max_applications": {
                     "type": "integer"
                 },
                 "online": {
                     "type": "boolean"
                 },
-                "organizername": {
-                    "type": "string"
+                "organization_id": {
+                    "type": "integer"
                 },
                 "paid": {
                     "type": "boolean"
@@ -2432,10 +2468,10 @@ const docTemplate = `{
                     "type": "string",
                     "default": "any"
                 },
-                "shortdiscription": {
+                "short_discription": {
                     "type": "string"
                 },
-                "subevents": {
+                "sub_events": {
                     "type": "string"
                 },
                 "title": {
@@ -2443,8 +2479,12 @@ const docTemplate = `{
                     "maxLength": 50,
                     "minLength": 2
                 },
-                "websitelink": {
-                    "type": "string"
+                "user_id": {
+                    "type": "integer"
+                },
+                "website_link": {
+                    "type": "string",
+                    "maxLength": 255
                 }
             }
         },
@@ -2458,6 +2498,9 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },
@@ -2485,7 +2528,7 @@ const docTemplate = `{
                 "about": {
                     "type": "string"
                 },
-                "createdat": {
+                "created_at": {
                     "type": "string"
                 },
                 "linkedin": {
@@ -2499,7 +2542,7 @@ const docTemplate = `{
                     "maxLength": 50,
                     "minLength": 2
                 },
-                "websitelink": {
+                "website_link": {
                     "type": "string"
                 }
             }
@@ -2514,7 +2557,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "name": {
                     "type": "string"
@@ -2525,34 +2569,40 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "firstname",
-                "lastname",
-                "username"
+                "first_name",
+                "last_name",
+                "password",
+                "phonenumber",
+                "user_name"
             ],
             "properties": {
                 "email": {
                     "type": "string"
                 },
-                "firstname": {
+                "first_name": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
                 },
-                "lastname": {
+                "last_name": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 1
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 20
                 },
                 "phonenumber": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 10
                 },
                 "profile": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
-                "username": {
+                "user_name": {
                     "type": "string",
                     "maxLength": 50,
                     "minLength": 2
@@ -2561,6 +2611,9 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "handler.UpdatePassword": {
+            "type": "object"
         },
         "response.Response": {
             "type": "object",
@@ -2593,7 +2646,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "eventsradar.online",
+	Host:             "localhost:3000",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Events-Radar API",

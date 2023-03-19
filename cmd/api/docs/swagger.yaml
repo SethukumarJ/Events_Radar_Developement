@@ -7,9 +7,9 @@ definitions:
     type: object
   domain.Admins:
     properties:
-      adminid:
+      admin_id:
         type: integer
-      adminname:
+      admin_name:
         maxLength: 50
         minLength: 2
         type: string
@@ -17,17 +17,24 @@ definitions:
         type: string
       password:
         type: string
-      phonenumber:
+      phone_number:
+        maxLength: 20
+        minLength: 10
         type: string
     required:
-    - adminname
+    - admin_name
     - email
     - password
+    - phone_number
     type: object
   domain.Answers:
     properties:
       answer:
+        maxLength: 255
+        minLength: 2
         type: string
+    required:
+    - answer
     type: object
   domain.ApplicationForm:
     properties:
@@ -42,82 +49,100 @@ definitions:
       firstname:
         type: string
       github:
+        maxLength: 255
         type: string
       lastname:
         type: string
       linkedin:
+        maxLength: 255
         type: string
       proffession:
         type: string
+    required:
+    - email
     type: object
   domain.Bios:
     properties:
       about:
         type: string
       devfolio:
+        maxLength: 255
         type: string
-      githublink:
+      github_link:
+        maxLength: 255
         type: string
-      linkedin:
+      linked_in:
+        maxLength: 255
         type: string
       qualification:
         type: string
       skills:
         type: string
-      twitterlink:
+      twitter_link:
+        maxLength: 255
         type: string
-      username:
-        maxLength: 50
-        minLength: 2
+      user_id:
+        maximum: 50
+        minimum: 2
+        type: integer
+      user_name:
         type: string
-      websitelink:
+      website_link:
+        maxLength: 255
         type: string
     required:
-    - username
+    - user_id
     type: object
   domain.Events:
     properties:
-      applicationclosingdate:
+      amount:
         type: string
-      applicationleft:
+      application_closing_date:
+        type: string
+      application_left:
         type: integer
-      applicationlink:
+      application_link:
+        maxLength: 255
         type: string
-      cusatonly:
+      created_by:
+        type: string
+      cusat_only:
         type: boolean
-      eventdate:
+      event_date:
         type: string
-      eventpic:
+      event_pic:
         type: string
       location:
         type: string
-      longdiscription:
+      long_discription:
         type: string
-      maxapplications:
+      max_applications:
         type: integer
       online:
         type: boolean
-      organizername:
-        type: string
+      organization_id:
+        type: integer
       paid:
         type: boolean
       sex:
         default: any
         type: string
-      shortdiscription:
+      short_discription:
         type: string
-      subevents:
+      sub_events:
         type: string
       title:
         maxLength: 50
         minLength: 2
         type: string
-      websitelink:
+      user_id:
+        type: integer
+      website_link:
+        maxLength: 255
         type: string
     required:
-    - eventdate
-    - eventpic
-    - organizername
+    - event_date
+    - event_pic
     - title
     type: object
   domain.Faqas:
@@ -125,6 +150,8 @@ definitions:
       question:
         maxLength: 50
         minLength: 2
+        type: string
+      userName:
         type: string
     required:
     - question
@@ -143,7 +170,7 @@ definitions:
     properties:
       about:
         type: string
-      createdat:
+      created_at:
         type: string
       linkedin:
         type: string
@@ -153,7 +180,7 @@ definitions:
         maxLength: 50
         minLength: 2
         type: string
-      websitelink:
+      website_link:
         type: string
     required:
     - organization_name
@@ -165,6 +192,7 @@ definitions:
       discription:
         type: string
       image:
+        maxLength: 255
         type: string
       name:
         type: string
@@ -173,21 +201,25 @@ definitions:
     properties:
       email:
         type: string
-      firstname:
+      first_name:
         maxLength: 50
         minLength: 2
         type: string
-      lastname:
+      last_name:
         maxLength: 50
         minLength: 1
         type: string
       password:
+        maxLength: 20
         type: string
       phonenumber:
+        maxLength: 20
+        minLength: 10
         type: string
       profile:
+        maxLength: 255
         type: string
-      username:
+      user_name:
         maxLength: 50
         minLength: 2
         type: string
@@ -195,9 +227,13 @@ definitions:
         type: boolean
     required:
     - email
-    - firstname
-    - lastname
-    - username
+    - first_name
+    - last_name
+    - password
+    - phonenumber
+    - user_name
+    type: object
+  handler.UpdatePassword:
     type: object
   response.Response:
     properties:
@@ -208,7 +244,7 @@ definitions:
       status:
         type: boolean
     type: object
-host: eventsradar.online
+host: localhost:3000
 info:
   contact:
     email: sethukumarj.76@gmail.com
@@ -226,9 +262,9 @@ paths:
     patch:
       operationId: approves event
       parameters:
-      - description: 'Event Name : '
+      - description: 'Event Id : '
         in: query
-        name: title
+        name: Event_id
         required: true
         type: string
       produces:
@@ -523,11 +559,11 @@ paths:
     patch:
       operationId: make vip user
       parameters:
-      - description: 'User Name : '
+      - description: 'User Id : '
         in: query
-        name: username
+        name: User_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -556,9 +592,9 @@ paths:
           items:
             $ref: '#/definitions/domain.AddMembers'
           type: array
-      - description: 'OrganizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
         type: string
       - description: member role
@@ -591,11 +627,11 @@ paths:
         name: joinstatusid
         required: true
         type: integer
-      - description: 'Organization Name :'
+      - description: 'Organization_id :'
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       - description: member role
         in: query
         name: role
@@ -621,16 +657,16 @@ paths:
     delete:
       operationId: remvoe member
       parameters:
-      - description: 'organizationName: '
+      - description: 'Organization_id : '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
-      - description: 'Username :'
+        type: integer
+      - description: 'user_id to remove :'
         in: query
-        name: userName
+        name: user_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -651,11 +687,11 @@ paths:
     get:
       operationId: List Members of the organization
       parameters:
-      - description: 'OrganizationName: '
+      - description: 'Organization_id :'
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       - description: 'Member role :'
         in: query
         name: memberRole
@@ -681,16 +717,16 @@ paths:
     patch:
       operationId: update  member role
       parameters:
-      - description: 'organizationName: '
+      - description: 'Organization_id : '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
-      - description: 'Username :'
+        type: integer
+      - description: 'user_id to update :'
         in: query
-        name: userName
+        name: user_id
         required: true
-        type: string
+        type: integer
       - description: 'Role to update :'
         in: query
         name: updatedRole
@@ -716,11 +752,11 @@ paths:
     post:
       operationId: Create event from organization
       parameters:
-      - description: organizationName
+      - description: Organization_id
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       - description: Create event
         in: body
         name: CreateEvent
@@ -747,11 +783,16 @@ paths:
     patch:
       operationId: Accept application
       parameters:
-      - description: 'organizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
+      - description: 'Event_id: '
+        in: query
+        name: Event_id
+        required: true
+        type: integer
       - description: 'orgStatus id : '
         in: query
         name: applicationstsid
@@ -788,9 +829,9 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/domain.Posters'
-      - description: 'organizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
         type: string
       produces:
@@ -813,16 +854,16 @@ paths:
     delete:
       operationId: Delete event
       parameters:
-      - description: 'Title: '
+      - description: 'Event_id: '
         in: query
-        name: title
+        name: Event_id
         required: true
-        type: string
-      - description: 'organizationName: '
+        type: integer
+      - description: 'Organizatiion_id: '
         in: query
-        name: organizationName
+        name: Organizatiion_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -843,19 +884,19 @@ paths:
     delete:
       operationId: Delete poster
       parameters:
-      - description: 'Title: '
+      - description: 'Poster_id: '
         in: query
-        name: title
-        required: true
-        type: string
-      - description: 'Title: '
-        in: query
-        name: eventid
+        name: Poster_id
         required: true
         type: integer
-      - description: 'organizationName: '
+      - description: 'Event_id: '
         in: query
-        name: organizationName
+        name: event_id
+        required: true
+        type: integer
+      - description: 'Organization_id: '
+        in: query
+        name: Organization_id
         required: true
         type: string
       produces:
@@ -874,15 +915,15 @@ paths:
       summary: delete poster
       tags:
       - Organization-Event-Poster Management
-  /organization/event/get-posterbytitle:
+  /organization/event/get-posterbyid:
     get:
       operationId: Get event by id
       parameters:
-      - description: 'Title: '
+      - description: 'Poster_id: '
         in: query
-        name: title
+        name: Poster_id
         required: true
-        type: string
+        type: integer
       - description: 'event id: '
         in: query
         name: eventid
@@ -931,11 +972,11 @@ paths:
     get:
       operationId: list all application with status
       parameters:
-      - description: 'event Name: '
+      - description: 'Event_id: '
         in: query
-        name: eventname
+        name: Event_id
         required: true
-        type: string
+        type: integer
       - description: 'Page number: '
         in: query
         name: page
@@ -946,11 +987,11 @@ paths:
         name: pagesize
         required: true
         type: integer
-      - description: 'organizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       - description: 'List application based on status: '
         in: query
         name: applicationStatus
@@ -976,16 +1017,16 @@ paths:
     get:
       operationId: list all asked questions
       parameters:
-      - description: organizationName
+      - description: 'Organization_id :'
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
-      - description: 'Event title: '
+        type: integer
+      - description: 'Event_id: '
         in: query
-        name: title
+        name: Event_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -1006,16 +1047,16 @@ paths:
     post:
       operationId: User Post Answer
       parameters:
-      - description: organizationName
+      - description: 'Organization_id :'
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       - description: Getting the id of the question
         in: query
         name: faqaid
         required: true
-        type: string
+        type: integer
       - description: Post Answer
         in: body
         name: PostAnswer
@@ -1042,9 +1083,9 @@ paths:
     get:
       operationId: promote event
       parameters:
-      - description: event name
+      - description: 'Event_id :'
         in: query
-        name: eventName
+        name: Event_id
         required: true
         type: string
       - description: plan
@@ -1075,16 +1116,16 @@ paths:
     patch:
       operationId: Update event
       parameters:
-      - description: event title
+      - description: 'Event_id: '
         in: query
-        name: title
+        name: Event_id
         required: true
-        type: string
-      - description: 'organizationName: '
+        type: integer
+      - description: 'Organizatiion_id: '
         in: query
-        name: organizationName
+        name: Organizatiion_id
         required: true
-        type: string
+        type: integer
       - description: update Event with new body
         in: body
         name: UpdateEvent
@@ -1111,9 +1152,9 @@ paths:
     get:
       operationId: Get Organizaition by name
       parameters:
-      - description: 'OrganizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
         type: string
       produces:
@@ -1127,8 +1168,6 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
       summary: Get Organization
       tags:
       - User-Organization Management
@@ -1136,11 +1175,11 @@ paths:
     get:
       operationId: Join requests to organization
       parameters:
-      - description: 'OrganizationName: '
+      - description: 'Organization_id :'
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -1161,11 +1200,16 @@ paths:
     patch:
       operationId: Reject application
       parameters:
-      - description: 'organizationName: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
-        type: string
+        type: integer
+      - description: 'Event_id: '
+        in: query
+        name: Event_id
+        required: true
+        type: integer
       - description: 'applicationstsid  : '
         in: query
         name: applicationstsid
@@ -1216,11 +1260,11 @@ paths:
     post:
       operationId: Apply event
       parameters:
-      - description: event name
+      - description: Event_id
         in: query
-        name: eventName
+        name: Event_id
         required: true
-        type: string
+        type: integer
       - description: Apply event
         in: body
         name: ApplyEvent
@@ -1299,16 +1343,16 @@ paths:
     post:
       operationId: User Post Question
       parameters:
-      - description: Getting the title of the event
+      - description: 'Organization_id :'
         in: query
-        name: title
+        name: Organization_id
         required: true
-        type: string
-      - description: Getting the title of the event
+        type: integer
+      - description: 'Event_id: '
         in: query
-        name: organizername
+        name: Event_id
         required: true
-        type: string
+        type: integer
       - description: Post question
         in: body
         name: PostQuestion
@@ -1331,15 +1375,15 @@ paths:
       summary: Post Question function
       tags:
       - FAQA-user
-  /user/geteventbytitle:
+  /user/geteventbyid:
     get:
       operationId: Get event by title
       parameters:
-      - description: 'Title: '
+      - description: 'Evnet_id: '
         in: query
-        name: title
+        name: Event_id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:
@@ -1358,9 +1402,9 @@ paths:
     patch:
       operationId: Join organization
       parameters:
-      - description: 'organization name: '
+      - description: 'Organization_id: '
         in: query
-        name: organizationName
+        name: Organization_id
         required: true
         type: string
       produces:
@@ -1426,9 +1470,9 @@ paths:
     get:
       operationId: list all public faqas
       parameters:
-      - description: 'Event title: '
+      - description: 'Event_id: '
         in: query
-        name: title
+        name: Event_id
         required: true
         type: string
       produces:
@@ -1501,7 +1545,7 @@ paths:
     get:
       operationId: search event with string by user
       parameters:
-      - description: 'List event by approved non approved : '
+      - description: 'Search Eventt: '
         in: query
         name: search
         required: true
@@ -1621,7 +1665,7 @@ paths:
         name: Updatepassword
         required: true
         schema:
-          type: string
+          $ref: '#/definitions/handler.UpdatePassword'
       produces:
       - application/json
       responses:

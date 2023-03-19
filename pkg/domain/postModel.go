@@ -10,7 +10,7 @@ type Users struct {
 	FirstName    string `json:"first_name" validate:"required,min=2,max=50"`
 	LastName     string `json:"last_name" validate:"required,min=1,max=50"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
-	Password     string `json:"password" validate:"required,min=,max=20"`
+	Password     string `json:"password" validate:"omitempty,max=255,url"`
 	Verification bool   `json:"verification" gorm:"default:false"`
 	Vip          bool   `json:"vip" gorm:"default:false" swaggerignore:"true"`
 	PhoneNumber  string `json:"phonenumber" validate:"required,min=10,max=20,numeric"`
@@ -53,36 +53,36 @@ type Admins struct {
 }
 
 type Events struct {
-	EventId                uint          `json:"event_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
-	Title                  string        `json:"title" gorm:"unique" validate:"required,min=2,max=50"`
-	OrganizationId         int           `json:"organization_id"`
-	User_id                int           `json:"user_id"`
-	Users                  Users         `gorm:"foreignKey:UserId;references:UserId"  swaggerignore:"true"`
-	CreatedBy              string        `json:"created_by"`
-	EventPic               string        `json:"event_pic" validate:"required,url"`
-	ShortDiscription       string        `json:"short_discription"`
-	LongDiscription        string        `json:"long_discription"`
-	EventDate              string        `json:"event_date" validate:"required"`
-	Location               string        `json:"location"`
-	CreatedAt              time.Time     `json:"created_at" swaggerignore:"true"`
-	Approved               bool          `json:"approved" gorm:"default:false" swaggerignore:"true"`
-	Paid                   bool          `json:"paid" gorm:"default:false"`
-	Amount                 string        `json:"amount" validate:"numeric"`
-	Sex                    string        `json:"sex" default:"any"`
-	CusatOnly              bool          `json:"cusat_only" gorm:"default:false"`
-	Archived               bool          `json:"archived" swaggerignore:"true"`
-	SubEvents              string        `json:"sub_events"`
-	Online                 bool          `json:"online" gorm:"default:false"`
-	MaxApplications        int           `json:"max_applications"`
-	ApplicationClosingDate string        `json:"application_closing_date"`
-	ApplicationLink        string        `json:"application_link" validate:"omitempty,max=255,url"`
-	WebsiteLink            string        `json:"website_link" validate:"omitempty,max=255,url"`
-	ApplicationLeft        int           `json:"application_left" validate:"numeric"`
-	Featured               bool          `json:"featured" gorm:"default:false" swaggerignore:"true"`
+	EventId                uint      `json:"event_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
+	Title                  string    `json:"title" gorm:"unique" validate:"required,min=2,max=50"`
+	OrganizationId         int       `json:"organization_id"`
+	User_id                int       `json:"user_id"`
+	Users                  Users     `gorm:"foreignKey:UserId;references:User_id"  swaggerignore:"true"`
+	CreatedBy              string    `json:"created_by"`
+	EventPic               string    `json:"event_pic" validate:"required,url"`					
+	ShortDiscription       string    `json:"short_discription"`
+	LongDiscription        string    `json:"long_discription"`
+	EventDate              string    `json:"event_date" validate:"required"`
+	Location               string    `json:"location"`
+	CreatedAt              time.Time `json:"created_at" swaggerignore:"true"`
+	Approved               bool      `json:"approved" gorm:"default:false" swaggerignore:"true"`
+	Paid                   bool      `json:"paid" gorm:"default:false"`
+	Amount                 string    `json:"amount" validate:"numeric"`
+	Sex                    string    `json:"sex" default:"any"`
+	CusatOnly              bool      `json:"cusat_only" gorm:"default:false"`
+	Archived               bool      `json:"archived" swaggerignore:"true"`
+	SubEvents              string    `json:"sub_events"`
+	Online                 bool      `json:"online" gorm:"default:false"`
+	MaxApplications        int       `json:"max_applications"`
+	ApplicationClosingDate string    `json:"application_closing_date"`
+	ApplicationLink        string    `json:"application_link" validate:"omitempty,max=255,url"`
+	WebsiteLink            string    `json:"website_link" validate:"omitempty,max=255,url"`
+	ApplicationLeft        int       `json:"application_left" validate:"numeric"`
+	Featured               bool      `json:"featured" gorm:"default:false" swaggerignore:"true"`
 }
 
 type Posters struct {
-	PosterId    uint   `json:"poster_id" ggorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
+	PosterId    uint   `json:"poster_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	Name        string `json:"name"`
 	Events      Events `gorm:"foreignKey:EventId;references:EventId" swaggerignore:"true"`
 	EventId     int    `json:"event_id" swaggerignore:"true" `
@@ -109,7 +109,7 @@ type Faqas struct {
 }
 
 type Answers struct {
-	AnswerId uint   `json:"answerid" gorm:"autoIncrement:true;unique" swaggerignore:"true"`
+	AnswerId uint   `json:"answerid" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
 	Answer   string `json:"answer" validate:"required,min=2,max=255"`
 }
 
@@ -185,7 +185,7 @@ type ApplicationForm struct {
 	College       string    `json:"college"`
 	Company       string    `json:"company"`
 	About         string    `json:"about"`
-	Email         string    `json:"email" gorm:"unique" validate:"email,required"`
+	Email         string    `json:"email" validate:"email,required"`
 	Github        string    `json:"github" validate:"omitempty,max=255,url"`
 	Linkedin      string    `json:"linkedin" validate:"omitempty,max=255,url"`
 }
@@ -204,7 +204,7 @@ type Promotion struct {
 	EventId       int           `json:"event_id" swaggerignore:"true" `
 	OrderId       string        `json:"order_id"`
 	PromotedBy    int           `json:"organization_id" validate:"required" swaggerignore:"true"`
-	Organizations Organizations `gorm:"foreignKey:PromotedBy;references:OrganizationId" swaggerignore:"true"`
+	Organizations Organizations `gorm:"foreignKey:OrganizationId;references:PromotedBy" swaggerignore:"true"`
 	PaymentId     string        `json:"payment_id"`
 	Amount        string        `json:"amount"`
 	Plan          string        `json:"plan"`

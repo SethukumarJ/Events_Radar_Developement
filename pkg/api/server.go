@@ -70,7 +70,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			user.POST("/event/post-question", userHandler.PostQuestion)
 			user.PATCH("/update-profile", userHandler.UpdateProfile)
 			user.POST("/create-organization", userHandler.CreateOrganization)
-			// user.POST("/create-event", eventHandler.CreateEventUser)
+			user.POST("/create-event", eventHandler.CreateEventUser)
 			user.PATCH("/join-organization", userHandler.JoinOrganization)
 
 		}
@@ -82,18 +82,19 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	{
 		admin.POST("/signup", authHandler.AdminSignup)
 		admin.POST("/login", authHandler.AdminLogin)
+		admin.GET("/search-event", adminHandler.SearchEvent)
 		admin.Use(middleware.AuthorizeJwtAdmin())
 		{
 			admin.GET("/token-refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)
-			// admin.POST("/create-event", eventHandler.CreateEventAdmin)
+			admin.POST("/create-event", eventHandler.CreateEventAdmin)
 			admin.GET("/list-users", adminHandler.ViewAllUsers)
 			admin.GET("/list-events", adminHandler.ViewAllEvents)
 			admin.PATCH("/register-organization", adminHandler.RegisterOrganization)
 			admin.PATCH("/reject-organization", adminHandler.RejectOrganization)
 			admin.GET("/list-organizations", adminHandler.ListOrgRequests)
 			admin.PATCH("/vipfy-user", adminHandler.VipUser)
-			admin.GET("/search-event", adminHandler.SearchEvent)
+		
 			
 		}
 	}

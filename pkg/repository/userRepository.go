@@ -47,7 +47,7 @@ func (c *userRepository) ListMembers(memberRole string, organizaition_id int) ([
 
 	var members []domain.UserOrganizationConnectionResponse
 
-	query := `SELECT COUNT(*) OVER(),user_id, role FROM user_organization_connections WHERE organizaition_id = $1 AND role = $2;`
+	query := `SELECT COUNT(*) OVER(),organization_id,user_id, role FROM user_organization_connections WHERE organization_id = $1 AND role = $2;`
 
 	rows, err := c.db.Query(query, organizaition_id, memberRole)
 	fmt.Println("rows", rows)
@@ -66,6 +66,7 @@ func (c *userRepository) ListMembers(memberRole string, organizaition_id int) ([
 		fmt.Println("member name :", member.UserId)
 		err = rows.Scan(
 			&totalRecords,
+			&member.OrganizationId,
 			&member.UserId,
 			&member.Role,
 		)
@@ -284,7 +285,7 @@ func (c *userRepository) FindApplication(user_id int, event_id int) (domain.Appl
 	email,
 	github,
 	linkedin FROM application_forms 
-					WHERE user_name = $1 AND event_name = $2;`
+					WHERE user_id = $1 AND event_id = $2;`
 
 	err := c.db.QueryRow(query, user_id, event_id).Scan(
 		&application.UserId,

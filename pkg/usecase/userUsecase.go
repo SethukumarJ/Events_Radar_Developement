@@ -241,7 +241,7 @@ func (c *userUseCase) SendInvitationMail(email string, organization_id int, orga
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username":         email,
 		"organizationName": organizationName,
-		"organizationId":   organization_id,
+		"organizationId":   fmt.Sprint(organization_id),
 		"memberRole":       memberRole,
 		"exp":              time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
@@ -282,7 +282,7 @@ func (c *userUseCase) SendInvitationMail(email string, organization_id int, orga
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"https://eventsradar.online/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 

@@ -16,12 +16,40 @@ type userRepository struct {
 	db *sql.DB
 }
 
+func (c *userRepository) InsertUser(user domain.Users) (int, error) {
+	var id int
+	var bio int
+	query := `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
+
+	err := c.db.QueryRow(query, user.UserName,
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.PhoneNumber,
+		user.Password,
+		user.Profile).Scan(&id)
+
+	if err != nil {
+		return id, err
+	}
+
+	query2 := `INSERT INTO bios(user_id)VALUES($1)RETURNING bio_id;`
+	err = c.db.QueryRow(query2, id).Err()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		println(bio)
+	}
+	fmt.Println("id", id)
+	return id, err
+}
+
 // UpdateRole implements interfaces.UserRepository
 func (c *userRepository) UpdateRole(user_id int, organization_id int, updatedRole string) error {
-	
+
 	query := `UPDATE user_organization_connections SET role = $1 WHERE user_id = $2 AND organization_id = $3;`
 
-	err := c.db.QueryRow(query, updatedRole,user_id, organization_id).Err()
+	err := c.db.QueryRow(query, updatedRole, user_id, organization_id).Err()
 	fmt.Println("id updted:")
 	if err != nil {
 		return err
@@ -134,55 +162,54 @@ func (c *userRepository) Prmotion_Faliure(orderid string, paymentid string) erro
 // FeaturizeEvent implements interfaces.UserRepository
 func (c *userRepository) FeaturizeEvent(orderid string) error {
 
-    var plan, insertPackage string
-    var event_id int
+	var plan, insertPackage string
+	var event_id int
 
-    query := `SELECT event_id, plan FROM promotions WHERE order_id = $1;`
+	query := `SELECT event_id, plan FROM promotions WHERE order_id = $1;`
 
-    err := c.db.QueryRow(query, orderid).Scan(&event_id, &plan)
-    if err != nil {
-        fmt.Println("1////////////////////////////")
-        return err
-    }
+	err := c.db.QueryRow(query, orderid).Scan(&event_id, &plan)
+	if err != nil {
+		fmt.Println("1////////////////////////////")
+		return err
+	}
 
-    feature := `UPDATE events SET featured = true WHERE event_id = $1`
+	feature := `UPDATE events SET featured = true WHERE event_id = $1`
 
-    err = c.db.QueryRow(feature, event_id).Err()
-    if err != nil {
-        fmt.Println("2////////////////////////////")
-        return err
-    }
+	err = c.db.QueryRow(feature, event_id).Err()
+	if err != nil {
+		fmt.Println("2////////////////////////////")
+		return err
+	}
 
-    packages := `INSERT INTO packages(event_id)VALUES($1)`
+	packages := `INSERT INTO packages(event_id)VALUES($1)`
 
-    err = c.db.QueryRow(packages, event_id).Err()
-    if err != nil {
-        fmt.Println("3////////////////////////////")
-        return err
-    }
+	err = c.db.QueryRow(packages, event_id).Err()
+	if err != nil {
+		fmt.Println("3////////////////////////////")
+		return err
+	}
 
-    basic := `UPDATE packages SET basic = true WHERE event_id = $1`
-    standard := `UPDATE packages SET standard = true WHERE event_id = $1`
-    premium := `UPDATE packages SET premium = true WHERE event_id = $1`
+	basic := `UPDATE packages SET basic = true WHERE event_id = $1`
+	standard := `UPDATE packages SET standard = true WHERE event_id = $1`
+	premium := `UPDATE packages SET premium = true WHERE event_id = $1`
 
-    if plan == "basic" {
-        insertPackage = basic
-    } else if plan == "standard" {
-        insertPackage = standard
-    } else if plan == "premium" {
-        insertPackage = premium
-    }
+	if plan == "basic" {
+		insertPackage = basic
+	} else if plan == "standard" {
+		insertPackage = standard
+	} else if plan == "premium" {
+		insertPackage = premium
+	}
 
-    err = c.db.QueryRow(insertPackage, event_id).Err()
-    if err != nil {
-        fmt.Println("4////////////////////////////")
-        return err
-    }
+	err = c.db.QueryRow(insertPackage, event_id).Err()
+	if err != nil {
+		fmt.Println("4////////////////////////////")
+		return err
+	}
 
-
-	if plan == "basic"{
-		   // Start a goroutine to update the featured column to false after 7 days
-		   go func() {
+	if plan == "basic" {
+		// Start a goroutine to update the featured column to false after 7 days
+		go func() {
 			time.Sleep(7 * 24 * time.Hour) // Wait for 7 days
 			update := `UPDATE events SET featured = false WHERE event_id = $1`
 			err := c.db.QueryRow(update, event_id).Err()
@@ -191,8 +218,8 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 			}
 		}()
 	} else if plan == "standard" {
-		   // Start a goroutine to update the featured column to false after 7 days
-		   go func() {
+		// Start a goroutine to update the featured column to false after 7 days
+		go func() {
 			time.Sleep(10 * 24 * time.Hour) // Wait for 7 days
 			update := `UPDATE events SET featured = false WHERE event_id = $1`
 			err := c.db.QueryRow(update, event_id).Err()
@@ -202,8 +229,8 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 		}()
 	} else if plan == "premium" {
 
-		   // Start a goroutine to update the featured column to false after 7 days
-		   go func() {
+		// Start a goroutine to update the featured column to false after 7 days
+		go func() {
 			time.Sleep(14 * 24 * time.Hour) // Wait for 7 days
 			update := `UPDATE events SET featured = false WHERE event_id = $1`
 			err := c.db.QueryRow(update, event_id).Err()
@@ -212,16 +239,9 @@ func (c *userRepository) FeaturizeEvent(orderid string) error {
 			}
 		}()
 	}
- 
 
-    return nil
+	return nil
 }
-
-
-
-
-
-
 
 // PromoteEvent implements interfaces.UserRepository
 func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {
@@ -240,30 +260,6 @@ func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {
 		return err
 	}
 	return nil
-}
-
-func (c *userRepository) InsertUser(user domain.Users) (int, error) {
-	var id int
-
-	query := `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
-
-	err := c.db.QueryRow(query, user.UserName,
-		user.FirstName,
-		user.LastName,
-		user.Email,
-		user.PhoneNumber,
-		user.Password,
-		user.Profile).Scan(&id)
-
-	if err != nil {
-		return id, err
-	}
-
-	query2 := `INSERT INTO bios(user_name)VALUES($1);`
-	err = c.db.QueryRow(query2, user.UserName).Err()
-
-	fmt.Println("id", id)
-	return id, err
 }
 
 // ApplyEvent implements interfaces.UserRepository
@@ -438,7 +434,7 @@ func (c *userRepository) ListJoinRequests(user_id int, organization_id int) ([]d
 // FindRelation implements interfaces.UserRepository
 func (c *userRepository) FindRelation(user_id int, organizaition_id int) (string, error) {
 	var role string
-	findRole := `SELECT role FROM user_organization_connections WHERE organizaition_id = $1 AND user_id = $2;`
+	findRole := `SELECT role FROM user_organization_connections WHERE organization_id = $1 AND user_id = $2;`
 
 	err := c.db.QueryRow(findRole, organizaition_id, user_id).Scan(&role)
 	fmt.Println("role,", role)
@@ -475,7 +471,7 @@ func (c *userRepository) FindRole(user_id int, organization_id int) (string, err
 func (c *userRepository) JoinOrganization(organizaition_id int, user_id int) (int, error) {
 	var id int
 
-	query := `INSERT INTO join_statuses(pending,organizaition_id)VALUES($1,$2);`
+	query := `INSERT INTO join_statuses(pending,organization_id)VALUES($1,$2);`
 	err := c.db.QueryRow(query, user_id, organizaition_id).Err()
 
 	fmt.Println("id", id)
@@ -636,7 +632,7 @@ func (c *userRepository) GetQuestions(event_id int) ([]domain.FaqaResponse, erro
 
 	var questions []domain.FaqaResponse
 
-	query := `SELECT COUNT(*) OVER(), question, created_at,user_name FROM faqas WHERE event_id = $1 AND answer_id = '0';`
+	query := `SELECT COUNT(*) OVER(),faqa_id, event_id, question, created_at,user_name FROM faqas WHERE event_id = $1 AND answer_id = '0';`
 
 	rows, err := c.db.Query(query, event_id)
 	fmt.Println("rows", rows)
@@ -655,6 +651,8 @@ func (c *userRepository) GetQuestions(event_id int) ([]domain.FaqaResponse, erro
 		fmt.Println("title :", faqas.EventId)
 		err = rows.Scan(
 			&totalRecords,
+			&faqas.FaqaId,
+			&faqas.EventId,
 			&faqas.Question,
 			&faqas.CreatedAt,
 			&faqas.UserName,

@@ -1257,8 +1257,6 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
-      security:
-      - BearerAuth: []
       summary: Accept invitation to join an organization
       tags:
       - User-Organization Management

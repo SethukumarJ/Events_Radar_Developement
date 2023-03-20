@@ -25,7 +25,7 @@ type Login struct {
 
 type Bios struct {
 	BioId         uint   `json:"bio_id" gorm:"primary key;autoIncrement:true;unique" swaggerignore:"true"`
-	UserId        int    `json:"user_id" validate:"required,min=2,max=50"`
+	UserId        int    `json:"user_id"`
 	Users         Users  `gorm:"foreignKey:UserId;references:UserId"  swaggerignore:"true"`
 	UserName      string `json:"user_name"`
 	About         string `json:"about"`

@@ -1551,11 +1551,6 @@ const docTemplate = `{
         },
         "/user/accept-invitation": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],

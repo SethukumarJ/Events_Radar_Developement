@@ -1,62 +1,76 @@
-package repository
+package repository_test
 
-// import (
-// 	"database/sql"
-// 	"testing"
+import (
+	"errors"
+	"testing"
 
-// 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
-// 	"github.com/stretchr/testify/assert"
-// 	"github.com/stretchr/testify/mock"
-// )
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
 
-// // mockDB implements the sql.DB interface and serves as a mock database
-// type mockDB struct {
-// 	mock.Mock
-// }
+	domain "github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	repository "github.com/SethukumarJ/Events_Radar_Developement/pkg/repository"
+)
 
-// func (m *mockDB) QueryRow(query string, args ...interface{}) *sql.Row {
-// 	args = append([]interface{}{query}, args...)
-// 	ret := m.Called(args...)
+func TestInsertUser(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("Failed to create sqlmock: %v", err)
+	}
+	defer db.Close()
 
-// 	return ret.Get(0).(*sql.Row)
-// }
+	repo := repository.NewUserRepository(db)
 
-// func TestInsertUser(t *testing.T) {
-// 	user := domain.Users{
-// 		UserName:    "testuser",
-// 		FirstName:   "Test",
-// 		LastName:    "User",
-// 		Email:       "testuser@example.com",
-// 		PhoneNumber: "1234567890",
-// 		Password:    "password",
-// 		Profile:     "default",
-// 	}
+	// Test Case 1: Successful insert
+	user := domain.Users{
+		UserName:    "testuser",
+		FirstName:   "John",
+		LastName:    "Doe",
+		Email:       "johndoe@example.com",
+		PhoneNumber: "555-555-5555",
+		Password:    "password",
+		Profile:     "http://example.com/profile",
+	}
 
-// 	// Create a new mockDB
-// 	db := new(mockDB)
+	mock.ExpectQuery(`INSERT INTO users\(user_name,first_name,last_name,email,phone_number,password,profile\)VALUES\(\$1, \$2, \$3, \$4, \$5, \$6, \$7\)RETURNING user_id`).
+		WithArgs(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.Password, user.Profile).
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}).AddRow(1))
 
-// 	// Set expectations on the mockDB
-// 	db.On("QueryRow", `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6,$7)RETURNING user_id;`,
-// 		user.UserName,
-// 		user.FirstName,
-// 		user.LastName,
-// 		user.Email,
-// 		user.PhoneNumber,
-// 		user.Password,
-// 		user.Profile).Return(&sql.Row{})
+	mock.ExpectQuery(`INSERT INTO bios\(user_id\)VALUES\(\$1\)RETURNING bio_id`).
+		WithArgs(1).
+		WillReturnRows(sqlmock.NewRows([]string{"bio_id"}).AddRow(1))
 
-// 	db.On("QueryRow", `INSERT INTO bios(user_name)VALUES($1);`, user.UserName).Return(&sql.Row{})
+	userID, err := repo.InsertUser(user)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, userID)
 
-// 	// Create a new userRepository with the mockDB
-// 	r := &userRepository{db: db}
+	// Test Case 2: Duplicate username 
+	mock.ExpectQuery(`INSERT INTO users\(user_name,first_name,last_name,email,phone_number,password,profile\)VALUES\(\$1, \$2, \$3, \$4, \$5, \$6, \$7\)RETURNING user_id`).
+		WithArgs(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.Password, user.Profile).
+		WillReturnError(errors.New("duplicate key value violates unique constraint"))
 
-// 	// Call the InsertUser function
-// 	id, err := r.InsertUser(user)
+	userID, err = repo.InsertUser(user)
+	assert.Error(t, err)
+	assert.Equal(t, 0, userID)
 
-// 	// Assert that the returned id and error are as expected
-// 	assert.Equal(t, 1, id)
-// 	assert.Nil(t, err)
+		// Test Case 1: Successful insert
+		user2 := domain.Users{
+			UserName:    "testuser2",
+		FirstName:   "John2",
+		LastName:    "Doe2",
+		Email:       "johndoe2@example.com",
+		PhoneNumber: "555-555-55552",
+		Password:    "password2",
+		Profile:     "http://example.com/profile2",
+		}
 
-// 	// Assert that all expectations were met
-// 	db.AssertExpectations(t)
-// }
+	// Test Case 2: Duplicate username 
+	mock.ExpectQuery(`INSERT INTO users\(user_name,first_name,last_name,email,phone_number,password,profile\)VALUES\(\$1, \$2, \$3, \$4, \$5, \$6, \$7\)RETURNING user_id`).
+		WithArgs(user2.UserName, user2.FirstName, user2.LastName, user2.Email, user2.PhoneNumber, user2.Password, user2.Profile).
+		WillReturnRows(sqlmock.NewRows([]string{"user_id"}).AddRow(1))
+
+	userID, err = repo.InsertUser(user2)
+	assert.Error(t, err)
+	assert.Equal(t, 1, userID)
+
+
+}

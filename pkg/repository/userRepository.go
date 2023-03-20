@@ -134,53 +134,94 @@ func (c *userRepository) Prmotion_Faliure(orderid string, paymentid string) erro
 // FeaturizeEvent implements interfaces.UserRepository
 func (c *userRepository) FeaturizeEvent(orderid string) error {
 
-	var  plan, insertPackage string
-	var event_id int
+    var plan, insertPackage string
+    var event_id int
 
-	query := `SELECT event_id, plan FROM promotions WHERE order_id = $1;`
+    query := `SELECT event_id, plan FROM promotions WHERE order_id = $1;`
 
-	err := c.db.QueryRow(query, orderid).Scan(&event_id, &plan)
-	if err != nil {
-		fmt.Println("1////////////////////////////")
-		return err
-	}
+    err := c.db.QueryRow(query, orderid).Scan(&event_id, &plan)
+    if err != nil {
+        fmt.Println("1////////////////////////////")
+        return err
+    }
 
-	feature := `UPDATE events SET featured = true  WHERE event_id = $1`
+    feature := `UPDATE events SET featured = true WHERE event_id = $1`
 
-	err = c.db.QueryRow(feature, event_id).Err()
-	if err != nil {
-		fmt.Println("2////////////////////////////")
-		return err
-	}
-	packages := `INSERT INTO packages(event_id)VALUES($1)`
+    err = c.db.QueryRow(feature, event_id).Err()
+    if err != nil {
+        fmt.Println("2////////////////////////////")
+        return err
+    }
 
-	err = c.db.QueryRow(packages, event_id).Err()
-	if err != nil {
-		fmt.Println("3////////////////////////////")
-		return err
-	}
+    packages := `INSERT INTO packages(event_id)VALUES($1)`
 
-	basic := `UPDATE packages SET basic = true WHERE event_id = $1`
-	standard := `UPDATE packages SET standard = true WHERE event_id = $1`
-	premium := `UPDATE packages SET premium = true WHERE event_id = $1`
+    err = c.db.QueryRow(packages, event_id).Err()
+    if err != nil {
+        fmt.Println("3////////////////////////////")
+        return err
+    }
 
-	if plan == "basic" {
-		insertPackage = basic
+    basic := `UPDATE packages SET basic = true WHERE event_id = $1`
+    standard := `UPDATE packages SET standard = true WHERE event_id = $1`
+    premium := `UPDATE packages SET premium = true WHERE event_id = $1`
+
+    if plan == "basic" {
+        insertPackage = basic
+    } else if plan == "standard" {
+        insertPackage = standard
+    } else if plan == "premium" {
+        insertPackage = premium
+    }
+
+    err = c.db.QueryRow(insertPackage, event_id).Err()
+    if err != nil {
+        fmt.Println("4////////////////////////////")
+        return err
+    }
+
+
+	if plan == "basic"{
+		   // Start a goroutine to update the featured column to false after 7 days
+		   go func() {
+			time.Sleep(7 * 24 * time.Hour) // Wait for 7 days
+			update := `UPDATE events SET featured = false WHERE event_id = $1`
+			err := c.db.QueryRow(update, event_id).Err()
+			if err != nil {
+				fmt.Println("Error updating featured column to false:", err)
+			}
+		}()
 	} else if plan == "standard" {
-		insertPackage = standard
+		   // Start a goroutine to update the featured column to false after 7 days
+		   go func() {
+			time.Sleep(10 * 24 * time.Hour) // Wait for 7 days
+			update := `UPDATE events SET featured = false WHERE event_id = $1`
+			err := c.db.QueryRow(update, event_id).Err()
+			if err != nil {
+				fmt.Println("Error updating featured column to false:", err)
+			}
+		}()
 	} else if plan == "premium" {
-		insertPackage = premium
+
+		   // Start a goroutine to update the featured column to false after 7 days
+		   go func() {
+			time.Sleep(14 * 24 * time.Hour) // Wait for 7 days
+			update := `UPDATE events SET featured = false WHERE event_id = $1`
+			err := c.db.QueryRow(update, event_id).Err()
+			if err != nil {
+				fmt.Println("Error updating featured column to false:", err)
+			}
+		}()
 	}
+ 
 
-	err = c.db.QueryRow(insertPackage, event_id).Err()
-	if err != nil {
-		fmt.Println("4////////////////////////////")
-		return err
-	}
-
-	return nil
-
+    return nil
 }
+
+
+
+
+
+
 
 // PromoteEvent implements interfaces.UserRepository
 func (c *userRepository) PromoteEvent(promotion domain.Promotion) error {

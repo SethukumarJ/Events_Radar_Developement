@@ -210,7 +210,7 @@ definitions:
         minLength: 1
         type: string
       password:
-        maxLength: 20
+        maxLength: 255
         type: string
       phonenumber:
         maxLength: 20
@@ -229,7 +229,6 @@ definitions:
     - email
     - first_name
     - last_name
-    - password
     - phonenumber
     - user_name
     type: object
@@ -861,7 +860,7 @@ paths:
         type: integer
       - description: 'Organizatiion_id: '
         in: query
-        name: Organizatiion_id
+        name: Organization_id
         required: true
         type: integer
       produces:
@@ -1087,7 +1086,12 @@ paths:
         in: query
         name: Event_id
         required: true
-        type: string
+        type: integer
+      - description: 'Organization_id :'
+        in: query
+        name: Organization_id
+        required: true
+        type: integer
       - description: plan
         in: query
         name: plan
@@ -1109,6 +1113,8 @@ paths:
           description: Unprocessable Entity
           schema:
             $ref: '#/definitions/response.Response'
+      security:
+      - BearerAuth: []
       summary: Promote
       tags:
       - Organizaton-Admin Role
@@ -1123,7 +1129,7 @@ paths:
         type: integer
       - description: 'Organizatiion_id: '
         in: query
-        name: Organizatiion_id
+        name: Organization_id
         required: true
         type: integer
       - description: update Event with new body

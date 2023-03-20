@@ -41,7 +41,9 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 // @ID promote event
 // @Tags Organizaton-Admin Role
 // @Produce json
-// @Param Event_id query string true "Event_id :"
+// @Security BearerAuth
+// @Param Event_id query int true "Event_id :"
+// @Param Organization_id query int true "Organization_id :"
 // @param plan query string true "plan"
 // @param email query string true "email"
 // @Success 200 {object} response.Response{}
@@ -49,11 +51,13 @@ var packages = map[string]int{"basic": 100,"stadard": 250,"premium": 500,}
 // @Router /organization/event/promote [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
-	username := "sethukumarj.76@gmail.com"
-	fmt.Println("username ", username)
-	organizationName := "organiztion1"
-	fmt.Println("organizationName ", organizationName)
-	role := "1"
+	email := (c.Query("email"))
+	plan := (c.Query("plan"))
+	event_id,_ := strconv.Atoi(c.Query("Event_id"))
+	
+	Organization_id,_ := strconv.Atoi(c.Writer.Header().Get("Organization_id"))
+	fmt.Println("Organization Id ", Organization_id)
+	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
 
 	if role > "1" {
@@ -65,13 +69,14 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	}
 
 	promotion  := domain.Promotion{}
-	promotion.PromotedBy = 8
-	promotion.EventId = 8
-	promotion.Amount = "10000"
-	promotion.Plan = "basic"
+	promotion.PromotedBy = email
+	promotion.OrganizationId = Organization_id
+	promotion.EventId = event_id
+	promotion.Amount = fmt.Sprint(packages[plan])
+	promotion.Plan = plan
 	page := &domain.PageVariables{}
 	page.Amount = promotion.Amount
-	page.Email = "sethukumarj.76@gmail.com"
+	page.Email = email
 	page.Name = ""
 	page.Contact = ""
 	//Create order_id from the server
@@ -163,7 +168,6 @@ func(cr *UserHandler) PaymentFaliure(c *gin.Context) {
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusOK)
 		utils.ResponseJSON(*c, response)
-		return
 	
 }
 

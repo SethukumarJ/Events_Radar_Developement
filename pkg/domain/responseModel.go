@@ -129,11 +129,12 @@ type ApplicationFormResponse struct {
 }
 
 type PromotionResponse struct {
-	PromotionId uint   `json:"promotion_id"`
-	EventId     int    `json:"event_id"`
-	OrderId     string `json:"order_id"`
-	PromotedBy  int    `json:"Organization_id"`
-	PaymentId   string `json:"payment_id"`
-	Amount      string `json:"amount"`
-	Plan        string `json:"plan"`
+	PromotionId    uint   `json:"promotion_id"`
+	EventId        int    `json:"event_id"`
+	OrderId        string `json:"order_id"`
+	PromotedBy     string    `json:"promoted_by"`
+	OrganizationId int    `json:"organization_id"`
+	PaymentId      string `json:"payment_id"`
+	Amount         string `json:"amount"`
+	Plan           string `json:"plan"`
 }

@@ -18,5 +18,4 @@ type AdminUsecase interface {
 	RegisterOrganization(orgstatus_id int) error
 	RejectOrganization(orgstatus_id int) error
 	
-	
 }

@@ -975,7 +975,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Organizatiion_id: ",
-                        "name": "Organizatiion_id",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     }
@@ -1305,6 +1305,11 @@ const docTemplate = `{
         },
         "/organization/event/promote": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1315,9 +1320,16 @@ const docTemplate = `{
                 "operationId": "promote event",
                 "parameters": [
                     {
-                        "type": "string",
+                        "type": "integer",
                         "description": "Event_id :",
                         "name": "Event_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Organization_id :",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -1378,7 +1390,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Organizatiion_id: ",
-                        "name": "Organizatiion_id",
+                        "name": "Organization_id",
                         "in": "query",
                         "required": true
                     },
@@ -2571,7 +2583,6 @@ const docTemplate = `{
                 "email",
                 "first_name",
                 "last_name",
-                "password",
                 "phonenumber",
                 "user_name"
             ],
@@ -2591,7 +2602,7 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string",
-                    "maxLength": 20
+                    "maxLength": 255
                 },
                 "phonenumber": {
                     "type": "string",

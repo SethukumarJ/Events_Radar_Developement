@@ -59,7 +59,7 @@ type Events struct {
 	User_id                int       `json:"user_id"`
 	Users                  Users     `gorm:"foreignKey:UserId;references:User_id"  swaggerignore:"true"`
 	CreatedBy              string    `json:"created_by"`
-	EventPic               string    `json:"event_pic" validate:"required,url"`					
+	EventPic               string    `json:"event_pic" validate:"required,url"`
 	ShortDiscription       string    `json:"short_discription"`
 	LongDiscription        string    `json:"long_discription"`
 	EventDate              string    `json:"event_date" validate:"required"`
@@ -199,16 +199,17 @@ type PageVariables struct {
 }
 
 type Promotion struct {
-	PromotionId   uint          `json:"promotion_id" gorm:"autoIncrement:true;unique"`
-	Events        Events        `gorm:"foreignKey:EventId;references:EventId" swaggerignore:"true"`
-	EventId       int           `json:"event_id" swaggerignore:"true" `
-	OrderId       string        `json:"order_id"`
-	PromotedBy    int           `json:"organization_id" validate:"required" swaggerignore:"true"`
-	Organizations Organizations `gorm:"foreignKey:OrganizationId;references:PromotedBy" swaggerignore:"true"`
-	PaymentId     string        `json:"payment_id"`
-	Amount        string        `json:"amount"`
-	Plan          string        `json:"plan"`
-	Status        bool          `json:"status" gorm:"default:false"`
+	PromotionId    uint          `json:"promotion_id" gorm:"autoIncrement:true;unique"`
+	Events         Events        `gorm:"foreignKey:EventId;references:EventId" swaggerignore:"true"`
+	EventId        int           `json:"event_id" swaggerignore:"true" `
+	OrderId        string        `json:"order_id"`
+	PromotedBy     string        `josn:"promoted_by"`
+	OrganizationId int           `json:"organization_id" validate:"required" swaggerignore:"true"`
+	Organizations  Organizations `gorm:"foreignKey:OrganizationId;references:OrganizationId" swaggerignore:"true"`
+	PaymentId      string        `json:"payment_id"`
+	Amount         string        `json:"amount"`
+	Plan           string        `json:"plan"`
+	Status         bool          `json:"status" gorm:"default:false"`
 }
 
 type Packages struct {

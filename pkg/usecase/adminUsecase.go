@@ -18,6 +18,7 @@ type adminUsecase struct {
 	config     config.Config
 }
 
+
 // SearchEvent implements interfaces.AdminUsecase
 func (c *adminUsecase) SearchEvent(search string) (*[]domain.EventResponse, error) {
 	fmt.Println("Search event from usecase called")
@@ -144,6 +145,7 @@ func (c *adminUsecase) FindAdminByName(email string) (*domain.AdminResponse, err
 
 	return &user, nil
 }
+
 // FindUser implements interfaces.UserUseCase
 func (c *adminUsecase) FindAdminById(admin_id int) (*domain.AdminResponse, error) {
 	user, err := c.adminRepo.FindAdminById(admin_id)
@@ -154,7 +156,6 @@ func (c *adminUsecase) FindAdminById(admin_id int) (*domain.AdminResponse, error
 
 	return &user, nil
 }
-
 
 func NewAdminUsecase(
 	adminRepo interfaces.AdminRepository,

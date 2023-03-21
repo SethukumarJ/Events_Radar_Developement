@@ -16,6 +16,29 @@ type userRepository struct {
 	db *sql.DB
 }
 
+// FindUser implements interfaces.UserRepository
+func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) {
+
+	var user domain.UserResponse
+
+	query := `SELECT user_id,user_name,firs_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = $1;`
+
+	err := c.db.QueryRow(query, user_id).Scan(&user.UserId,
+		&user.UserName,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Password,
+		&user.PhoneNumber,
+		&user.Profile,
+		&user.Verification,
+	)
+
+	fmt.Println("user from find user :", user)
+	return user, err
+}
+
+
 func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var id int
 	var bio int
@@ -838,30 +861,6 @@ func (c *userRepository) FindUserByName(email string) (domain.UserResponse, erro
 	return user, err
 }
 
-// FindUser implements interfaces.UserRepository
-func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) {
-
-	var user domain.UserResponse
-
-	query := `SELECT user_id,user_name,first_name,
-			  		last_name,email,password,
-					phone_number,profile,verification FROM users 
-					WHERE user_id = $1;`
-
-	err := c.db.QueryRow(query, user_id).Scan(&user.UserId,
-		&user.UserName,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-		&user.PhoneNumber,
-		&user.Profile,
-		&user.Verification,
-	)
-
-	fmt.Println("user from find user :", user)
-	return user, err
-}
 
 // StoreVerificationDetails implements interfaces.UserRepository
 func (u *userRepository) StoreVerificationDetails(email string, code string) error {

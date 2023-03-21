@@ -135,12 +135,10 @@ func TestFindUserByName(t *testing.T) {
 	// Define a test case
 	testCase := struct {
 		UserName     string
-		Email        string
 		expectedUser domain.UserResponse
 		expectedErr  error
 	}{
 		UserName: "john.doe",
-		Email: "john.doe@example.com",
 		expectedUser: domain.UserResponse{
 			UserId:       1,
 			UserName:     "john.doe",
@@ -158,7 +156,7 @@ func TestFindUserByName(t *testing.T) {
 
 	// Define the expected SQL query and result
 
-	mock.ExpectQuery(`SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE email = \$1 OR user_name = \$2;`).WithArgs(testCase.Email,testCase.UserName,).WillReturnRows(
+	mock.ExpectQuery(`SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE email = \$1 OR user_name = \$2;`).WithArgs(testCase.UserName,testCase.UserName).WillReturnRows(
 		sqlmock.NewRows([]string{"user_id", "user_name", "first_name", "last_name", "email", "password", "phone_number", "profile", "verification"}).
 			AddRow(testCase.expectedUser.UserId, testCase.expectedUser.UserName, testCase.expectedUser.FirstName, testCase.expectedUser.LastName, testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber, testCase.expectedUser.Profile, testCase.expectedUser.Verification))
 
@@ -168,4 +166,49 @@ func TestFindUserByName(t *testing.T) {
 	// Check the result and error against the expected values
 	assert.Equal(t, testCase.expectedErr, err)
 	assert.Equal(t, testCase.expectedUser, user)
+}
+
+
+func TestUserRepository_UpdateProfile(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+
+	userRepo := repository.NewUserRepository(db)
+
+	profile := domain.Bios{
+		About:         "I am a software developer",
+		Twitter:       "https://twitter.com/example",
+		Github:        "https://github.com/example",
+		LinkedIn:      "https://www.linkedin.com/in/example/",
+		Skills:        "Go, Java, Python",
+		Qualification: "Bachelor of Technology in ComputerScience and Engineering",
+		DevFolio:      "https://devfolio.co/example",
+		WebsiteLink:   "https://example.com",
+	}
+
+	userID := 1
+	bioID := 1
+
+	// Mocking the SQL query
+	mock.ExpectQuery(`UPDATE bios SET about=\$1,twitter = \$2,github = \$3,linked_in = \$4,skills =\$5,qualification=\$6,dev_folio=\$7,website_link=\$8 WHERE user_id = \$9 RETURNING bio_id;`).WithArgs(
+		profile.About,
+		profile.Twitter,
+		profile.Github,
+		profile.LinkedIn,
+		profile.Skills,
+		profile.Qualification,
+		profile.DevFolio,
+		profile.WebsiteLink,
+		userID,
+	).WillReturnRows(sqlmock.NewRows([]string{"bio_id"}).AddRow(bioID))
+
+	// Calling the function to be tested
+	result, err := userRepo.UpdateProfile(profile, userID)
+
+	// Asserting the result and error
+	assert.NoError(t, err)
+	assert.Equal(t, bioID, result)
+
+	// Verifying that all the expectations were met
+	assert.NoError(t, mock.ExpectationsWereMet())
 }

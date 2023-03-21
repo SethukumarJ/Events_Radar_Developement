@@ -813,15 +813,7 @@ func (c *userRepository) UpdatePassword(password string, email string) (int, err
 // UpdateProfile implements interfaces.UserRepository
 func (c *userRepository) UpdateProfile(profile domain.Bios, user_id int) (int, error) {
 	var id int
-	query := `UPDATE bios SET 
-							about=$1,
-							twitter = $2,
-							github = $3,
-							linked_in = $4,
-							skills =$5,
-							qualification=$6,
-							dev_folio=$7,
-							website_link=$8 WHERE user_id = $9;`
+	query := `UPDATE bios SET about=$1,twitter = $2,github = $3,linked_in = $4,skills =$5,qualification=$6,dev_folio=$7,website_link=$8 WHERE user_id = $9 RETURNING bio_id;`
 	err := c.db.QueryRow(query, profile.About,
 		profile.Twitter,
 		profile.Github,

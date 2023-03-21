@@ -433,9 +433,7 @@ func (c *adminRepository) FindAdminByName(email string) (domain.AdminResponse, e
 
 	var admin domain.AdminResponse
 
-	query := `SELECT admin_id,admin_name,email,password,
-					phone_number FROM admins 
-					WHERE email = $1 OR admin_name = $2;`
+	query := `SELECT admin_id,admin_name,email,password,phone_number FROM admins WHERE email = $1 OR admin_name = $2;`
 
 	err := c.db.QueryRow(query, email, email).Scan(&admin.AdminId,
 		&admin.AdminName,

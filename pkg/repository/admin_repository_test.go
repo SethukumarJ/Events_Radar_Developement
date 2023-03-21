@@ -104,40 +104,37 @@ func TestFindAdminByName(t *testing.T) {
 	defer db.Close()
 
 	// Create a new userRepository instance with the mock database connection
-	userRepo := repository.NewUserRepository(db)
+	adminRepo := repository.NewAdminRespository(db)
 
 	// Define a test case
 	testCase := struct {
-		UserName     string
-		expectedUser domain.UserResponse
+		adminName       string
+		expectedUser domain.AdminResponse
 		expectedErr  error
 	}{
-		UserName: "john.doe",
-		expectedUser: domain.UserResponse{
-			UserId:       1,
-			UserName:     "john.doe",
-			FirstName:    "John",
-			LastName:     "Doe",
+		adminName: "john.doe",
+		expectedUser: domain.AdminResponse{
+			AdminId:       1,
+			AdminName:     "john.doe",
 			Email:        "john.doe@example.com",
 			Password:     "passw0rd",
-			Verification: true,
-			Vip:          false,
+			Verification: false,
 			PhoneNumber:  "1234567890",
-			Profile:      "https://example.com/john.doe",
+			
 		},
 		expectedErr: nil,
 	}
 
 	// Define the expected SQL query and result
-
-	mock.ExpectQuery(`SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE email = \$1 OR user_name = \$2;`).WithArgs(testCase.UserName,testCase.UserName).WillReturnRows(
-		sqlmock.NewRows([]string{"user_id", "user_name", "first_name", "last_name", "email", "password", "phone_number", "profile", "verification"}).
-			AddRow(testCase.expectedUser.UserId, testCase.expectedUser.UserName, testCase.expectedUser.FirstName, testCase.expectedUser.LastName, testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber, testCase.expectedUser.Profile, testCase.expectedUser.Verification))
+	// query := `SELECT admin_id,admin_name,email,password,phone_number FROM admins WHERE admin_id = \$1;`
+	mock.ExpectQuery(`SELECT admin_id,admin_name,email,password,phone_number FROM admins WHERE email = \$1 OR admin_name = \$2;`).WithArgs(testCase.adminName,testCase.adminName).WillReturnRows(
+		sqlmock.NewRows([]string{"admin_id", "admin_name", "email", "password", "phone_number"}).
+			AddRow(testCase.expectedUser.AdminId, testCase.expectedUser.AdminName,testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber))
 
 	// Call the FindUserById method with the test case user ID
-	user, err := userRepo.FindUserByName(testCase.UserName)
+	admin, err := adminRepo.FindAdminByName(testCase.adminName)
 
 	// Check the result and error against the expected values
 	assert.Equal(t, testCase.expectedErr, err)
-	assert.Equal(t, testCase.expectedUser, user)
+	assert.Equal(t, testCase.expectedUser, admin)
 }

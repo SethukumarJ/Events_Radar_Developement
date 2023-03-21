@@ -138,3 +138,34 @@ func TestFindAdminByName(t *testing.T) {
 	assert.Equal(t, testCase.expectedErr, err)
 	assert.Equal(t, testCase.expectedUser, admin)
 }
+
+
+
+func TestVipUser(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+
+	adminRepo := repository.NewAdminRespository(db)
+
+	profile := domain.Users{
+		Vip: true,
+	}
+
+	userID := 1
+
+	// Mocking the SQL query
+	mock.ExpectQuery(`UPDATE users SET vip = \$1 WHERE user_id = \$2 RETURNING user_id;`).WithArgs(
+		profile.Vip,
+		userID,
+	).WillReturnRows(sqlmock.NewRows([]string{"user_id"}).AddRow(userID))
+
+	// Calling the function to be tested
+	err = adminRepo.VipUser(userID)
+
+	// Asserting the result and error
+	assert.NoError(t, err)
+	assert.Equal(t, userID, 1)
+
+	// Verifying that all the expectations were met
+	assert.NoError(t, mock.ExpectationsWereMet())
+}

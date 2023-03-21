@@ -235,13 +235,7 @@ func (c *eventRepository) DeletePoster(poster_id int, eventid int) error {
 func (c *eventRepository) FindPosterByName(title string, eventid int) (domain.PosterResponse, error) {
 	var poster domain.PosterResponse
 
-	query := `SELECT poster_id,
-				name,
-				image,
-				discription,
-				date,
-				colour FROM posters
-				WHERE name  = $1 AND event_id = $2;`
+	query := `SELECT poster_id,name,image,discription,date,colour,event_id FROM posters WHERE name  = $1 AND event_id = $2;`
 
 	err := c.db.QueryRow(query, title, eventid).Scan(
 		&poster.PosterId,
@@ -250,6 +244,7 @@ func (c *eventRepository) FindPosterByName(title string, eventid int) (domain.Po
 		&poster.Discription,
 		&poster.Date,
 		&poster.Colour,
+		&poster.EventId,
 	)
 
 	fmt.Println("poster from find poster :", poster)
@@ -260,13 +255,7 @@ func (c *eventRepository) FindPosterByName(title string, eventid int) (domain.Po
 func (c *eventRepository) FindPosterById(Poster_id int, eventid int) (domain.PosterResponse, error) {
 	var poster domain.PosterResponse
 
-	query := `SELECT poster_id,
-				name,
-				image,
-				discription,
-				date,
-				colour FROM posters
-				WHERE poster_id  = $1 AND event_id = $2;`
+	query := `SELECT poster_id,name,image,discription,date,colour,event_id FROM posters WHERE poster_id  = $1 AND event_id = $2;`
 
 	err := c.db.QueryRow(query, Poster_id, eventid).Scan(
 		&poster.PosterId,
@@ -275,6 +264,7 @@ func (c *eventRepository) FindPosterById(Poster_id int, eventid int) (domain.Pos
 		&poster.Discription,
 		&poster.Date,
 		&poster.Colour,
+		&poster.EventId,
 	)
 
 	fmt.Println("poster from find poster :", poster)
@@ -286,16 +276,7 @@ func (c *eventRepository) PostersByEvent(eventid int) ([]domain.PosterResponse, 
 	fmt.Println("all posters called from repo")
 	var posters []domain.PosterResponse
 
-	query := `SELECT 
-				COUNT(*) OVER(),
-				poster_id,
-				name,
-				image,
-				discription,
-				date,
-				colour FROM posters
-				WHERE event_id = $1
-				ORDER BY date DESC;`
+	query := `SELECT COUNT(*) OVER(),poster_id,name,image,discription,date,colour,event_id FROM posters WHERE event_id = $1ORDER BY date DESC;`
 
 	rows, err := c.db.Query(query, eventid)
 	fmt.Println("rows", rows)
@@ -321,6 +302,7 @@ func (c *eventRepository) PostersByEvent(eventid int) ([]domain.PosterResponse, 
 			&poster.Discription,
 			&poster.Date,
 			&poster.Colour,
+			&poster.EventId,
 		)
 
 		if err != nil {
@@ -774,29 +756,7 @@ func (c *eventRepository) FindEventById(event_id int) (domain.EventResponse, err
 func (c *eventRepository) CreateEvent(event domain.Events) (int, error) {
 	var id int
 	event.ApplicationLeft = event.MaxApplications
-	query := `INSERT INTO events(title,
-								organization_id,
-								user_id,
-								created_by,
-								event_pic,
-								short_discription,
-								long_discription,
-								event_date,
-								location,
-								created_at,
-								approved,
-								paid,
-								amount,
-								sex,
-								cusat_only,
-								archived,
-								sub_events,
-								online,
-								max_applications,
-								application_closing_date,
-								application_link,
-								website_link,application_left)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19,$20,$21,$22,$23)
-								RETURNING event_id;`
+	query := `INSERT INTO events(title,organization_id,user_id,created_by,event_pic,short_discription,long_discription,event_date,location,created_at,approved,paid,amount,sex,cusat_only,archived,sub_events,online,max_applications,application_closing_date,application_link,website_link,application_left)VALUES($1, $2, $3, $4, $5, $6,$7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19,$20,$21,$22,$23)RETURNING event_id;`
 
 	err := c.db.QueryRow(query, event.Title,
 		event.OrganizationId,

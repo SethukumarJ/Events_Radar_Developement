@@ -61,6 +61,7 @@ type PosterResponse struct {
 	Discription string `json:"discription"`
 	Date        string `json:"date"`
 	Colour      string `json:"colour"`
+	EventId     int    `json:"event_id"`
 }
 
 type FaqaResponse struct {

@@ -348,13 +348,10 @@ func (c *adminRepository) AllEvents(pagenation utils.Filter, approved string) ([
 
 // VipUser implements interfaces.AdminRepository
 func (c *adminRepository) VipUser(user_id int) error {
-
-	query := `UPDATE users SET
-				vip = $1
-				WHERE
-				user_id = $2 ;`
-	err := c.db.QueryRow(query, true, user_id).Err()
-	log.Println("Updating vip status to true ", err)
+	var id int
+	query := `UPDATE users SET vip = $1 WHERE user_id = $2 RETURNING user_id;`
+	err := c.db.QueryRow(query, true, user_id).Scan(&id)
+	log.Println("Updating vip status to true ", id)
 	if err != nil {
 		return err
 	}

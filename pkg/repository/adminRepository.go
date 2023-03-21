@@ -453,9 +453,7 @@ func (c *adminRepository) FindAdminById(admin_id int) (domain.AdminResponse, err
 
 	var admin domain.AdminResponse
 
-	query := `SELECT admin_id,admin_name,email,password,
-					phone_number FROM admins 
-					WHERE admin_id = $1;`
+	query := `SELECT admin_id,admin_name,email,password,phone_number FROM admins WHERE admin_id = $1;`
 
 	err := c.db.QueryRow(query, admin_id).Scan(&admin.AdminId,
 		&admin.AdminName,

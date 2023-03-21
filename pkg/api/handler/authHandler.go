@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -66,7 +67,7 @@ func (cr *AuthHandler) VerifyAccount(c *gin.Context) {
 	}
 
 	err = cr.authUsecase.VerifyAccount(email, tokenString)
-
+	fmt.Println("//////////////////", err)
 	if err != nil {
 		response := response.ErrorResponse("Verification failed, Jwt is not valid", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
@@ -110,7 +111,7 @@ func (cr *AuthHandler) UserSignup(c *gin.Context) {
 		return
 	}
 
-	user, _ := cr.userUsecase.FindUser(newUser.Email)
+	user, _ := cr.userUsecase.FindUserByName(newUser.Email)
 	user.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", user)
 	c.Writer.Header().Add("Content-Type", "application/json")
@@ -123,7 +124,7 @@ var (
 	oauthConfGl = &oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
-		RedirectURL:  "https://eventsradar.online/user/callback-gl",
+		RedirectURL:  "http://localhost:3000/user/callback-gl",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
@@ -180,18 +181,22 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 	}
 	fmt.Println("//////////////////////hellooooo2////////////////////////////////////")
 	code := c.Request.FormValue("code")
-
+	fmt.Print("code", code)
 	if code == "" {
 		c.JSON(http.StatusBadRequest, "Code Not Found to provide AccessToken..\n")
-
+		fmt.Println("//////////////////////hai in code nil////////////////////////////////////")
 		reason := c.Request.FormValue("error_reason")
 		if reason == "user_denied" {
 			fmt.Println("//////////////////////hai////////////////////////////////////")
 			c.JSON(http.StatusBadRequest, "User has denied Permission..")
 		}
 	} else {
-		token, err := oauthConfGl.Exchange(oauth2.NoContext, code)
+		fmt.Println("//////////////////////New1////////////////////////////////////")
+		fmt.Println("code//////",code)
+		token, err := oauthConfGl.Exchange(context.TODO(), code)
+		fmt.Println("token", token)
 		if err != nil {
+			fmt.Println("//////////////////////New1 err////////////////////////////////////",err)
 			return
 		}
 		resp, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + url.QueryEscape(token.AccessToken))
@@ -202,14 +207,14 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 			return
 		}
 		defer resp.Body.Close()
-
+		fmt.Println("//////////////////////New2////////////////////////////////////")
 		response1, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Println("//////////////////////hai3////////////////////////////////////")
 			c.Redirect(http.StatusTemporaryRedirect, "/")
 			return
 		}
-		fmt.Println("//////////////////////hai4////////////////////////////////////")
+		fmt.Println("//////////////////////New3////////////////////////////////////")
 		type data struct {
 			Id             int
 			Email          string
@@ -225,9 +230,9 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 		fmt.Println("email", any.Email)
 
 		newUser := domain.Users{}
-		newUser.UserName, newUser.Email, newUser.Profile = any.Email, any.Email, any.Picture
+		newUser.UserName, newUser.Email, newUser.Profile,newUser.Verification = any.Email, any.Email, any.Picture, true
 
-		user, err := cr.userUsecase.FindUser(any.Email)
+		user, err := cr.userUsecase.FindUserByName(any.Email)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -242,7 +247,7 @@ func (cr *AuthHandler) CallBackFromGoogle(c *gin.Context) {
 				utils.ResponseJSON(*c, response)
 				return
 			}
-			newUser, err := cr.userUsecase.FindUser(any.Email)
+			newUser, err := cr.userUsecase.FindUserByName(any.Email)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -333,7 +338,7 @@ func (cr *AuthHandler) UserLogin(c *gin.Context) {
 	}
 
 	//fetching user details
-	user, _ := cr.userUsecase.FindUser(userLogin.Email)
+	user, _ := cr.userUsecase.FindUserByName(userLogin.Email)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(user.UserId, user.UserName, "user")
 	if err != nil {
 		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)
@@ -397,7 +402,7 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 		return
 	}
 	c.Writer.Header().Set("AccessToken", accesstoken)
-	
+
 	response := response.SuccessResponse(true, "SUCCESS", accesstoken)
 	c.Writer.Header().Add("Content-Type", "application/json")
 	c.Writer.WriteHeader(http.StatusOK)
@@ -436,7 +441,7 @@ func (cr *AuthHandler) AdminSignup(c *gin.Context) {
 		return
 	}
 
-	admin, _ := cr.adminUsecase.FindAdmin(newAdmin.Email)
+	admin, _ := cr.adminUsecase.FindAdminByName(newAdmin.Email)
 	admin.Password = ""
 	response := response.SuccessResponse(true, "SUCCESS", admin)
 	c.Writer.Header().Add("Content-Type", "application/json")
@@ -474,7 +479,7 @@ func (cr *AuthHandler) AdminLogin(c *gin.Context) {
 	}
 
 	//fetching user details
-	admin, _ := cr.adminUsecase.FindAdmin(adminLogin.Email)
+	admin, _ := cr.adminUsecase.FindAdminByName(adminLogin.Email)
 	accesstoken, err := cr.jwtUsecase.GenerateAccessToken(admin.AdminId, admin.AdminName, "admin")
 	if err != nil {
 		response := response.ErrorResponse("Failed to generate access token", err.Error(), nil)

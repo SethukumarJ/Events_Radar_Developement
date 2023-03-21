@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/response"
@@ -38,8 +39,8 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 
 		//getting from header
 		autheader := c.Request.Header["Authorization"]
-		organizationName := c.Query("organizationName")
-		fmt.Println("organization Name from middleware", organizationName)
+		organization_id, _ := strconv.Atoi(c.Query("Organization_id"))
+		fmt.Println("organization id from middleware", organization_id)
 
 		auth := strings.Join(autheader, " ")
 		bearerToken := strings.Split(auth, " ")
@@ -79,8 +80,9 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		userName := fmt.Sprint(claims.UserName)
-		fmt.Println("username", userName)
-		role, err := cr.userUsecase.VerifyRole(userName, organizationName)
+		userId := claims.UserId
+		fmt.Println("username", userName,"user_id",userId,"organization_id",organization_id)
+		role, err := cr.userUsecase.VerifyRole(int(userId), int(organization_id))
 		fmt.Println(role, "///////////", err, "role and pathrole")
 		if err != nil {
 			err = errors.New("your role input is invalid")
@@ -93,7 +95,8 @@ func (cr *middleware) AuthorizeOrg() gin.HandlerFunc {
 		}
 
 		c.Writer.Header().Set("userName", userName)
-		c.Writer.Header().Set("organizationName", organizationName)
+		c.Writer.Header().Set("user_id", fmt.Sprint(userId))
+		c.Writer.Header().Set("organization_id", fmt.Sprint(organization_id))
 		c.Writer.Header().Set("role", role)
 		c.Next()
 
@@ -123,7 +126,7 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 		authtoken := bearerToken[1]
 		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
 		source := fmt.Sprint(claims.Source)
-		fmt.Println("///////////////token role",claims.Role)
+		fmt.Println("///////////////token role", claims.Role)
 		if claims.Role != "user" {
 			err := errors.New("your role of the token is not valid")
 			response := response.ErrorResponse("Error", err.Error(), source)
@@ -157,15 +160,15 @@ func (cr *middleware) AuthorizeJwt() gin.HandlerFunc {
 		} else {
 
 			userName := fmt.Sprint(claims.UserName)
+			userId := fmt.Sprint(claims.UserId)
 			c.Writer.Header().Set("userName", userName)
+			c.Writer.Header().Set("user_id",userId)
 			c.Next()
 
 		}
 
-		
 	})
 }
-
 
 func (cr *middleware) AuthorizeJwtAdmin() gin.HandlerFunc {
 	return (func(c *gin.Context) {
@@ -190,7 +193,7 @@ func (cr *middleware) AuthorizeJwtAdmin() gin.HandlerFunc {
 		authtoken := bearerToken[1]
 		ok, claims := cr.jwtUsecase.VerifyToken(authtoken)
 		source := fmt.Sprint(claims.Source)
-		fmt.Println("///////////////token role",claims.Role)
+		fmt.Println("///////////////token role", claims.Role)
 		if claims.Role != "admin" {
 			err := errors.New("your role of the token is not valid")
 			response := response.ErrorResponse("Error", err.Error(), source)
@@ -224,11 +227,12 @@ func (cr *middleware) AuthorizeJwtAdmin() gin.HandlerFunc {
 		} else {
 
 			userName := fmt.Sprint(claims.UserName)
+			user_id := fmt.Sprint(claims.UserId)
 			c.Writer.Header().Set("userName", userName)
+			c.Writer.Header().Set("user_id", user_id)
 			c.Next()
 
 		}
 
-		
 	})
 }

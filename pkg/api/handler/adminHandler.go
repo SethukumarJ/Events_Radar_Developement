@@ -151,15 +151,16 @@ func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 // @Tags Admin-User Profile
 // @Produce json
 // @Security BearerAuth
-// @Param  username   query  string  true  "User Name : "
+// @Param  User_id   query  int  true  "User Id : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/vipfy-user [patch]
 func (cr *AdminHandler) VipUser(c *gin.Context)  {
 	
-	username := c.Query("username")
+	User_id,_ := strconv.Atoi(c.Query("User_id"))
 
-	err := cr.adminUsecase.VipUser(username)
+
+	err := cr.adminUsecase.VipUser(User_id)
 
 	if err != nil {
 		response := response.ErrorResponse("making user into vip faled!", err.Error(), nil)
@@ -168,7 +169,7 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "User made into vip", username)
+	response := response.SuccessResponse(true, "User made into vip", User_id)
 	utils.ResponseJSON(*c, response)
 
 }
@@ -178,15 +179,15 @@ func (cr *AdminHandler) VipUser(c *gin.Context)  {
 // @Tags Admin-Event Management
 // @Produce json
 // @Security BearerAuth
-// @Param  title   query  string  true  "Event Name : "
+// @Param  Event_id   query  string  true  "Event Id : "
 // @Success 200 {object} response.Response{}
 // @Failure 422 {object} response.Response{}
 // @Router /admin/approve-event [patch]
 func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 	
-	title := c.Query("title")
+	Event_id,_ := strconv.Atoi(c.Query("Event_id"))
 
-	err := cr.adminUsecase.ApproveEvent(title)
+	err := cr.adminUsecase.ApproveEvent(Event_id)
 
 	if err != nil {
 		response := response.ErrorResponse("approving event failed!", err.Error(), nil)
@@ -195,7 +196,7 @@ func (cr *AdminHandler) ApproveEvent(c *gin.Context)  {
 		utils.ResponseJSON(*c, response)
 		return
 	}
-	response := response.SuccessResponse(true, "event approved", title)
+	response := response.SuccessResponse(true, "event approved", Event_id)
 	utils.ResponseJSON(*c, response)
 
 }

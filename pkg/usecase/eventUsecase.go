@@ -16,9 +16,20 @@ type eventUsecase struct {
 	eventRepo interfaces.EventRepository
 }
 
+// FindOrganizationById implements interfaces.EventUsecase
+func (c *eventUsecase) FindOrganizationById(organization_id int) (*domain.OrganizationsResponse, error) {
+	organization, err := c.eventRepo.FindOrganizationById(organization_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &organization, nil
+}
+
 // AcceptApplication implements interfaces.EventUsecase
-func (c *eventUsecase) AcceptApplication(applicationStatusId int,eventname string) error {
-	err := c.eventRepo.AcceptApplication(applicationStatusId,eventname)
+func (c *eventUsecase) AcceptApplication(applicationStatusId int, event_id int) error {
+	err := c.eventRepo.AcceptApplication(applicationStatusId, event_id)
 
 	if err != nil {
 		return err
@@ -27,9 +38,9 @@ func (c *eventUsecase) AcceptApplication(applicationStatusId int,eventname strin
 }
 
 // ListApplications implements interfaces.EventUsecase
-func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string,eventname string) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
+func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStatus string, event_id int) (*[]domain.ApplicationFormResponse, *utils.Metadata, error) {
 	fmt.Println("List applilcation from usecase called")
-	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus,eventname)
+	applicaition, metadata, err := c.eventRepo.ListApplications(pagenation, applicationStatus, event_id)
 	fmt.Println("applicaition:", applicaition)
 	if err != nil {
 		fmt.Println("error from list applicaition from usecase:", err)
@@ -40,8 +51,8 @@ func (c *eventUsecase) ListApplications(pagenation utils.Filter, applicationStat
 }
 
 // RejectApplication implements interfaces.EventUsecase
-func (c *eventUsecase) RejectApplication(applicationStatusId int,eventname string) error {
-	err := c.eventRepo.RejectApplication(applicationStatusId,eventname)
+func (c *eventUsecase) RejectApplication(applicationStatusId int, event_id int) error {
+	err := c.eventRepo.RejectApplication(applicationStatusId, event_id)
 
 	if err != nil {
 		return err
@@ -52,7 +63,7 @@ func (c *eventUsecase) RejectApplication(applicationStatusId int,eventname strin
 // CreatePoster implements interfaces.EventUsecase
 func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 	fmt.Println("create poster from service")
-	_, err := c.eventRepo.FindPoster(poster.Name, int(poster.EventId))
+	_, err := c.eventRepo.FindPosterByName(poster.Name, int(poster.EventId))
 	fmt.Println("found poster", err)
 
 	if err == nil {
@@ -71,8 +82,8 @@ func (c *eventUsecase) CreatePoster(poster domain.Posters) error {
 }
 
 // DeletePoster implements interfaces.EventUsecase
-func (c *eventUsecase) DeletePoster(name string, eventid int) error {
-	err := c.eventRepo.DeletePoster(name, eventid)
+func (c *eventUsecase) DeletePoster(poster_id int, eventid int) error {
+	err := c.eventRepo.DeletePoster(poster_id, eventid)
 
 	if err != nil {
 		return nil
@@ -82,8 +93,19 @@ func (c *eventUsecase) DeletePoster(name string, eventid int) error {
 }
 
 // FindPoster implements interfaces.EventUsecase
-func (c *eventUsecase) FindPoster(title string, eventid int) (*domain.PosterResponse, error) {
-	poster, err := c.eventRepo.FindPoster(title, eventid)
+func (c *eventUsecase) FindPosterById(poster_id int, eventid int) (*domain.PosterResponse, error) {
+	poster, err := c.eventRepo.FindPosterById(poster_id, eventid)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &poster, nil
+}
+
+// FindPoster implements interfaces.EventUsecase
+func (c *eventUsecase) FindPosterByName(name string, eventid int) (*domain.PosterResponse, error) {
+	poster, err := c.eventRepo.FindPosterByName(name, eventid)
 
 	if err != nil {
 		return nil, err
@@ -120,8 +142,8 @@ func (c *eventUsecase) FindUser(username string) (bool, error) {
 }
 
 // DeleteEvent implements interfaces.EventUsecase
-func (c *eventUsecase) DeleteEvent(title string) error {
-	err := c.eventRepo.DeleteEvent(title)
+func (c *eventUsecase) DeleteEvent(event_id int) error {
+	err := c.eventRepo.DeleteEvent(event_id)
 
 	if err != nil {
 		return nil
@@ -131,9 +153,9 @@ func (c *eventUsecase) DeleteEvent(title string) error {
 }
 
 // UpdateEvent implements interfaces.EventUsecase
-func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
+func (c *eventUsecase) UpdateEvent(event domain.Events, event_id int) error {
 	fmt.Println("update event from service")
-	_, err := c.eventRepo.FindEvent(title)
+	_, err := c.eventRepo.FindEventById(event_id)
 	fmt.Println("found event", err)
 
 	if err == nil {
@@ -144,7 +166,7 @@ func (c *eventUsecase) UpdateEvent(event domain.Events, title string) error {
 		return err
 	}
 
-	_, err = c.eventRepo.UpdateEvent(event, title)
+	_, err = c.eventRepo.UpdateEvent(event, event_id)
 	if err != nil {
 		return err
 	}
@@ -180,7 +202,7 @@ func (c *eventUsecase) SearchEventUser(search string) (*[]domain.EventResponse, 
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
 	fmt.Println("create user from service")
-	_, err := c.eventRepo.FindEvent(event.Title)
+	_, err := c.eventRepo.FindEventByTitle(event.Title)
 	fmt.Println("found event", err)
 
 	if err == nil {
@@ -199,8 +221,19 @@ func (c *eventUsecase) CreateEvent(event domain.Events) error {
 }
 
 // FindUser implements interfaces.UserUseCase
-func (c *eventUsecase) FindEvent(title string) (*domain.EventResponse, error) {
-	event, err := c.eventRepo.FindEvent(title)
+func (c *eventUsecase) FindEventByTitle(title string) (*domain.EventResponse, error) {
+	event, err := c.eventRepo.FindEventByTitle(title)
+	fmt.Println("event from usecase",event)
+	if err != nil {
+		return nil, err
+	}
+
+	return &event, nil
+}
+
+// FindUser implements interfaces.UserUseCase
+func (c *eventUsecase) FindEventById(event_id int) (*domain.EventResponse, error) {
+	event, err := c.eventRepo.FindEventById(event_id)
 
 	if err != nil {
 		return nil, err

@@ -1,0 +1,17 @@
+DROP TABLE admins;
+DROP TABLE bios;
+DROP TABLE join_statuses;
+DROP TABLE org_statuses;
+DROP TABLE organizations;
+DROP TABLE user_organization_connections;
+DROP TABLE users;
+DROP TABLE verifications;           
+DROP TABLE application_forms;
+DROP TABLE appllication_statuses;
+DROP TABLE events;
+DROP TABLE faqas;
+DROP TABLE notificaitons;
+DROP TABLE packages;
+DROP TABLE posters; 
+DROP TABLE answers;
+DROP TABLE promotions;

@@ -76,8 +76,8 @@ const (
 	// For giving notification on joined status  to the user
 	joined_notification = `CREATE OR REPLACE FUNCTION joined_notification() RETURNS TRIGGER AS $$
 	BEGIN
-	INSERT INTO notificaitons (user_name, organization_name, time, message)
-	VALUES (NEW.user_name, NEW.organization_name, NEW.joined_at, 'You are successfully joined to the organization');
+	INSERT INTO notificaitons (user_id, organization_id, time, message)
+	VALUES (NEW.user_id, NEW.organization_id, NEW.joined_at, 'You are successfully joined to the organization');
 	RETURN NEW;
 	END; $$ LANGUAGE plpgsql;`
 	admit_member_notification_trigger = `CREATE OR REPLACE TRIGGER admit_member_notification
@@ -88,9 +88,9 @@ const (
 	// For giving notification on joined status  to the user
 	organization_created_notification = `CREATE OR REPLACE FUNCTION org_created_notification() RETURNS TRIGGER AS $$
 	BEGIN
-	INSERT INTO notificaitons (user_name, organization_name, time, message)
-	VALUES ((SELECT created_by from organizations where organization_name = NEW.registered), NEW.registered, 
-	(SELECT created_at from organizations where organization_name = NEW.registered), 'Organization have been successfully registered');
+	INSERT INTO notificaitons (user_id, organization_id, time, message)
+	VALUES ((SELECT created_by from organizations where organization_id = NEW.registered), NEW.registered, 
+	(SELECT created_at from organizations where organization_id = NEW.registered), 'Organization have been successfully registered');
 	RETURN NEW;
 	END; $$ LANGUAGE plpgsql;`
 	organization_created_notification_trigger = `CREATE OR REPLACE TRIGGER organization_created_notification
@@ -101,8 +101,9 @@ const (
 	// featured_basic = `CREATE OR REPLACE FUNCTION update_column_after_7_days()
 	// RETURNS TRIGGER AS $$
 	// BEGIN
-	// 	IF NEW.basic = true THEN PERFORM pg_sleep(7 * 24 * 60 * 60);
-	// 	UPDATE events SET featured = false WHERE title = NEW.event_title;
+	// 	IF NEW.basic = true THEN 
+	// 		PERFORM pg_sleep_for(interval '7 days');
+	// 		UPDATE events SET featured = false WHERE event_id = NEW.event_id;
 	// 	END IF;
 	// 	RETURN NEW;
 	// END; $$ LANGUAGE plpgsql;`
@@ -115,8 +116,8 @@ const (
 	// featured_standard = `CREATE OR REPLACE FUNCTION update_column_after_12_days()
 	// RETURNS TRIGGER AS $$
 	// BEGIN
-	// 	IF NEW.standard = true THEN PERFORM pg_sleep(7 * 24 * 60 * 60);
-	// 	UPDATE events SET featured = false WHERE title = NEW.event_title;
+	// 	IF NEW.standard = true THEN PERFORM pg_sleep_for(7 * 24 * 60 * 60);
+	// 	UPDATE events SET featured = false WHERE event_id = NEW.event_id;
 	// 	END IF;
 	// 	RETURN NEW;
 	// END; $$ LANGUAGE plpgsql;`
@@ -129,8 +130,8 @@ const (
 	// featured_premium = `CREATE OR REPLACE FUNCTION update_column_after_16_days()
 	// RETURNS TRIGGER AS $$
 	// BEGIN
-	// 	IF NEW.premium = true THEN PERFORM pg_sleep(7 * 24 * 60 * 60);
-	// 	UPDATE events SET featured = false WHERE title = NEW.event_title;
+	// 	IF NEW.premium = true THEN PERFORM pg_sleep_for(7 * 24 * 60 * 60);
+	// 	UPDATE events SET featured = false WHERE event_id = NEW.event_id;
 	// 	END IF;
 	// 	RETURN NEW;
 	// END; $$ LANGUAGE plpgsql;`

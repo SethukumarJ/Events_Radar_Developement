@@ -32,7 +32,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	eventRepository := repository.NewEventRepository(sqlDB)
 	eventUsecase := usecase.NewEventUseCase(eventRepository)
 	adminHandler := handler.NewAdminHandler(adminUsecase, userUseCase, eventUsecase)
-	eventHandler := handler.NewEventHandler(eventUsecase)
+	eventHandler := handler.NewEventHandler(adminUsecase, userUseCase, eventUsecase)
 	middlewareMiddleware := middleware.NewMiddlewareUser(jwtUsecase, userUseCase)
 	serverHTTP := http.NewServerHTTP(userHandler, authHandler, adminHandler, eventHandler, middlewareMiddleware)
 	return serverHTTP, nil

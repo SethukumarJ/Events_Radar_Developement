@@ -29,7 +29,7 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 			handler.NewAuthHandler,
 			handler.NewAdminHandler,
 			handler.NewEventHandler,
-			middleware.NewMiddlewareUser,
+			middleware.NewMiddlewareUser,		
 			http.NewServerHTTP)
 
 	return &http.ServerHTTP{}, nil

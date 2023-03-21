@@ -841,10 +841,7 @@ func (c *userRepository) FindUserByName(email string) (domain.UserResponse, erro
 
 	var user domain.UserResponse
 
-	query := `SELECT user_id,user_name,first_name,
-			  		last_name,email,password,
-					phone_number,profile,verification FROM users 
-					WHERE email = $1 OR user_name = $2;`
+	query := `SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE email = $1 OR user_name = $2;`
 
 	err := c.db.QueryRow(query, email, email).Scan(&user.UserId,
 		&user.UserName,

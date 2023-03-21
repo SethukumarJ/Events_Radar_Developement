@@ -74,7 +74,6 @@ func TestInsertUser(t *testing.T) {
 
 }
 
-
 func TestFindUserById(t *testing.T) {
 	// Create a new mock database connection
 	db, mock, err := sqlmock.New()
@@ -108,13 +107,11 @@ func TestFindUserById(t *testing.T) {
 		expectedErr: nil,
 	}
 
-	
 	// Define the expected SQL query and result
-	
+
 	mock.ExpectQuery(`SELECT user_id,user_name,firs_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = \$1;`).WithArgs(testCase.userID).WillReturnRows(
 		sqlmock.NewRows([]string{"user_id", "user_name", "first_name", "last_name", "email", "password", "phone_number", "profile", "verification"}).
 			AddRow(testCase.expectedUser.UserId, testCase.expectedUser.UserName, testCase.expectedUser.FirstName, testCase.expectedUser.LastName, testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber, testCase.expectedUser.Profile, testCase.expectedUser.Verification))
-	
 
 	// Call the FindUserById method with the test case user ID
 	user, err := userRepo.FindUserById(testCase.userID)
@@ -124,3 +121,51 @@ func TestFindUserById(t *testing.T) {
 	assert.Equal(t, testCase.expectedUser, user)
 }
 
+func TestFindUserByName(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("Error creating mock database connection: %s", err)
+	}
+	defer db.Close()
+
+	// Create a new userRepository instance with the mock database connection
+	userRepo := repository.NewUserRepository(db)
+
+	// Define a test case
+	testCase := struct {
+		UserName     string
+		Email        string
+		expectedUser domain.UserResponse
+		expectedErr  error
+	}{
+		UserName: "john.doe",
+		Email: "john.doe@example.com",
+		expectedUser: domain.UserResponse{
+			UserId:       1,
+			UserName:     "john.doe",
+			FirstName:    "John",
+			LastName:     "Doe",
+			Email:        "john.doe@example.com",
+			Password:     "passw0rd",
+			Verification: true,
+			Vip:          false,
+			PhoneNumber:  "1234567890",
+			Profile:      "https://example.com/john.doe",
+		},
+		expectedErr: nil,
+	}
+
+	// Define the expected SQL query and result
+
+	mock.ExpectQuery(`SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE email = \$1 OR user_name = \$2;`).WithArgs(testCase.Email,testCase.UserName,).WillReturnRows(
+		sqlmock.NewRows([]string{"user_id", "user_name", "first_name", "last_name", "email", "password", "phone_number", "profile", "verification"}).
+			AddRow(testCase.expectedUser.UserId, testCase.expectedUser.UserName, testCase.expectedUser.FirstName, testCase.expectedUser.LastName, testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber, testCase.expectedUser.Profile, testCase.expectedUser.Verification))
+
+	// Call the FindUserById method with the test case user ID
+	user, err := userRepo.FindUserByName(testCase.UserName)
+
+	// Check the result and error against the expected values
+	assert.Equal(t, testCase.expectedErr, err)
+	assert.Equal(t, testCase.expectedUser, user)
+}

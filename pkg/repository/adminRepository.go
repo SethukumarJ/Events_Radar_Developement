@@ -472,9 +472,7 @@ func (c *adminRepository) FindAdminById(admin_id int) (domain.AdminResponse, err
 func (c *adminRepository) CreateAdmin(admin domain.Admins) (int, error) {
 	var id int
 
-	query := `INSERT INTO admins(admin_name,
-								email,phone_number,password)VALUES($1, $2, $3, $4)
-								RETURNING admin_id;`
+	query := `INSERT INTO admins(admin_name,email,phone_number,password)VALUES($1, $2, $3, $4)RETURNING admin_id;`
 
 	err := c.db.QueryRow(query, admin.AdminName,
 

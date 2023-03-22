@@ -23,6 +23,31 @@ type userUseCase struct {
 	config     config.Config
 }
 
+
+// CreateUser implements interfaces.UserUseCase
+func (c *userUseCase) CreateUser(user domain.Users) error {
+	fmt.Println("create user from service")
+	_, err := c.userRepo.FindUserByName(user.Email)
+	fmt.Println("found user", err)
+
+	if err == nil {
+		return errors.New("username already exists")
+	}
+
+	if err != nil && err != sql.ErrNoRows {
+		return err
+	}
+
+	//hashing password
+	user.Password = HashPassword(user.Password)
+	fmt.Println("password", user.Password)
+	_, err = c.userRepo.InsertUser(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // UpdateRole implements interfaces.UserUseCase
 func (c *userUseCase) UpdateRole(user_id int, organization_id int, updatedRole string) error {
 	_, err := c.userRepo.FindRelation(user_id, organization_id)
@@ -443,29 +468,6 @@ func (c *userUseCase) UpdateProfile(user domain.Bios, user_id int) error {
 	return nil
 }
 
-// CreateUser implements interfaces.UserUseCase
-func (c *userUseCase) CreateUser(user domain.Users) error {
-	fmt.Println("create user from service")
-	_, err := c.userRepo.FindUserByName(user.Email)
-	fmt.Println("found user", err)
-
-	if err == nil {
-		return errors.New("username already exists")
-	}
-
-	if err != nil && err != sql.ErrNoRows {
-		return err
-	}
-
-	//hashing password
-	user.Password = HashPassword(user.Password)
-	fmt.Println("password", user.Password)
-	_, err = c.userRepo.InsertUser(user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
 
 // FindUser implements interfaces.UserUseCase
 func (c *userUseCase) FindUserByName(email string) (*domain.UserResponse, error) {

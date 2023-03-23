@@ -44,8 +44,8 @@ func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var bio int
 	query := `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
 
-	err := c.db.QueryRow(query, user.UserName,
-		user.FirstName,
+	err := c.db.QueryRow(query,  user.UserName,
+		user.FirstName, 
 		user.LastName,
 		user.Email,
 		user.PhoneNumber,

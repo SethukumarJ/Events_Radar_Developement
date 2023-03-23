@@ -42,7 +42,7 @@ func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) 
 func (c *userRepository) InsertUser(user domain.Users) (int, error) {
 	var id int
 	var bio int
-	query := `INSERT INTO users(user_name,first_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
+	query := `INSERT INTO users(user_name,irst_name,last_name,email,phone_number,password,profile)VALUES($1, $2, $3, $4, $5, $6, $7)RETURNING user_id;`
 
 	err := c.db.QueryRow(query, user.UserName,
 		user.FirstName,

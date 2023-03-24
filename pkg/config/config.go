@@ -20,7 +20,10 @@ type Config struct {
 	SMTPUSERNAME     string `mapstructure:"SMTP_USERNAME"`
 	OauthStateString string `mapstructure:"OauthStateString"`
 	CLIENT_ID        string `mapstructure:"CLIENT_ID"`
+	REDIRECT_URL     string `mapstructure:"REDIRECT_URL"`
 	CLIENT_SECRET    string `mapstructure:"CLIENT_SECRET"`
+	VERIFICATION_URL string `mapstructure:"VERIFICATION_URL"`
+	INVITATION_URL   string `mapstructure:"INVITATION_URL"`
 }
 
 var envs = []string{
@@ -36,7 +39,10 @@ var envs = []string{
 	"SMTP_USERNAME",
 	"OauthStateString",
 	"CLIENT_ID",
+	"REDIRECT_URL",
 	"CLIENT_SECRET",
+	"VERIFICATION_URL",
+	"INVITATION_URL",
 }
 
 func LoadConfig() (Config, error) {

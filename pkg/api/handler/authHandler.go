@@ -124,7 +124,7 @@ var (
 	oauthConfGl = &oauth2.Config{
 		ClientID:     "",
 		ClientSecret: "",
-		RedirectURL:  "http://localhost:3000/user/callback-gl",
+		RedirectURL:  "",
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 		Endpoint:     google.Endpoint,
 	}
@@ -135,6 +135,7 @@ func (cr *AuthHandler) InitializeOAuthGoogle() {
 	oauthConfGl.ClientID = cr.cfg.CLIENT_ID
 	oauthConfGl.ClientSecret = cr.cfg.CLIENT_SECRET
 	oauthStateStringGl = cr.cfg.OauthStateString
+	oauthConfGl.RedirectURL = cr.cfg.REDIRECT_URL
 	fmt.Printf("\n\n%v\n\n", oauthConfGl)
 }
 

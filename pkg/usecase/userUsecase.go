@@ -307,7 +307,7 @@ func (c *userUseCase) SendInvitationMail(email string, organization_id int, orga
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\""+ c.config.INVITATION_URL+ "/user/accept-invitation?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 
@@ -524,7 +524,7 @@ func (c *userUseCase) SendVerificationEmail(email string) error {
 			"  </head>" +
 			"  <body>" +
 			"    <p>Click the button on verify your accout:</p>" +
-			"    <a class=\"blue-button\" href=\"http://localhost:3000/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
+			"    <a class=\"blue-button\" href=\""+ c.config.VERIFICATION_URL+ "/user/verify-account?token=" + tokenString + "\" target=\"_blank\">Access Credentials</a>" +
 			"  </body>" +
 			"</html>")
 

@@ -47,6 +47,6 @@ func main() {
 	if diErr != nil {
 		log.Fatal("cannot start server: ", diErr)
 	} else {
-		server.Start()
+		server.Start(
 	}
 }

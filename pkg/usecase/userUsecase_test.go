@@ -1,50 +1,106 @@
-package usecase_test
+package usecase
 
-// import (
-// 	"database/sql"
-// 	"testing"
+import (
+	"errors"
+	"testing"
 
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/config"
+	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
+	mock "github.com/SethukumarJ/Events_Radar_Developement/pkg/mock/repoMock"
+	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+)
 
+func TestFindUserByName(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/domain"
-// 	"github.com/SethukumarJ/Events_Radar_Developement/pkg/mocks"
-// 	"github.com/golang/mock/gomock"
-// )
+	c := mock.NewMockUserRepository(ctrl)
 
-// func TestCreateUser(t *testing.T) {
-// 	// Create a new controller for managing mock objects
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+	userusecase := NewUserUseCase(c, nil, nil, config.Config{})
+	testData := []struct {
+		name       string
+		email      string
+		beforeTest func(userRepo *mock.MockUserRepository)
+		expectErr  error
+	}{
+		{
+			name:  "Test success response",
+			email: "jon",
+			beforeTest: func(userRepo *mock.MockUserRepository) {
+				userRepo.EXPECT().FindUserByName("jon").Return(domain.UserResponse{
+					UserName: "jon",
+					Password: "12345",
+				}, nil)
+			},
+			expectErr: nil,
+		},
+		{
+			name:  "Test when user alredy exist response",
+			email: "jon",
+			beforeTest: func(userRepo *mock.MockUserRepository) {
+				userRepo.EXPECT().FindUserByName("jon").Return(domain.UserResponse{}, errors.New("repo error"))
+			},
+			expectErr: errors.New("repo error"),
+		},
+	}
 
-// 	// Create a mock object for your user repository interface
-// 	mockUserRepo := mocks.NewMockUserRepository(ctrl)
+	for _, tt := range testData {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.beforeTest(c)
+			actualUser, err := userusecase.FindUserByName(tt.email)
+			assert.Equal(t, tt.expectErr, err)
+			if err == nil {
+				assert.Equal(t, tt.email, actualUser.UserName)
+			}
+		})
+	}
+}
 
-// 	// Create a mock user object
-// 	user := domain.Users{
-// 		UserName:    "testuser",
-// 		FirstName:   "John",
-// 		LastName:    "Doe",
-// 		Email:       "johndoe@example.com",
-// 		PhoneNumber: "555-555-5555",
-// 		Password:    "password",
-// 		Profile:     "http://example.com/profile",
-// 	}
+func TestCreateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	// Set the expectations for the mock object
-// 	mockUserRepo.EXPECT().FindUserByEmail(user.Email).Return(nil, sql.ErrNoRows)
-// 	mockUserRepo.EXPECT().InsertUser(user).Return(nil)
+	c := mock.NewMockUserRepository(ctrl)
 
-// 	// Create a new user usecase with the mock objects
-// 	userUC := &userUseCase{
-// 		userRepo:   mockUserRepo,
-// 		adminRepo:  nil,
-// 		mailConfig: nil,
-// 		config:     nil,
-// 	}
+	userusecase := NewUserUseCase(c, nil, nil, config.Config{})
+	testData := []struct {
+		name       string
+		user       domain.Users
+		beforeTest func(userRepo *mock.MockUserRepository)
+		expectErr  error
+	}{
+		{
+			name: "Test success response",
+			user: domain.Users{
+				Email:    "jon",
+				Password: "12345",
+			},
+			beforeTest: func(userRepo *mock.MockUserRepository) {
+				userRepo.EXPECT().FindUserByName("jon").Return(domain.UserResponse{}, nil)
 
-// 	// Call the function to be tested
-// 	err := userUC.CreateUser(user)
-// 	if err != nil {
-// 		t.Errorf("Expected no error but got %v", err)
-// 	}
-// }
+			},
+			expectErr: errors.New("username already exists"),
+		},
+		{
+			name: "Test Repo err response",
+			user: domain.Users{
+				Email:    "jon",
+				Password: "12345",
+			},
+			beforeTest: func(userRepo *mock.MockUserRepository) {
+				userRepo.EXPECT().FindUserByName("jon").Return(domain.UserResponse{}, errors.New("repo error"))
+
+			},
+			expectErr: errors.New("repo error"),
+		},
+	}
+
+	for _, tt := range testData {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.beforeTest(c)
+			err := userusecase.CreateUser(tt.user)
+			assert.Equal(t, tt.expectErr, err)
+		})
+	}
+}

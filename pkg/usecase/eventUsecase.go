@@ -201,7 +201,7 @@ func (c *eventUsecase) SearchEventUser(search string) (*[]domain.EventResponse, 
 
 // CreateUser implements interfaces.UserUseCase
 func (c *eventUsecase) CreateEvent(event domain.Events) error {
-	fmt.Println("create user from service")
+	fmt.Println("create event from service")
 	_, err := c.eventRepo.FindEventByTitle(event.Title)
 	fmt.Println("found event", err)
 

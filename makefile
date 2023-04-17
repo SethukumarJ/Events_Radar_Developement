@@ -50,5 +50,12 @@ swag1:
 swagger: ##Insatall swagger
 	$(GOCMD) install github.com/swaggo/swag/cmd/swag@latest
 
+mockgen: ## Generate mock repocitory and usecase functions 
+	mockgen -source=pkg/repository/interface/userRepoInterface.go -destination=pkg/mock/repoMock/userRepoMock.go -package=mock
+	mockgen -source=pkg/repository/interface/eventRepositoryInterface.go -destination=pkg/mock/repoMock/workerRepoMock.go -package=mock
+	mockgen -source=pkg/usecase/interface/userUsecaseInterface.go -destination=pkg/mock/usecaseMock/userUsecaseMock.go -package=mock
+	mockgen -source=pkg/usecase/interface/eventUsecaseInterface.go -destination=pkg/mock/usecaseMock/authUsecaseMock.go -package=mock
+
+
 help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

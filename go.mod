@@ -8,6 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-playground/validator/v10 v10.12.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang/mock v1.4.4
 	github.com/google/wire v0.5.0
 	github.com/lib/pq v1.10.8
 	github.com/razorpay/razorpay-go v0.0.0-20230410044935-943abe07d4c1

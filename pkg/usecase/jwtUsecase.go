@@ -75,7 +75,7 @@ func (j *jwtUsecase) GenerateAccessToken(userid uint, username string, role stri
 }
 
 // GetTokenFromString implements interfaces.JWTUsecase
-func (j *jwtUsecase) GetTokenFromString(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error) {
+func (j *jwtUsecase) GetTokenFromStringUser(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(signedToken, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -85,11 +85,21 @@ func (j *jwtUsecase) GetTokenFromString(signedToken string, claims *domain.Signe
 	})
 
 }
+// GetTokenFromString implements interfaces.JWTUsecase
+func (j *jwtUsecase) GetTokenFromStringAdmin(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(signedToken, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 
+		return []byte(j.AdminSecretKey), nil
+	})
+
+}
 // VerifyToken implements interfaces.JWTUsecase
-func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetails) {
+func (j *jwtUsecase) VerifyTokenAdmin(signedToken string) (bool, *domain.SignedDetails) {
 	claims := &domain.SignedDetails{}
-	token, _ := j.GetTokenFromString(signedToken, claims)
+	token, _ := j.GetTokenFromStringAdmin(signedToken, claims)
 
 	if token.Valid {
 		if e := claims.Valid(); e == nil {
@@ -98,6 +108,19 @@ func (j *jwtUsecase) VerifyToken(signedToken string) (bool, *domain.SignedDetail
 	}
 	return false, claims
 }
+// VerifyToken implements interfaces.JWTUsecase
+func (j *jwtUsecase) VerifyTokenUser(signedToken string) (bool, *domain.SignedDetails) {
+	claims := &domain.SignedDetails{}
+	token, _ := j.GetTokenFromStringUser(signedToken, claims)
+
+	if token.Valid {
+		if e := claims.Valid(); e == nil {
+			return true, claims
+		}
+	}
+	return false, claims
+}
+
 
 
 func NewJWTUsecase() usecase.JWTUsecase {

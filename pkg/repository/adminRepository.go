@@ -226,8 +226,8 @@ func (c *adminRepository) RejectOrganization(orgStatudId int) error {
 		return err
 	}
 
-	query2 := `UPDATE org_statuses SET pending = null, rejected = $1;`
-	err = c.db.QueryRow(query2, organization_id).Scan(&organization_id)
+	query2 := `UPDATE org_statuses SET pending = null, rejected = $1 WHERE org_status_id = $2;`
+	err = c.db.QueryRow(query2, organization_id, orgStatudId).Scan(&organization_id)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("err", err)
 		return err

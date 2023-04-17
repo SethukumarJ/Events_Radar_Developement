@@ -21,8 +21,8 @@ func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) 
 
 	var user domain.UserResponse
 
-	query := `SELECT user_id,user_name,firs_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = $1;`
-
+	query := `SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = $1;`
+	fmt.Println("user_id:", user_id)
 	err := c.db.QueryRow(query, user_id).Scan(&user.UserId,
 		&user.UserName,
 		&user.FirstName,
@@ -33,7 +33,7 @@ func (c *userRepository) FindUserById(user_id int) (domain.UserResponse, error) 
 		&user.Profile,
 		&user.Verification,
 	)
-
+	fmt.Println("errfrom find user :", err)
 	fmt.Println("user from find user :", user)
 	return user, err
 }

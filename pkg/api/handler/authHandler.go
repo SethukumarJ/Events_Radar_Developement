@@ -387,7 +387,7 @@ func (cr *AuthHandler) UserRefreshToken(c *gin.Context) {
 	bearerToken := strings.Split(auth, " ")
 	fmt.Printf("\n\ntocen : %v\n\n", autheader)
 	token := bearerToken[1]
-	ok, claims := cr.jwtUsecase.VerifyToken(token)
+	ok, claims := cr.jwtUsecase.VerifyTokenUser(token)
 	if !ok {
 		log.Fatal("referesh token not valid")
 	}
@@ -526,7 +526,7 @@ func (cr *AuthHandler) AdminRefreshToken(c *gin.Context) {
 	bearerToken := strings.Split(auth, " ")
 	fmt.Printf("\n\ntocen : %v\n\n", autheader)
 	token := bearerToken[1]
-	ok, claims := cr.jwtUsecase.VerifyToken(token)
+	ok, claims := cr.jwtUsecase.VerifyTokenAdmin(token)
 	if !ok {
 		log.Fatal("referesh token not valid")
 	}

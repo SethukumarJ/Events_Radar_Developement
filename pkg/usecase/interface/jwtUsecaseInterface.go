@@ -7,8 +7,10 @@ import (
 
 type JWTUsecase interface {
 	GenerateAccessToken(userid uint, userName string, role string) (string, error)
-	VerifyToken(token string) (bool, *domain.SignedDetails)
-	GetTokenFromString(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error)
+	VerifyTokenAdmin(token string) (bool, *domain.SignedDetails)
+	VerifyTokenUser(token string) (bool, *domain.SignedDetails)
+	GetTokenFromStringAdmin(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error)
+	GetTokenFromStringUser(signedToken string, claims *domain.SignedDetails) (*jwt.Token, error)
 	GenerateRefreshToken(userid uint, userName string, role string) (string, error)
 
 }

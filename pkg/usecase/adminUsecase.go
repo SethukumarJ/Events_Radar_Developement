@@ -57,7 +57,7 @@ func (c *adminUsecase) RegisterOrganization(orgstatusId int) error {
 
 // RejectOrganization implements interfaces.AdminUsecase
 func (c *adminUsecase) RejectOrganization(orgstatusId int) error {
-	err := c.adminRepo.RegisterOrganization(orgstatusId)
+	err := c.adminRepo.RejectOrganization(orgstatusId)
 
 	if err != nil {
 		return err

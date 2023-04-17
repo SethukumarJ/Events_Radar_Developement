@@ -268,8 +268,11 @@ func (cr *EventHandler) CreateEventUser(c *gin.Context) {
 	fmt.Println("event", newEvent)
 	newEvent.CreatedBy = "user"
 	newEvent.User_id,_ =  strconv.Atoi(c.Writer.Header().Get("user_id"))
+	fmt.Println("user id", newEvent.User_id)
+
 	newEvent.CreatedAt = time.Now()
 	user, err := cr.userUsecase.FindUserById(newEvent.User_id)
+	fmt.Println("user", user)
 	if err != nil {
 		err = errors.New("error while getting user")
 		response := response.ErrorResponse("FAIL", err.Error(), nil)

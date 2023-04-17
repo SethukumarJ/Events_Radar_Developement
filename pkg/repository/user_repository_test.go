@@ -109,7 +109,7 @@ func TestFindUserById(t *testing.T) {
 
 	// Define the expected SQL query and result
 
-	mock.ExpectQuery(`SELECT user_id,user_name,firs_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = \$1;`).WithArgs(testCase.userID).WillReturnRows(
+	mock.ExpectQuery(`SELECT user_id,user_name,first_name,last_name,email,password,phone_number,profile,verification FROM users WHERE user_id = \$1;`).WithArgs(testCase.userID).WillReturnRows(
 		sqlmock.NewRows([]string{"user_id", "user_name", "first_name", "last_name", "email", "password", "phone_number", "profile", "verification"}).
 			AddRow(testCase.expectedUser.UserId, testCase.expectedUser.UserName, testCase.expectedUser.FirstName, testCase.expectedUser.LastName, testCase.expectedUser.Email, testCase.expectedUser.Password, testCase.expectedUser.PhoneNumber, testCase.expectedUser.Profile, testCase.expectedUser.Verification))
 

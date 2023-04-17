@@ -134,7 +134,7 @@ func (cr *AdminHandler) RejectOrganization(c *gin.Context)  {
 	err := cr.adminUsecase.RejectOrganization(orgStatusId)
 
 	if err != nil {
-		response := response.ErrorResponse("Registering organization failed!", err.Error(), nil)
+		response := response.ErrorResponse("Rejecting organization failed!", err.Error(), nil)
 		c.Writer.Header().Add("Content-Type", "application/json")
 		c.Writer.WriteHeader(http.StatusBadRequest)
 		utils.ResponseJSON(*c, response)

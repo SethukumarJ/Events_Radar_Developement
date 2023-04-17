@@ -276,7 +276,7 @@ func (c *eventRepository) PostersByEvent(eventid int) ([]domain.PosterResponse, 
 	fmt.Println("all posters called from repo")
 	var posters []domain.PosterResponse
 
-	query := `SELECT COUNT(*) OVER(),poster_id,name,image,discription,date,colour,event_id FROM posters WHERE event_id = $1ORDER BY date DESC;`
+	query := `SELECT COUNT(*) OVER(),poster_id,name,image,discription,date,colour,event_id FROM posters WHERE event_id = $1 ORDER BY date DESC;`
 
 	rows, err := c.db.Query(query, eventid)
 	fmt.Println("rows", rows)

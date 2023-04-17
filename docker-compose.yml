@@ -11,14 +11,23 @@ services:
     ports:
       - '5433:5432'
     volumes:
-      - ./db:/var/lib/postgresql/data
-    # networks:
-    #   - myapp
+      - db:/var/lib/postgresql/data
+    networks:
+      - myapp
 
   api:
     build: . 
+    image: sethukumarj/events_radar_developement:1.1
+    env_file:
+      - .env
     ports: 
       - 3000:3000
     restart: on-failure
     depends_on:
-      - postgres       
+      - postgres
+    networks:
+      - myapp
+volumes:
+  db:
+networks:
+  myapp:

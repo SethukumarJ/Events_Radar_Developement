@@ -7,8 +7,6 @@ definitions:
     type: object
   domain.Admins:
     properties:
-      admin_id:
-        type: integer
       admin_name:
         maxLength: 50
         minLength: 2
@@ -82,16 +80,12 @@ definitions:
         maxLength: 255
         type: string
       user_id:
-        maximum: 50
-        minimum: 2
         type: integer
       user_name:
         type: string
       website_link:
         maxLength: 255
         type: string
-    required:
-    - user_id
     type: object
   domain.Events:
     properties:
@@ -170,8 +164,6 @@ definitions:
     properties:
       about:
         type: string
-      created_at:
-        type: string
       linkedin:
         type: string
       logo:
@@ -243,7 +235,7 @@ definitions:
       status:
         type: boolean
     type: object
-host: localhost:3000
+host: eventsradar.online
 info:
   contact:
     email: sethukumarj.76@gmail.com

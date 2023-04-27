@@ -29,7 +29,7 @@ import (
 // @in header
 // @name Authorization
 
-// @host localhost:3000
+// @host eventsradar.online
 // @BasePath /
 // @query.collection.format multi
 func main() {

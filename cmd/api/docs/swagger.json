@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:3000",
+    "host": "eventsradar.online",
     "basePath": "/",
     "paths": {
         "/admin/approve-event": {
@@ -2298,9 +2298,6 @@
                 "phone_number"
             ],
             "properties": {
-                "admin_id": {
-                    "type": "integer"
-                },
                 "admin_name": {
                     "type": "string",
                     "maxLength": 50,
@@ -2371,9 +2368,6 @@
         },
         "domain.Bios": {
             "type": "object",
-            "required": [
-                "user_id"
-            ],
             "properties": {
                 "about": {
                     "type": "string"
@@ -2401,9 +2395,7 @@
                     "maxLength": 255
                 },
                 "user_id": {
-                    "type": "integer",
-                    "maximum": 50,
-                    "minimum": 2
+                    "type": "integer"
                 },
                 "user_name": {
                     "type": "string"
@@ -2527,9 +2519,6 @@
             ],
             "properties": {
                 "about": {
-                    "type": "string"
-                },
-                "created_at": {
                     "type": "string"
                 },
                 "linkedin": {

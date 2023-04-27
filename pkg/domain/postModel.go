@@ -44,7 +44,7 @@ type Verification struct {
 }
 
 type Admins struct {
-	AdminId      uint   `json:"admin_id" gorm:"primary key;autoIncrement:true;unique"`
+	AdminId      uint   `json:"-" gorm:"primary key;autoIncrement:true;unique"`
 	AdminName    string `json:"admin_name" gorm:"unique" validate:"required,min=2,max=50"`
 	Password     string `json:"password" validate:"required"`
 	Email        string `json:"email" gorm:"notnull;unique" validate:"email,required"`
@@ -119,7 +119,7 @@ type Organizations struct {
 	CreatedBy        int       `json:"created_by" swaggerignore:"true"`
 	Logo             string    `json:"logo"`
 	About            string    `json:"about"`
-	CreatedAt        time.Time `json:"created_at"`
+	CreatedAt        time.Time `json:"-"`
 	LinkedIn         string    `json:"linkedin"`
 	WebsiteLink      string    `json:"website_link"`
 	Verified         bool      `json:"verified" gorm:"default:false" swaggerignore:"true"`

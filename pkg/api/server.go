@@ -47,7 +47,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 
 	engine.GET("/payment-success", userHandler.PaymentSuccess)
 	engine.GET("/payment-faliure", userHandler.PaymentFaliure)
-	engine.GET("/organization/event/promote", userHandler.Pay)
+	// engine.GET("/organization/event/promote", userHandler.Pay)
 	user := engine.Group("user")
 	{
 		user.GET("/sso-google", authHandler.GoogleAuth)

@@ -17,6 +17,19 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
+func corsMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(200)
+            return
+        }
+        c.Next()
+    }
+}
+
 func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler handler.AuthHandler,
 	adminHandler handler.AdminHandler,
@@ -25,10 +38,10 @@ func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler.InitializeOAuthGoogle()
 
 	engine := gin.Default()
-	// Enable CORS for all origins
+	//Enable CORS for all origins
 	// config := cors.DefaultConfig()
-	// config.AllowOrigins = []string{"https://eventsradar.online"}
-	// config.AllowMethods = []string{"GET", "POST","PUT","PATCH","DELETE"}
+	// config.AllowOrigins = []string{"https://eventsradar.online","null","localhost"}
+	// config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 	// config.AllowHeaders = []string{"Authorization"}
 	// engine.Use(cors.New(config))
 	engine.HTMLRender = gintemplate.Default()
@@ -94,8 +107,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			admin.PATCH("/reject-organization", adminHandler.RejectOrganization)
 			admin.GET("/list-organizations", adminHandler.ListOrgRequests)
 			admin.PATCH("/vipfy-user", adminHandler.VipUser)
-		
-			
+
 		}
 	}
 
@@ -106,7 +118,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		organization.GET("/list-organizations", userHandler.ListOrganizations)
 		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
 		organization.GET("/event/get-posterbyid", eventHandler.GetPosterById)
-		organization.Use(middleware.AuthorizeOrg())
+		organization.Use(corsMiddleware(),middleware.AuthorizeOrg(),)
 		{
 
 			organization.POST("/event/create-poster", eventHandler.CreatePosterOrganization)

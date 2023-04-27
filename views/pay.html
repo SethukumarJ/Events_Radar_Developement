@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GET Request Form</title>
+  </head>
+  <body>
+    <h1>Send a GET Request with Bearer Token</h1>
+    <form id="get-request-form" method="GET" >
+      <label for="token">Enter Bearer Token:</label><br>
+      <input type="text" id="token" name="token"><br><br>
+      <label for="Event_id">Event ID:</label><br>
+      <input type="text" id="Event_id" name="Event_id"><br><br>
+      <label for="Organization_id">Organization ID:</label><br>
+      <input type="text" id="Organization_id" name="Organization_id"><br><br>
+      <label for="plan">Plan:</label><br>
+      <input type="text" id="plan" name="plan"><br><br>
+      <label for="email">Email:</label><br>
+      <input type="text" id="email" name="email"><br><br>
+      <input type="submit" value="Submit">
+    </form>
+    <script>
+      function setBearerToken(token) {
+        var Event_id = document.getElementById('Event_id').value;
+        var Organization_id = document.getElementById('Organization_id').value;
+        var plan = document.getElementById('plan').value;
+        var email = document.getElementById('email').value;
+        var url = 'https://eventsradar.online/organization/event/promote?Event_id=' + Event_id + '&Organization_id=' + Organization_id + '&plan=' + plan + '&email=' + email;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+          }
+        };
+        xhr.send();
+      }
+      var form = document.getElementById('get-request-form');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log("--------------------hello world");
+        var token = document.getElementById('token').value;
+       // setBearerToken(token);
+      });
+    </script>
+  </body>
+</html>

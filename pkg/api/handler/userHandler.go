@@ -50,7 +50,7 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	plan := (c.Query("plan"))
 	event_id, _ := strconv.Atoi(c.Query("Event_id"))
 
-	Organization_id, _ := strconv.Atoi(c.Writer.Header().Get("Organization_id"))
+	Organization_id, _ := strconv.Atoi(c.Query("Organization_id"))
 	fmt.Println("Organization Id ", Organization_id)
 	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
@@ -123,6 +123,16 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "index.html", HomePageVars)
+
+}
+
+func (cr *UserHandler) Template(c *gin.Context) {
+
+	// role := c.Writer.Header().Get("role")
+	// fmt.Println("role ", role)
+
+
+	c.HTML(http.StatusOK, "pay.html", nil)
 
 }
 

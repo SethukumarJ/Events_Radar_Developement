@@ -85,7 +85,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		admin.GET("/search-event", adminHandler.SearchEvent)
 		admin.Use(middleware.AuthorizeJwtAdmin())
 		{
-			admin.GET("/token-refresh", authHandler.AdminRefreshToken)
+			admin.POST("/token-refresh", authHandler.AdminRefreshToken)
 			admin.PATCH("/approve-event", adminHandler.ApproveEvent)
 			admin.POST("/create-event", eventHandler.CreateEventAdmin)
 			admin.GET("/list-users", adminHandler.ViewAllUsers)
@@ -125,6 +125,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 			organization.PATCH("/event/accept-application", eventHandler.AcceptApplication)
 			organization.PATCH("/reject-application", eventHandler.RejectApplication)
 			organization.GET("/event/list-applications", eventHandler.ListApplications)
+			organization.GET("/event/promote", userHandler.Pay)
 
 		}
 

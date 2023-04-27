@@ -118,7 +118,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		organization.GET("/list-organizations", userHandler.ListOrganizations)
 		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
 		organization.GET("/event/get-posterbyid", eventHandler.GetPosterById)
-		organization.Use(corsMiddleware(),middleware.AuthorizeOrg(),)
+		organization.Use(corsMiddleware(),middleware.AuthorizeOrg())
 		{
 
 			organization.POST("/event/create-poster", eventHandler.CreatePosterOrganization)

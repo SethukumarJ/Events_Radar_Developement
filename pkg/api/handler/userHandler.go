@@ -46,23 +46,23 @@ var packages = map[string]int{"basic": 10000, "stadard": 25000, "premium": 50000
 // @Router /organization/event/promote [Get]
 func (cr *UserHandler) Pay(c *gin.Context) {
 
-	email := (c.Query("email"))
-	plan := (c.Query("plan"))
-	event_id, _ := strconv.Atoi(c.Query("Event_id"))
+	// email := (c.Query("email"))
+	// plan := (c.Query("plan"))
+	// event_id, _ := strconv.Atoi(c.Query("Event_id"))
 
-	Organization_id, _ := strconv.Atoi(c.Query("Organization_id"))
-	fmt.Println("Organization Id ", Organization_id)
-	role := c.Writer.Header().Get("role")
-	fmt.Println("role ", role)
-
-	// email := "sethukumarj.76@gmail.com"
-	// plan := "basic"
-	// event_id := 1
-
-	// Organization_id  := 1
+	// Organization_id, _ := strconv.Atoi(c.Query("Organization_id"))
 	// fmt.Println("Organization Id ", Organization_id)
-	// role := "1"
+	// role := c.Writer.Header().Get("role")
 	// fmt.Println("role ", role)
+
+	email := "sethukumarj.76@gmail.com"
+	plan := "basic"
+	event_id := 1
+
+	Organization_id  := 1
+	fmt.Println("Organization Id ", Organization_id)
+	role := "1"
+	fmt.Println("role ", role)
 
 
 	if role > "1" {

@@ -17,18 +17,18 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func corsMiddleware() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-        if c.Request.Method == "OPTIONS" {
-            c.AbortWithStatus(200)
-            return
-        }
-        c.Next()
-    }
-}
+// func corsMiddleware() gin.HandlerFunc {
+//     return func(c *gin.Context) {
+//         c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+//         c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+//         c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+//         if c.Request.Method == "OPTIONS" {
+//             c.AbortWithStatus(200)
+//             return
+//         }
+//         c.Next()
+//     }
+// }
 
 func NewServerHTTP(userHandler handler.UserHandler,
 	authHandler handler.AuthHandler,
@@ -119,7 +119,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 		organization.GET("/list-organizations", userHandler.ListOrganizations)
 		organization.GET("/event/get-posters", eventHandler.PostersByEvent)
 		organization.GET("/event/get-posterbyid", eventHandler.GetPosterById)
-		organization.Use(corsMiddleware(),middleware.AuthorizeOrg())
+		organization.Use(middleware.AuthorizeOrg())
 		{
 
 			organization.POST("/event/create-poster", eventHandler.CreatePosterOrganization)

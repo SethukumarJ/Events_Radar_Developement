@@ -60,6 +60,7 @@ func NewServerHTTP(userHandler handler.UserHandler,
 
 	engine.GET("/payment-success", userHandler.PaymentSuccess)
 	engine.GET("/payment-faliure", userHandler.PaymentFaliure)
+	engine.GET("/template", userHandler.Template)
 	// engine.GET("/organization/event/promote", userHandler.Pay)
 	user := engine.Group("user")
 	{

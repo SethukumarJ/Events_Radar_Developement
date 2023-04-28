@@ -30,7 +30,7 @@ func NewUserHandler(usecase usecase.UserUseCase) UserHandler {
 }
 
 // Initialize a map with key/value pairs
-var packages = map[string]int{"basic": 100, "stadard": 250, "premium": 500}
+var packages = map[string]int{"basic": 10000, "stadard": 25000, "premium": 50000}
 
 // @Summary Promote
 // @ID promote event
@@ -54,6 +54,16 @@ func (cr *UserHandler) Pay(c *gin.Context) {
 	fmt.Println("Organization Id ", Organization_id)
 	role := c.Writer.Header().Get("role")
 	fmt.Println("role ", role)
+
+	// email := "sethukumarj.76@gmail.com"
+	// plan := "basic"
+	// event_id := 1
+
+	// Organization_id  := 1
+	// fmt.Println("Organization Id ", Organization_id)
+	// role := "1"
+	// fmt.Println("role ", role)
+
 
 	if role > "1" {
 		response := response.ErrorResponse("Your role is not eligible for this action", "no value", nil)

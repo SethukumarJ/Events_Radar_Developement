@@ -23,6 +23,7 @@ FROM alpine:3.16
 WORKDIR /Events_Radar_Developement
 COPY go.mod .
 COPY go.sum .
+COPY views ./views
 COPY --from=builder /Events_Radar_Developement/build/bin/api .
 
 
